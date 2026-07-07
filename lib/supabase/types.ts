@@ -351,6 +351,7 @@ export type Database = {
           city: string | null;
           emergency_contact_name: string | null;
           emergency_contact_phone: string | null;
+          administrative_notes: string | null;
           status: string;
           created_at: string;
           updated_at: string;
@@ -368,6 +369,7 @@ export type Database = {
           city?: string | null;
           emergency_contact_name?: string | null;
           emergency_contact_phone?: string | null;
+          administrative_notes?: string | null;
           status?: string;
           created_at?: string;
           updated_at?: string;
@@ -385,6 +387,7 @@ export type Database = {
           city?: string | null;
           emergency_contact_name?: string | null;
           emergency_contact_phone?: string | null;
+          administrative_notes?: string | null;
           status?: string;
           created_at?: string;
           updated_at?: string;
