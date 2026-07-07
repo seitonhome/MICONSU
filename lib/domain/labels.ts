@@ -49,3 +49,83 @@ export const PAYMENT_STATUS_LABELS: Record<Database["public"]["Enums"]["payment_
 };
 
 export const WEEKDAY_LABELS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+export const SUPPORT_TICKET_CATEGORY_LABELS: Record<
+  Database["public"]["Enums"]["support_ticket_category"],
+  string
+> = {
+  acceso: "Acceso",
+  agenda: "Agenda",
+  pagos: "Pagos",
+  pasarelas: "Pasarelas",
+  recordatorios: "Recordatorios",
+  pagina_publica: "Página pública",
+  pacientes: "Pacientes",
+  reportes: "Reportes",
+  diseno: "Diseño",
+  soporte_legal_documentos: "Soporte legal / documentos",
+  configuracion: "Configuración",
+  error_tecnico: "Error técnico",
+  solicitud_mejora: "Solicitud de mejora",
+  backup_restauracion: "Backup / restauración",
+  seguridad: "Seguridad",
+};
+
+export const SUPPORT_TICKET_PRIORITY_LABELS: Record<
+  Database["public"]["Enums"]["support_ticket_priority"],
+  string
+> = {
+  critical: "Crítica",
+  high: "Alta",
+  medium: "Media",
+  low: "Baja",
+};
+
+export const SUPPORT_TICKET_STATUS_LABELS: Record<
+  Database["public"]["Enums"]["support_ticket_status"],
+  string
+> = {
+  open: "Abierto",
+  in_review: "En revisión",
+  waiting_client: "Esperando al cliente",
+  in_progress: "En progreso",
+  resolved: "Resuelto",
+  closed: "Cerrado",
+  escalated: "Escalado",
+};
+
+export const LICENSE_STATUS_LABELS: Record<string, string> = {
+  active: "Activa",
+  trial: "Prueba",
+  suspended: "Suspendida",
+  expired: "Vencida",
+  cancelled: "Cancelada",
+};
+
+export const SUPPORT_SUBSCRIPTION_STATUS_LABELS: Record<string, string> = {
+  active: "Activo",
+  expiring_soon: "Por vencer",
+  expired: "Vencido",
+  suspended: "Suspendido",
+};
+
+export const MODULE_KEY_LABELS: Record<Database["public"]["Enums"]["module_key"], string> = {
+  extra_professional: "Profesional adicional",
+  extra_location: "Sede adicional",
+  extra_payment_gateway: "Pasarela adicional",
+  whatsapp_automation: "WhatsApp automático",
+  sms: "SMS",
+  advanced_telehealth: "Teleconsulta avanzada",
+  advanced_clinical_history: "Historia clínica avanzada",
+  custom_domain: "Dominio personalizado",
+  data_migration: "Migración de datos",
+  extra_training: "Capacitación adicional",
+  priority_support: "Soporte prioritario",
+  advanced_therapeutic_packages: "Paquetes terapéuticos avanzados",
+  group_workshops: "Talleres grupales",
+  digital_resources: "Recursos digitales",
+  premium_reports: "Reportes premium",
+  premium_visual_customization: "Personalización visual premium",
+};
+
+export const MODULE_KEYS = Object.keys(MODULE_KEY_LABELS) as Database["public"]["Enums"]["module_key"][];
