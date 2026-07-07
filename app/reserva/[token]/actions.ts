@@ -1,6 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/server";
+import { notifyAppointment } from "@/lib/notifications/notify";
 
 export type ManageBookingState = { error?: string; success?: boolean };
 
@@ -43,6 +44,8 @@ export async function cancelPublicAppointment(
     .eq("id", appointment.id);
 
   if (error) return { error: "No pudimos cancelar tu cita. Intenta de nuevo." };
+
+  await notifyAppointment(admin, appointment.id, "appointment_cancelled");
 
   return { success: true };
 }

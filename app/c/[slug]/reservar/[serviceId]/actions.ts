@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { getAvailableSlots } from "@/lib/booking/slots";
 import { getPaymentProvider } from "@/lib/payments/provider-factory";
+import { notifyAppointment } from "@/lib/notifications/notify";
 import type { Database } from "@/lib/supabase/types";
 
 export type BookingActionState = { error?: string; token?: string; checkoutUrl?: string };
@@ -215,6 +216,12 @@ export async function createBookingAction(
         await admin.from("payment_intents").update({ checkout_url: checkoutUrl }).eq("id", paymentIntent.id);
       }
     }
+  }
+
+  // No bloquea la respuesta si el correo falla; queda registrado en
+  // notification_logs para poder diagnosticarlo desde el panel.
+  if (!checkoutUrl) {
+    await notifyAppointment(admin, appointment.id, "appointment_confirmation");
   }
 
   return { token: appointment.booking_token, checkoutUrl };

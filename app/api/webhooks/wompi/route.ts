@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { getPaymentProvider } from "@/lib/payments/provider-factory";
+import { notifyAppointment } from "@/lib/notifications/notify";
 import type { Json } from "@/lib/supabase/types";
 
 export async function POST(request: NextRequest) {
@@ -102,6 +103,7 @@ export async function POST(request: NextRequest) {
 
   if (intent.appointment_id && result.status === "approved") {
     await admin.from("appointments").update({ status: "confirmed" }).eq("id", intent.appointment_id);
+    await notifyAppointment(admin, intent.appointment_id, "payment_approved");
   }
 
   return NextResponse.json({ ok: true });

@@ -1,8 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth/session";
+import { notifyAppointment } from "@/lib/notifications/notify";
 
 async function staffClinicId() {
   const profile = await requireRole(["clinic_owner", "assistant", "receptionist", "finance_user"]);
@@ -36,6 +37,7 @@ export async function confirmPayment(intentId: string): Promise<void> {
 
   if (intent.appointment_id) {
     await supabase.from("appointments").update({ status: "confirmed" }).eq("id", intent.appointment_id);
+    await notifyAppointment(createAdminClient(), intent.appointment_id, "payment_approved");
   }
 
   await supabase.from("payment_reconciliation_logs").insert({

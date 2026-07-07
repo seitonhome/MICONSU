@@ -1643,6 +1643,81 @@ export type Database = {
         };
         Relationships: [];
       };
+      notification_templates: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          template_key: Database["public"]["Enums"]["notification_template_key"];
+          channel: Database["public"]["Enums"]["notification_channel"];
+          subject: string | null;
+          body: string;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          template_key: Database["public"]["Enums"]["notification_template_key"];
+          channel?: Database["public"]["Enums"]["notification_channel"];
+          subject?: string | null;
+          body: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          template_key?: Database["public"]["Enums"]["notification_template_key"];
+          channel?: Database["public"]["Enums"]["notification_channel"];
+          subject?: string | null;
+          body?: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      notification_logs: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          appointment_id: string | null;
+          patient_id: string | null;
+          template_key: Database["public"]["Enums"]["notification_template_key"];
+          channel: Database["public"]["Enums"]["notification_channel"];
+          recipient: string | null;
+          status: "sent" | "failed" | "skipped";
+          error: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          appointment_id?: string | null;
+          patient_id?: string | null;
+          template_key: Database["public"]["Enums"]["notification_template_key"];
+          channel?: Database["public"]["Enums"]["notification_channel"];
+          recipient?: string | null;
+          status?: "sent" | "failed" | "skipped";
+          error?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          appointment_id?: string | null;
+          patient_id?: string | null;
+          template_key?: Database["public"]["Enums"]["notification_template_key"];
+          channel?: Database["public"]["Enums"]["notification_channel"];
+          recipient?: string | null;
+          status?: "sent" | "failed" | "skipped";
+          error?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       payment_providers_public: {
@@ -1826,6 +1901,15 @@ export type Database = {
         | "resolved"
         | "closed"
         | "escalated";
+      notification_channel: "email" | "whatsapp" | "sms";
+      notification_template_key:
+        | "appointment_confirmation"
+        | "appointment_reminder_24h"
+        | "appointment_reminder_2h"
+        | "appointment_cancelled"
+        | "appointment_rescheduled"
+        | "payment_pending"
+        | "payment_approved";
     };
     CompositeTypes: Record<string, never>;
   };

@@ -1,8 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth/session";
+import { notifyAppointment } from "@/lib/notifications/notify";
 import type { Database } from "@/lib/supabase/types";
 
 export type AgendaActionState = { error?: string; success?: boolean };
@@ -127,5 +128,8 @@ export async function cancelAppointment(id: string, reason: string): Promise<voi
     .from("appointments")
     .update({ status: "cancelled", cancellation_reason: reason || null, cancelled_by: profileId })
     .eq("id", id);
+
+  await notifyAppointment(createAdminClient(), id, "appointment_cancelled");
+
   revalidatePath("/dashboard/agenda");
 }
