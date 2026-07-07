@@ -89,6 +89,34 @@ export function roleHasPermission(role: AppRole, permission: Permission): boolea
   return ROLE_PERMISSIONS[role]?.includes(permission) ?? false;
 }
 
+export const PRACTITIONER_TYPE_LABELS: Record<PractitionerType, string> = {
+  medico_general: "Médico general",
+  medico_especialista: "Médico especialista",
+  odontologo: "Odontólogo",
+  ortodoncista: "Ortodoncista",
+  psicologo: "Psicólogo",
+  psiquiatra: "Psiquiatra",
+  fisioterapeuta: "Fisioterapeuta",
+  nutricionista: "Nutricionista",
+  medicina_funcional_integrativa: "Medicina funcional / integrativa",
+  medicina_alternativa: "Medicina alternativa",
+  homeopatia: "Homeopatía",
+  acupuntura_mtc: "Acupuntura / medicina tradicional china",
+  ayurveda: "Ayurveda",
+  naturopatia: "Naturopatía",
+  terapia_neural: "Terapia neural",
+  quiropraxia: "Quiropraxia",
+  osteopatia: "Osteopatía",
+  biomagnetismo: "Biomagnetismo",
+  bioenergetica: "Bioenergética",
+  reiki: "Reiki",
+  biosanacion_biodescodificacion: "Biosanación emocional / biodescodificación",
+  coaching_mentoria_emocional: "Coaching / mentoría emocional",
+  terapias_respiracion_meditacion: "Terapias de respiración / meditación",
+  terapias_corporales_masajes: "Terapias corporales / masajes",
+  otro: "Otro",
+};
+
 export const DEFAULT_LABELS_BY_PRACTITIONER_TYPE: Partial<
   Record<PractitionerType, { patient: string; appointment: string; process: string }>
 > = {
