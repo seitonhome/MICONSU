@@ -60,7 +60,7 @@ export default async function BookingPage({
   const { data: professionals } = await professionalsQuery;
 
   const bookableProviders = (paymentProviders ?? []).filter((p) =>
-    ["manual_transfer", "in_person"].includes(p.provider_key),
+    ["manual_transfer", "in_person", "wompi"].includes(p.provider_key),
   );
 
   let manualInstructions: string | null = null;

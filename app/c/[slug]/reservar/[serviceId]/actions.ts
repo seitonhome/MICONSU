@@ -3,9 +3,10 @@
 import { headers } from "next/headers";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { getAvailableSlots } from "@/lib/booking/slots";
+import { getPaymentProvider } from "@/lib/payments/provider-factory";
 import type { Database } from "@/lib/supabase/types";
 
-export type BookingActionState = { error?: string; token?: string };
+export type BookingActionState = { error?: string; token?: string; checkoutUrl?: string };
 
 export async function fetchSlotsAction(params: {
   clinicId: string;
@@ -169,30 +170,52 @@ export async function createBookingAction(
     );
   }
 
+  let checkoutUrl: string | undefined;
+
   if (service.requires_payment) {
     const amount = service.payment_type === "deposit" ? (service.deposit_amount ?? service.price) : service.price;
-    let providerId: string | null = null;
+    let providerRow: Database["public"]["Tables"]["payment_providers"]["Row"] | null = null;
     if (paymentProviderKey) {
-      const { data: provider } = await admin
+      const { data } = await admin
         .from("payment_providers")
-        .select("id")
+        .select("*")
         .eq("clinic_id", clinic.id)
         .eq("provider_key", paymentProviderKey as Database["public"]["Tables"]["payment_providers"]["Row"]["provider_key"])
         .maybeSingle();
-      providerId = provider?.id ?? null;
+      providerRow = data;
     }
 
-    await admin.from("payment_intents").insert({
-      clinic_id: clinic.id,
-      appointment_id: appointment.id,
-      patient_id: patientId,
-      service_id: serviceId,
-      payment_provider_id: providerId,
-      kind: service.payment_type === "deposit" ? "deposit" : "full",
-      amount,
-      status: "pending",
-    });
+    const { data: paymentIntent } = await admin
+      .from("payment_intents")
+      .insert({
+        clinic_id: clinic.id,
+        appointment_id: appointment.id,
+        patient_id: patientId,
+        service_id: serviceId,
+        payment_provider_id: providerRow?.id ?? null,
+        kind: service.payment_type === "deposit" ? "deposit" : "full",
+        amount,
+        status: "pending",
+      })
+      .select("id")
+      .single();
+
+    if (providerRow?.provider_key === "wompi" && paymentIntent) {
+      const provider = getPaymentProvider(providerRow);
+      if (provider?.createCheckoutSession) {
+        const session = await provider.createCheckoutSession({
+          reference: paymentIntent.id,
+          amount,
+          currency: "COP",
+          redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/reserva/${appointment.booking_token}`,
+          customerEmail: email,
+          customerFullName: fullName,
+        });
+        checkoutUrl = session.checkoutUrl;
+        await admin.from("payment_intents").update({ checkout_url: checkoutUrl }).eq("id", paymentIntent.id);
+      }
+    }
   }
 
-  return { token: appointment.booking_token };
+  return { token: appointment.booking_token, checkoutUrl };
 }

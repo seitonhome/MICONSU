@@ -72,7 +72,11 @@ export function BookingWizard({
   const [state, formAction, isPending] = useActionState(createBookingAction, initialState);
 
   useEffect(() => {
-    if (state?.token) router.push(`/reserva/${state.token}`);
+    if (state?.checkoutUrl) {
+      window.location.href = state.checkoutUrl;
+    } else if (state?.token) {
+      router.push(`/reserva/${state.token}`);
+    }
   }, [state, router]);
 
   useEffect(() => {
