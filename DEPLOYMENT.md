@@ -72,12 +72,14 @@ Puedes forzar el uso del pooler pasando la cadena de conexión completa a `supab
 ```json
 {
   "crons": [
-    { "path": "/api/cron/reminders", "schedule": "0 * * * *" }
+    { "path": "/api/cron/reminders", "schedule": "0 13 * * *" }
   ]
 }
 ```
 
-Se ejecuta cada hora en punto y dispara el envío de recordatorios de citas (24h y 2h antes) vía Resend, registrando cada intento en `notification_logs` (con deduplicación: no se reenvía el mismo `template_key` dos veces para la misma cita). El endpoint debe validar el header de autenticación del cron de Vercel contra `CRON_SECRET` antes de ejecutar cualquier envío, para que no sea invocable públicamente.
+**Corre 1 vez al día (13:00 UTC, ~8:00 a.m. hora Colombia)** y dispara el envío de recordatorios de citas (24h y 2h antes) vía Resend, registrando cada intento en `notification_logs` (con deduplicación: no se reenvía el mismo `template_key` dos veces para la misma cita). El endpoint debe validar el header de autenticación del cron de Vercel contra `CRON_SECRET` antes de ejecutar cualquier envío, para que no sea invocable públicamente.
+
+**Limitación conocida:** el plan Vercel Hobby (gratis) solo permite cron jobs diarios — el diseño original pedía correr cada hora para que el recordatorio "2 horas antes" fuera preciso. Con una sola corrida diaria, ese recordatorio pierde precisión (efectivamente se envía junto con el de 24h, no 2h antes). Al subir a **Vercel Pro**, cambiar `schedule` de vuelta a `"0 * * * *"` (cada hora) restaura el comportamiento original.
 
 Los crons de Vercel solo se ejecutan en el entorno de **producción**; no se disparan automáticamente en Preview deployments.
 
