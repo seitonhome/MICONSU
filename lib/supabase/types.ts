@@ -1718,6 +1718,600 @@ export type Database = {
         };
         Relationships: [];
       };
+      clinical_notes: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          patient_id: string;
+          professional_id: string;
+          appointment_id: string | null;
+          chief_complaint: string | null;
+          evolution_notes: string | null;
+          diagnosis: string | null;
+          recommendations: string | null;
+          follow_up_plan: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          patient_id: string;
+          professional_id: string;
+          appointment_id?: string | null;
+          chief_complaint?: string | null;
+          evolution_notes?: string | null;
+          diagnosis?: string | null;
+          recommendations?: string | null;
+          follow_up_plan?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          patient_id?: string;
+          professional_id?: string;
+          appointment_id?: string | null;
+          chief_complaint?: string | null;
+          evolution_notes?: string | null;
+          diagnosis?: string | null;
+          recommendations?: string | null;
+          follow_up_plan?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
+      treatment_plans: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          patient_id: string;
+          professional_id: string;
+          title: string;
+          procedures: Json;
+          teeth_involved: string | null;
+          total_amount: number;
+          paid_amount: number;
+          status: "active" | "completed" | "cancelled";
+          next_appointment_suggestion: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          patient_id: string;
+          professional_id: string;
+          title: string;
+          procedures?: Json;
+          teeth_involved?: string | null;
+          total_amount?: number;
+          paid_amount?: number;
+          status?: "active" | "completed" | "cancelled";
+          next_appointment_suggestion?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          patient_id?: string;
+          professional_id?: string;
+          title?: string;
+          procedures?: Json;
+          teeth_involved?: string | null;
+          total_amount?: number;
+          paid_amount?: number;
+          status?: "active" | "completed" | "cancelled";
+          next_appointment_suggestion?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
+      therapeutic_processes: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          patient_id: string;
+          professional_id: string;
+          objective: string | null;
+          sessions_planned: number | null;
+          progress_notes: string | null;
+          tasks_recommendations: string | null;
+          next_session_at: string | null;
+          status: Database["public"]["Enums"]["therapeutic_process_status"];
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          patient_id: string;
+          professional_id: string;
+          objective?: string | null;
+          sessions_planned?: number | null;
+          progress_notes?: string | null;
+          tasks_recommendations?: string | null;
+          next_session_at?: string | null;
+          status?: Database["public"]["Enums"]["therapeutic_process_status"];
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          patient_id?: string;
+          professional_id?: string;
+          objective?: string | null;
+          sessions_planned?: number | null;
+          progress_notes?: string | null;
+          tasks_recommendations?: string | null;
+          next_session_at?: string | null;
+          status?: Database["public"]["Enums"]["therapeutic_process_status"];
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
+      clinical_notes_access_logs: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          clinical_note_id: string;
+          accessed_by: string | null;
+          action: "view" | "edit";
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          clinical_note_id: string;
+          accessed_by?: string | null;
+          action?: "view" | "edit";
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          clinical_note_id?: string;
+          accessed_by?: string | null;
+          action?: "view" | "edit";
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      session_packages: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          patient_id: string;
+          professional_id: string;
+          service_id: string | null;
+          name: string;
+          total_sessions: number;
+          sessions_used: number;
+          price_total: number;
+          deposit_amount: number;
+          starts_at: string;
+          valid_until: string | null;
+          status: Database["public"]["Enums"]["session_package_status"];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          patient_id: string;
+          professional_id: string;
+          service_id?: string | null;
+          name: string;
+          total_sessions: number;
+          sessions_used?: number;
+          price_total?: number;
+          deposit_amount?: number;
+          starts_at?: string;
+          valid_until?: string | null;
+          status?: Database["public"]["Enums"]["session_package_status"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          patient_id?: string;
+          professional_id?: string;
+          service_id?: string | null;
+          name?: string;
+          total_sessions?: number;
+          sessions_used?: number;
+          price_total?: number;
+          deposit_amount?: number;
+          starts_at?: string;
+          valid_until?: string | null;
+          status?: Database["public"]["Enums"]["session_package_status"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      package_sessions: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          package_id: string;
+          appointment_id: string | null;
+          session_number: number;
+          used_at: string;
+          notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          package_id: string;
+          appointment_id?: string | null;
+          session_number: number;
+          used_at?: string;
+          notes?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          package_id?: string;
+          appointment_id?: string | null;
+          session_number?: number;
+          used_at?: string;
+          notes?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      group_sessions: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          professional_id: string | null;
+          service_id: string | null;
+          location_id: string | null;
+          name: string;
+          description: string | null;
+          starts_at: string;
+          ends_at: string;
+          modality: "in_person" | "virtual";
+          virtual_link: string | null;
+          max_capacity: number;
+          status: Database["public"]["Enums"]["group_session_status"];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          professional_id?: string | null;
+          service_id?: string | null;
+          location_id?: string | null;
+          name: string;
+          description?: string | null;
+          starts_at: string;
+          ends_at: string;
+          modality?: "in_person" | "virtual";
+          virtual_link?: string | null;
+          max_capacity?: number;
+          status?: Database["public"]["Enums"]["group_session_status"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          professional_id?: string | null;
+          service_id?: string | null;
+          location_id?: string | null;
+          name?: string;
+          description?: string | null;
+          starts_at?: string;
+          ends_at?: string;
+          modality?: "in_person" | "virtual";
+          virtual_link?: string | null;
+          max_capacity?: number;
+          status?: Database["public"]["Enums"]["group_session_status"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      group_session_attendees: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          group_session_id: string;
+          patient_id: string;
+          payment_status: "pending" | "paid" | "waived";
+          attended: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          group_session_id: string;
+          patient_id: string;
+          payment_status?: "pending" | "paid" | "waived";
+          attended?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          group_session_id?: string;
+          patient_id?: string;
+          payment_status?: "pending" | "paid" | "waived";
+          attended?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      resource_library: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          title: string;
+          description: string | null;
+          resource_type: Database["public"]["Enums"]["resource_type"];
+          file_url: string;
+          created_by: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          title: string;
+          description?: string | null;
+          resource_type?: Database["public"]["Enums"]["resource_type"];
+          file_url: string;
+          created_by?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          title?: string;
+          description?: string | null;
+          resource_type?: Database["public"]["Enums"]["resource_type"];
+          file_url?: string;
+          created_by?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
+      assigned_resources: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          resource_id: string;
+          patient_id: string;
+          appointment_id: string | null;
+          assigned_by: string | null;
+          assigned_at: string;
+          viewed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          resource_id: string;
+          patient_id: string;
+          appointment_id?: string | null;
+          assigned_by?: string | null;
+          assigned_at?: string;
+          viewed_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          resource_id?: string;
+          patient_id?: string;
+          appointment_id?: string | null;
+          assigned_by?: string | null;
+          assigned_at?: string;
+          viewed_at?: string | null;
+        };
+        Relationships: [];
+      };
+      post_consultation_followups: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          patient_id: string;
+          appointment_id: string | null;
+          followup_type: Database["public"]["Enums"]["followup_type"];
+          status: Database["public"]["Enums"]["followup_status"];
+          scheduled_for: string;
+          sent_at: string | null;
+          message: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          patient_id: string;
+          appointment_id?: string | null;
+          followup_type?: Database["public"]["Enums"]["followup_type"];
+          status?: Database["public"]["Enums"]["followup_status"];
+          scheduled_for?: string;
+          sent_at?: string | null;
+          message?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          patient_id?: string;
+          appointment_id?: string | null;
+          followup_type?: Database["public"]["Enums"]["followup_type"];
+          status?: Database["public"]["Enums"]["followup_status"];
+          scheduled_for?: string;
+          sent_at?: string | null;
+          message?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      reviews: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          patient_id: string | null;
+          appointment_id: string | null;
+          professional_id: string | null;
+          service_id: string | null;
+          rating: number;
+          comment: string | null;
+          status: Database["public"]["Enums"]["review_status"];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          patient_id?: string | null;
+          appointment_id?: string | null;
+          professional_id?: string | null;
+          service_id?: string | null;
+          rating: number;
+          comment?: string | null;
+          status?: Database["public"]["Enums"]["review_status"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          patient_id?: string | null;
+          appointment_id?: string | null;
+          professional_id?: string | null;
+          service_id?: string | null;
+          rating?: number;
+          comment?: string | null;
+          status?: Database["public"]["Enums"]["review_status"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      intake_forms: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          service_id: string | null;
+          title: string;
+          fields: Json;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          service_id?: string | null;
+          title: string;
+          fields?: Json;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          service_id?: string | null;
+          title?: string;
+          fields?: Json;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      rate_limit_attempts: {
+        Row: {
+          id: string;
+          bucket_key: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          bucket_key: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          bucket_key?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      intake_form_responses: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          intake_form_id: string;
+          patient_id: string | null;
+          appointment_id: string | null;
+          responses: Json;
+          submitted_at: string;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          intake_form_id: string;
+          patient_id?: string | null;
+          appointment_id?: string | null;
+          responses?: Json;
+          submitted_at?: string;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          intake_form_id?: string;
+          patient_id?: string | null;
+          appointment_id?: string | null;
+          responses?: Json;
+          submitted_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       payment_providers_public: {
@@ -1910,6 +2504,28 @@ export type Database = {
         | "appointment_rescheduled"
         | "payment_pending"
         | "payment_approved";
+      therapeutic_process_status:
+        | "active"
+        | "paused"
+        | "completed"
+        | "abandoned"
+        | "cancelled";
+      session_package_status:
+        | "active"
+        | "completed"
+        | "paused"
+        | "expired"
+        | "cancelled";
+      group_session_status: "scheduled" | "completed" | "cancelled";
+      resource_type: "pdf" | "audio" | "video" | "guide" | "exercise" | "other";
+      followup_type:
+        | "thank_you"
+        | "satisfaction_survey"
+        | "review_request"
+        | "package_renewal"
+        | "custom";
+      followup_status: "pending" | "sent" | "completed" | "skipped";
+      review_status: "private" | "approved" | "featured";
     };
     CompositeTypes: Record<string, never>;
   };

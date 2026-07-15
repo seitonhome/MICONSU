@@ -5,6 +5,7 @@ import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { getAvailableSlots } from "@/lib/booking/slots";
 import { getPaymentProvider } from "@/lib/payments/provider-factory";
 import { notifyAppointment } from "@/lib/notifications/notify";
+import { checkRateLimit, getClientIp } from "@/lib/security/rate-limit";
 import type { Database } from "@/lib/supabase/types";
 
 export type BookingActionState = { error?: string; token?: string; checkoutUrl?: string };
@@ -43,6 +44,12 @@ export async function createBookingAction(
 
   if (!fullName || !date || !time || !professionalId) {
     return { error: "Completa todos los campos obligatorios." };
+  }
+
+  const ip = await getClientIp();
+  const rateLimitOk = await checkRateLimit(`booking:ip:${ip}`, { max: 15, windowSeconds: 3600 });
+  if (!rateLimitOk) {
+    return { error: "Demasiados intentos de reserva desde este dispositivo. Espera un momento e intenta de nuevo." };
   }
 
   const { data: clinic } = await admin

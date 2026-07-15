@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth/session";
+import { logAudit } from "@/lib/security/audit";
 
 export type PatientActionState = { error?: string; success?: boolean };
 
@@ -11,7 +12,7 @@ const STAFF_ROLES = ["clinic_owner", "assistant", "receptionist"] as const;
 async function staffClinicId() {
   const profile = await requireRole([...STAFF_ROLES]);
   const supabase = await createClient();
-  return { clinicId: profile.clinicId!, supabase };
+  return { clinicId: profile.clinicId!, profileId: profile.id, supabase };
 }
 
 function parsePatientForm(formData: FormData) {
@@ -67,8 +68,17 @@ export async function updatePatientNotes(id: string, notes: string): Promise<voi
 }
 
 export async function deletePatient(id: string): Promise<void> {
-  const { supabase } = await staffClinicId();
+  const { clinicId, profileId, supabase } = await staffClinicId();
   await supabase.from("patients").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+
+  await logAudit({
+    clinicId,
+    actorProfileId: profileId,
+    action: "soft_delete",
+    entityType: "patients",
+    entityId: id,
+  });
+
   revalidatePath("/dashboard/pacientes");
 }
 

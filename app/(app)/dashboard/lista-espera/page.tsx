@@ -2,6 +2,8 @@ import { Users } from "lucide-react";
 import { requireRole } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
+import { getClinicEntitlements, planAtLeast } from "@/lib/modules";
+import { ModuleLocked } from "@/components/patterns/module-locked";
 import { WaitlistDialog } from "./waitlist-dialog";
 import { WaitlistRowActions } from "./waitlist-row-actions";
 
@@ -16,6 +18,11 @@ const STATUS_LABELS = {
 export default async function ListaEsperaPage() {
   const profile = await requireRole(["clinic_owner", "assistant", "receptionist", "professional"]);
   const supabase = await createClient();
+
+  const entitlements = await getClinicEntitlements(profile.clinicId!);
+  if (!planAtLeast(entitlements, "profesional")) {
+    return <ModuleLocked title="La lista de espera es parte del Plan Profesional." requiredPlan="profesional" />;
+  }
 
   const [{ data: entries }, { data: professionals }, { data: services }, { data: patients }] = await Promise.all([
     supabase

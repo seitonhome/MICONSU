@@ -160,24 +160,16 @@ as $$
   select coalesce((select role from public.profiles where id = auth.uid()) = 'super_admin', false);
 $$;
 
-create or replace function public.current_professional_id()
-returns uuid
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select id from public.professionals where profile_id = auth.uid();
-$$;
-
 revoke all on function public.current_clinic_id() from public;
 revoke all on function public.current_role() from public;
 revoke all on function public.is_super_admin() from public;
-revoke all on function public.current_professional_id() from public;
 grant execute on function public.current_clinic_id() to authenticated, anon;
 grant execute on function public.current_role() to authenticated, anon;
 grant execute on function public.is_super_admin() to authenticated, anon;
-grant execute on function public.current_professional_id() to authenticated, anon;
+
+-- current_professional_id() se define más abajo, después de crear la tabla
+-- public.professionals (esta función language sql se valida contra el
+-- catálogo en el momento de creación, a diferencia de las funciones plpgsql).
 
 -- ── Alta automática de profile al crear un usuario en auth.users ───────
 -- El rol y clinic_id por defecto pueden venir en raw_user_meta_data al crear
@@ -457,6 +449,19 @@ create policy "professionals_public_read" on public.professionals
       where c.id = professionals.clinic_id and c.is_published = true and c.deleted_at is null
     )
   );
+
+create or replace function public.current_professional_id()
+returns uuid
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select id from public.professionals where profile_id = auth.uid();
+$$;
+
+revoke all on function public.current_professional_id() from public;
+grant execute on function public.current_professional_id() to authenticated, anon;
 
 -- ── Tabla: professional_credentials ──────────────────────────────────────
 

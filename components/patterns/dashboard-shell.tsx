@@ -13,6 +13,13 @@ import {
   ShieldCheck,
   LifeBuoy,
   Settings,
+  PackageOpen,
+  Sparkles,
+  CalendarRange,
+  Library,
+  Heart,
+  Star,
+  ListTree,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,23 +28,72 @@ import { signOut } from "@/app/(app)/actions";
 import type { AppRole } from "@/lib/auth/roles";
 import { roleHasPermission } from "@/lib/auth/roles";
 
+type NavEntitlements = {
+  profesionalPlan: boolean;
+  packages: boolean;
+  workshops: boolean;
+  resources: boolean;
+};
+
 type NavItem = {
   href: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  show: (role: AppRole) => boolean;
+  show: (role: AppRole, entitlements: NavEntitlements) => boolean;
 };
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Inicio", icon: BarChart3, show: () => true },
   { href: "/dashboard/agenda", label: "Agenda", icon: CalendarDays, show: () => true },
   { href: "/dashboard/pacientes", label: "Pacientes", icon: Users, show: () => true },
+  {
+    href: "/dashboard/lista-espera",
+    label: "Lista de espera",
+    icon: ListTree,
+    show: (r, e) => STAFF_OPERATIVE_ROLES.includes(r) && e.profesionalPlan,
+  },
   { href: "/dashboard/servicios", label: "Servicios", icon: Stethoscope, show: (r) => r === "clinic_owner" },
   {
     href: "/dashboard/pagos",
     label: "Pagos",
     icon: CreditCard,
     show: (r) => roleHasPermission(r, "payments:manage") || roleHasPermission(r, "payments:view_reports"),
+  },
+  {
+    href: "/dashboard/paquetes",
+    label: "Paquetes",
+    icon: PackageOpen,
+    show: (r, e) => STAFF_OPERATIVE_ROLES.includes(r) && e.profesionalPlan && e.packages,
+  },
+  {
+    href: "/dashboard/procesos",
+    label: "Procesos",
+    icon: Sparkles,
+    show: (r, e) => (r === "clinic_owner" || r === "professional") && e.profesionalPlan,
+  },
+  {
+    href: "/dashboard/grupales",
+    label: "Grupales",
+    icon: CalendarRange,
+    show: (r, e) => STAFF_OPERATIVE_ROLES.includes(r) && e.profesionalPlan && e.workshops,
+  },
+  {
+    href: "/dashboard/recursos",
+    label: "Recursos",
+    icon: Library,
+    show: (r, e) => (r === "clinic_owner" || r === "assistant" || r === "professional") && e.profesionalPlan && e.resources,
+  },
+  {
+    href: "/dashboard/seguimientos",
+    label: "Seguimientos",
+    icon: Heart,
+    show: (r, e) => STAFF_OPERATIVE_ROLES.includes(r) && e.profesionalPlan,
+  },
+  {
+    href: "/dashboard/resenas",
+    label: "Reseñas",
+    icon: Star,
+    show: (r, e) => (r === "clinic_owner" || r === "assistant" || r === "receptionist") && e.profesionalPlan,
   },
   { href: "/dashboard/oportunidades", label: "Oportunidades", icon: Lightbulb, show: (r) => r === "clinic_owner" },
   {
@@ -51,16 +107,20 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard/configuracion", label: "Configuración", icon: Settings, show: (r) => r === "clinic_owner" },
 ];
 
+const STAFF_OPERATIVE_ROLES: AppRole[] = ["clinic_owner", "assistant", "receptionist", "professional"];
+
 export function DashboardShell({
   children,
   clinicName,
   role,
   fullName,
+  entitlements,
 }: {
   children: React.ReactNode;
   clinicName: string;
   role: AppRole;
   fullName: string;
+  entitlements: NavEntitlements;
 }) {
   const pathname = usePathname();
   const initials = fullName
@@ -78,7 +138,7 @@ export function DashboardShell({
           <p className="mt-1 truncate text-lg font-semibold">{clinicName}</p>
         </div>
         <nav className="flex-1 space-y-1 px-3">
-          {NAV_ITEMS.filter((item) => item.show(role)).map((item) => {
+          {NAV_ITEMS.filter((item) => item.show(role, entitlements)).map((item) => {
             const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
             const Icon = item.icon;
             return (

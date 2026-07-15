@@ -8,6 +8,7 @@ import { slugify } from "@/lib/utils/slugify";
 import { getServiceTemplates } from "@/lib/templates/service-templates";
 import { CONSENT_TEMPLATES } from "@/lib/templates/consent-templates";
 import { encryptCredentials } from "@/lib/payments/crypto";
+import { getClinicEntitlements } from "@/lib/modules";
 import type { PractitionerType } from "@/lib/auth/roles";
 import type { Database } from "@/lib/supabase/types";
 
@@ -122,6 +123,19 @@ export async function addProfessional(
 
   if (!fullName) return { error: "El nombre del profesional es obligatorio." };
 
+  const entitlements = await getClinicEntitlements(clinicId);
+  const { count: currentProfessionals } = await supabase
+    .from("professionals")
+    .select("id", { count: "exact", head: true })
+    .eq("clinic_id", clinicId)
+    .is("deleted_at", null);
+
+  if ((currentProfessionals ?? 0) >= entitlements.professionalsAllowed) {
+    return {
+      error: `Tu plan permite hasta ${entitlements.professionalsAllowed} profesional(es). Contacta a soporte para agregar más.`,
+    };
+  }
+
   const baseSlug = slugify(fullName) || "profesional";
   let slug = baseSlug;
   let profileId: string | null = null;
@@ -169,6 +183,19 @@ export async function addLocation(
   const isVirtual = formData.get("is_virtual") === "on";
 
   if (!name) return { error: "El nombre de la sede es obligatorio." };
+
+  const entitlements = await getClinicEntitlements(clinicId);
+  const { count: currentLocations } = await supabase
+    .from("clinic_locations")
+    .select("id", { count: "exact", head: true })
+    .eq("clinic_id", clinicId)
+    .is("deleted_at", null);
+
+  if ((currentLocations ?? 0) >= entitlements.locationsAllowed) {
+    return {
+      error: `Tu plan permite hasta ${entitlements.locationsAllowed} sede(s). Contacta a soporte para agregar más.`,
+    };
+  }
 
   const { error } = await supabase.from("clinic_locations").insert({
     clinic_id: clinicId,

@@ -5,13 +5,14 @@ import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth/session";
 import { encryptCredentials, decryptCredentials } from "@/lib/payments/crypto";
 import { WompiProvider } from "@/lib/payments/providers/wompi";
+import { logAudit } from "@/lib/security/audit";
 
 export type PaymentsActionState = { error?: string; success?: boolean; message?: string };
 
 async function ownerClinicId() {
   const profile = await requireRole(["clinic_owner", "finance_user"]);
   const supabase = await createClient();
-  return { clinicId: profile.clinicId!, supabase };
+  return { clinicId: profile.clinicId!, profileId: profile.id, supabase };
 }
 
 export async function configureManualTransfer(
@@ -70,7 +71,7 @@ export async function configureWompi(
   _prev: PaymentsActionState | undefined,
   formData: FormData,
 ): Promise<PaymentsActionState> {
-  const { clinicId, supabase } = await ownerClinicId();
+  const { clinicId, profileId, supabase } = await ownerClinicId();
   const publicKey = (formData.get("public_key") as string)?.trim();
   const privateKey = (formData.get("private_key") as string)?.trim();
   const eventsSecret = (formData.get("events_secret") as string)?.trim();
@@ -97,13 +98,30 @@ export async function configureWompi(
 
   if (error) return { error: "No pudimos guardar la configuración de Wompi." };
 
+  await logAudit({
+    clinicId,
+    actorProfileId: profileId,
+    action: "configure_credentials",
+    entityType: "payment_providers",
+    afterData: { provider_key: "wompi", is_sandbox: isSandbox },
+  });
+
   revalidatePath("/dashboard/pagos");
   return { success: true };
 }
 
 export async function toggleWompiActive(isActive: boolean): Promise<void> {
-  const { clinicId, supabase } = await ownerClinicId();
+  const { clinicId, profileId, supabase } = await ownerClinicId();
   await supabase.from("payment_providers").update({ is_active: isActive }).eq("clinic_id", clinicId).eq("provider_key", "wompi");
+
+  await logAudit({
+    clinicId,
+    actorProfileId: profileId,
+    action: isActive ? "activate" : "deactivate",
+    entityType: "payment_providers",
+    afterData: { provider_key: "wompi", is_active: isActive },
+  });
+
   revalidatePath("/dashboard/pagos");
 }
 

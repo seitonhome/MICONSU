@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { registerSchema } from "@/lib/validation/auth";
 import { slugify } from "@/lib/utils/slugify";
+import { checkRateLimit, getClientIp } from "@/lib/security/rate-limit";
 import type { AuthActionState } from "@/app/login/actions";
 
 export async function register(
@@ -22,6 +23,13 @@ export async function register(
   }
 
   const { fullName, clinicName, email, password } = parsed.data;
+
+  const ip = await getClientIp();
+  const ok = await checkRateLimit(`register:ip:${ip}`, { max: 5, windowSeconds: 3600 });
+  if (!ok) {
+    return { error: "Demasiados intentos de registro. Espera un momento antes de volver a intentar." };
+  }
+
   const supabase = await createClient();
 
   const { data: signUpData, error: signUpError } = await supabase.auth.signUp({

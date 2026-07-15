@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShieldAlert } from "lucide-react";
 import { requireRole } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
@@ -80,7 +80,15 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
             {[patient.phone, patient.email, patient.city].filter(Boolean).join(" · ") || "Sin datos de contacto"}
           </p>
         </div>
-        {canManage && <PatientDialog patient={patient} />}
+        <div className="flex items-center gap-2">
+          {(profile.role === "clinic_owner" || profile.role === "professional") && (
+            <Button variant="outline" render={<Link href={`/dashboard/clinico/${id}`} />}>
+              <ShieldAlert className="size-4" />
+              Historia clínica
+            </Button>
+          )}
+          {canManage && <PatientDialog patient={patient} />}
+        </div>
       </div>
 
       <Tabs defaultValue="citas">
