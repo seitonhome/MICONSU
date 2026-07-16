@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ThemeProvider } from "@/components/themes/theme-provider";
 import { RegisterForm } from "./register-form";
 
 export const metadata: Metadata = {
@@ -7,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-10">
+    <ThemeProvider theme="clinico_moderno" className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-10">
       <div className="w-full max-w-sm rounded-2xl border bg-background p-8 shadow-sm">
         <div className="mb-6 text-center">
           <h1 className="text-xl font-semibold">Configura tu consultorio en pocos pasos</h1>
@@ -17,6 +18,6 @@ export default function RegisterPage() {
         </div>
         <RegisterForm />
       </div>
-    </div>
+    </ThemeProvider>
   );
 }

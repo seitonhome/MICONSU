@@ -15,10 +15,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { ThemeProvider } from "@/components/themes/theme-provider";
 
 export default function MarketingHomePage() {
   return (
-    <div className="min-h-screen bg-background">
+    <ThemeProvider theme="clinico_moderno" className="min-h-screen bg-background">
       {/* 1. Hero principal */}
       <section className="border-b bg-gradient-to-b from-muted/40 to-background px-4 py-20 text-center">
         <div className="mx-auto max-w-3xl">
@@ -294,7 +295,7 @@ export default function MarketingHomePage() {
           </div>
         </div>
       </section>
-    </div>
+    </ThemeProvider>
   );
 }
 

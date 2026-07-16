@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ThemeProvider } from "@/components/themes/theme-provider";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
@@ -13,7 +14,7 @@ export default async function LoginPage({
   const { checkEmail } = await searchParams;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
+    <ThemeProvider theme="clinico_moderno" className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
       <div className="w-full max-w-sm rounded-2xl border bg-background p-8 shadow-sm">
         <div className="mb-6 text-center">
           <h1 className="text-xl font-semibold">Mi Consultorio Pro</h1>
@@ -26,6 +27,6 @@ export default async function LoginPage({
         )}
         <LoginForm />
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
