@@ -35,7 +35,10 @@ export async function register(
   const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName } },
+    options: {
+      data: { full_name: fullName },
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/login`,
+    },
   });
 
   if (signUpError) {
