@@ -44,8 +44,8 @@ export default async function DemoVerticalPage({ params }: { params: Promise<{ v
         </p>
         <div className="flex gap-3">
           <Button render={<Link href="/demo/alternativa" />}>Ver demo de medicina alternativa</Button>
-          <Button variant="outline" render={<Link href="/register" />}>
-            Crear mi consultorio
+          <Button variant="outline" render={<Link href="https://pay.hotmart.com/K107022793M" target="_blank" rel="noopener noreferrer" />}>
+            Comprar Mi Consultorio Pro
           </Button>
         </div>
       </div>

@@ -26,10 +26,10 @@ export function LoginForm() {
       <Button type="submit" className="w-full" disabled={isPending}>
         {isPending ? "Ingresando..." : "Ingresar"}
       </Button>
-      <p className="text-center text-sm text-muted-foreground">
-        ¿No tienes una cuenta?{" "}
-        <Link href="/register" className="font-medium text-foreground underline underline-offset-4">
-          Crea tu consultorio
+      <p className="text-center text-xs text-muted-foreground">
+        ¿Eres paciente?{" "}
+        <Link href="/portal/login" className="font-medium underline underline-offset-4">
+          Ingresa a tu portal
         </Link>
       </p>
     </form>
