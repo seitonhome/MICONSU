@@ -64,6 +64,7 @@ export const CONSENT_TEMPLATES: Record<ConsentDocumentType, { title: string; bod
 export const DEFAULT_CONSENT_TYPES: ConsentDocumentType[] = [
   "privacy_policy",
   "data_authorization",
+  "sensitive_data_authorization",
   "informed_consent_general",
   "cancellation_policy",
   "terms_and_conditions",
