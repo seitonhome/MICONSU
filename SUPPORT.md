@@ -36,19 +36,23 @@ Ejemplos de qué prioridad corresponde a cada situación (criterio comercial, no
 
 Al resolver un ticket se puede registrar un `csat_score` (1 a 5) como medida de satisfacción del cliente con la atención recibida.
 
-## 4. Qué pasa si vence el soporte
+## 4. Qué pasa si vence el plan anual
 
-El estado de la suscripción de soporte de un consultorio vive en `support_subscriptions.status`: `active`, `expiring_soon`, `expired` o `suspended`, con una fecha `ends_at`. El panel superadmin muestra en su resumen (`/admin`) cuántos consultorios tienen el soporte por vencer en los próximos 30 días.
+Mi Consultorio Pro se vende como **un plan anual único de $39 USD, que incluye el Plan Continuidad Clínica** — no son dos compras separadas. La licencia (`licenses.ends_at`) y la suscripción de soporte (`support_subscriptions.ends_at`) se otorgan juntas por 1 año desde el registro (migración `20260802100000_annual_plan.sql`) y deben renovarse juntas cada año.
 
-**El sistema sigue funcionando con normalidad aunque el Plan Continuidad Clínica esté vencido.** Vencer el soporte no bloquea el acceso al consultorio, sus citas, pacientes o pagos. Lo que cambia es:
+**Si el plan vence sin renovarse, el sistema deja de estar operativo**: `app/(app)/layout.tsx` bloquea el acceso a agenda, pacientes, pagos y el resto de módulos, mostrando una pantalla de "plan vencido" en su lugar. Esto es un cambio respecto al modelo anterior (donde vencer el soporte no afectaba el uso del producto) — ahora licencia y soporte son la misma compra.
 
-- Ya no hay garantía de los tiempos de respuesta/resolución descritos arriba.
-- Los tickets nuevos se atienden según disponibilidad del equipo, sin compromiso de SLA.
-- Renovar la suscripción reactiva el soporte con SLA sin tocar ni perder ningún dato del consultorio.
+**Lo que nunca se bloquea ni se borra:**
+
+- El dueño del consultorio (`clinic_owner`) puede seguir iniciando sesión en cualquier momento.
+- Puede exportar todos los datos del consultorio en un archivo JSON descargable desde la pantalla de "plan vencido" (`/api/export/clinic-data`) — pacientes, citas, pagos, consentimientos, paquetes, etc.
+- Ningún dato se elimina ni se oculta por falta de renovación.
+
+Renovar (compra anual siguiente en Hotmart, o extensión manual desde `/admin/consultorios/[id]` mientras no haya automatización de renovación conectada a Hotmart) reactiva el sistema de inmediato con todos los datos intactos.
 
 ## 5. Planes de soporte
 
-El catálogo de planes (`support_plans`, seed inicial en la migración) está alineado con los tipos de licencia del producto: **Esencial**, **Profesional** y **Centro**, cada uno con su propio nivel de prioridad de atención (ver `ADMIN_MANUAL.md` para cómo se asignan desde el panel superadmin).
+El catálogo de planes (`support_plans`, seed inicial en la migración) conserva los nombres **Esencial**, **Profesional** y **Centro** como valores internos del esquema, pero de cara al cliente Mi Consultorio Pro es **un solo plan anual con todo incluido** — estos nombres ya no representan niveles que el cliente elige o paga por separado (ver `lib/modules/index.ts`).
 
 ## 6. Cómo escalar un problema urgente
 

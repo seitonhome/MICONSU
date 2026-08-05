@@ -12,5 +12,10 @@ export const registerSchema = z.object({
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres."),
 });
 
+export const patientLoginSchema = z.object({
+  email: z.string().email("Ingresa un correo válido."),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
+export type PatientLoginInput = z.infer<typeof patientLoginSchema>;

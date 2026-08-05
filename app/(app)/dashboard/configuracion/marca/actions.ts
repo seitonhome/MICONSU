@@ -15,23 +15,40 @@ export async function updateClinicBranding(
   const supabase = await createClient();
   const clinicId = profile.clinicId!;
 
+  const commercialName = (formData.get("commercial_name") as string)?.trim();
   const logoFile = formData.get("logo") as File | null;
+  const coverFile = formData.get("cover_image") as File | null;
+  const photoFile = formData.get("professional_photo") as File | null;
   const primaryColor = formData.get("primary_color") as string;
   const secondaryColor = formData.get("secondary_color") as string;
   const visualTheme = formData.get("visual_theme") as Database["public"]["Enums"]["visual_theme"];
+  const fontStyle = (formData.get("font_style") as string) || "default";
 
-  let logoUrl: string | undefined;
+  if (!commercialName) return { error: "El nombre comercial es obligatorio." };
 
-  if (logoFile && logoFile.size > 0) {
-    const ext = logoFile.name.split(".").pop() || "png";
-    const path = `${clinicId}/logo-${Date.now()}.${ext}`;
-    const { error: uploadError } = await supabase.storage.from("branding").upload(path, logoFile, {
+  async function uploadImage(file: File, prefix: string): Promise<string | undefined> {
+    if (!file || file.size === 0) return undefined;
+    const ext = file.name.split(".").pop() || "png";
+    const path = `${clinicId}/${prefix}-${Date.now()}.${ext}`;
+    const { error: uploadError } = await supabase.storage.from("branding").upload(path, file, {
       upsert: true,
-      contentType: logoFile.type || undefined,
+      contentType: file.type || undefined,
     });
-    if (uploadError) return { error: "No pudimos subir el logo. Intenta con otra imagen." };
-    logoUrl = supabase.storage.from("branding").getPublicUrl(path).data.publicUrl;
+    if (uploadError) return undefined;
+    return supabase.storage.from("branding").getPublicUrl(path).data.publicUrl;
   }
+
+  const [logoUrl, coverUrl, photoUrl] = await Promise.all([
+    logoFile ? uploadImage(logoFile, "logo") : Promise.resolve(undefined),
+    coverFile ? uploadImage(coverFile, "cover") : Promise.resolve(undefined),
+    photoFile ? uploadImage(photoFile, "professional") : Promise.resolve(undefined),
+  ]);
+
+  const { error: clinicError } = await supabase
+    .from("clinics")
+    .update({ commercial_name: commercialName })
+    .eq("id", clinicId);
+  if (clinicError) return { error: "No pudimos guardar el nombre comercial." };
 
   const { error } = await supabase
     .from("clinic_branding")
@@ -39,7 +56,10 @@ export async function updateClinicBranding(
       primary_color: primaryColor,
       secondary_color: secondaryColor,
       visual_theme: visualTheme,
+      font_style: fontStyle,
       ...(logoUrl ? { logo_url: logoUrl } : {}),
+      ...(coverUrl ? { cover_image_url: coverUrl } : {}),
+      ...(photoUrl ? { professional_photo_url: photoUrl } : {}),
     })
     .eq("clinic_id", clinicId);
 

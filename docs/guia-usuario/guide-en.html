@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Mi Consultorio Pro — User Guide</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm 22mm 18mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: #1E293B;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .cover {
+    height: 257mm;
+    margin: -20mm -18mm -22mm -18mm;
+    background: linear-gradient(150deg, #0F1923 0%, #14313A 55%, #0F1923 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    page-break-after: always;
+  }
+  .cover .mark {
+    width: 84px; height: 84px; border-radius: 22px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(126,200,200,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px; margin-bottom: 28px;
+  }
+  .cover .eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #7EC8C8; margin-bottom: 18px;
+  }
+  .cover h1 { font-size: 34pt; font-weight: 900; margin: 0 0 14px; letter-spacing: -0.02em; max-width: 480px; }
+  .cover .sub { font-size: 13pt; color: rgba(255,255,255,0.65); max-width: 420px; line-height: 1.6; margin-bottom: 40px; }
+  .cover .meta { font-size: 9.5pt; color: rgba(255,255,255,0.35); }
+  .cover .lang-badge {
+    margin-top: 60px; font-size: 10pt; font-weight: 700; color: #C99A3D;
+    border: 1px solid rgba(201,154,61,0.5); border-radius: 999px; padding: 8px 20px;
+  }
+
+  h1.section {
+    font-size: 18pt; font-weight: 900; color: #0F1923; margin: 0 0 4px;
+    page-break-before: always;
+    border-bottom: 3px solid #0E7C86; padding-bottom: 10px;
+  }
+  .section-num { color: #0E7C86; font-weight: 800; margin-right: 6px; }
+  h1.section:first-of-type { page-break-before: avoid; }
+  h2 { font-size: 12.5pt; font-weight: 800; color: #0E7C86; margin: 20px 0 8px; }
+  p { margin: 0 0 10px; }
+  ul, ol { margin: 0 0 12px; padding-left: 20px; }
+  li { margin-bottom: 5px; }
+  strong { color: #0F1923; }
+
+  .intro-box {
+    background: #F0FAFA; border-left: 4px solid #0E7C86; border-radius: 8px;
+    padding: 14px 18px; margin: 14px 0 18px; font-size: 10pt; color: #14313A;
+  }
+  .tip-box {
+    background: #FDF8ED; border-left: 4px solid #C99A3D; border-radius: 8px;
+    padding: 12px 18px; margin: 14px 0; font-size: 9.5pt; color: #4A3A10;
+  }
+  .tip-box .label { font-weight: 800; color: #92400E; text-transform: uppercase; font-size: 8.5pt; letter-spacing: 0.06em; display: block; margin-bottom: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 9.5pt; }
+  th, td { border: 1px solid #E2E8F0; padding: 7px 10px; text-align: left; }
+  th { background: #F0FAFA; color: #0F1923; font-weight: 700; }
+
+  .toc { }
+  .toc-item {
+    display: flex; justify-content: space-between; padding: 7px 0;
+    border-bottom: 1px dotted #CBD5E1; font-size: 10.5pt;
+  }
+  .toc-item .n { color: #0E7C86; font-weight: 800; width: 26px; flex-shrink: 0; }
+  .toc-item .t { flex: 1; }
+
+  .footer-note { font-size: 8.5pt; color: #94A3B8; margin-top: 30px; border-top: 1px solid #E2E8F0; padding-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="eyebrow">Software for clinics and wellness centers</div>
+  <div class="mark">🩺</div>
+  <h1>Mi Consultorio Pro</h1>
+  <p class="sub">Complete user guide — scheduling, patients, payments, consent, treatment processes and support, explained step by step.</p>
+  <p class="lang-badge">English edition</p>
+  <p class="meta" style="margin-top:40px;">A Seiton Home product · mcpro.seitonhome.com · Guide version: August 2026</p>
+</div>
+
+<h1 class="section" style="border:none;page-break-before:avoid;">Contents</h1>
+<div class="toc">
+  <div class="toc-item"><span class="n">1</span><span class="t">Welcome — what Mi Consultorio Pro is and who it's for</span></div>
+  <div class="toc-item"><span class="n">2</span><span class="t">Activating your account after purchase</span></div>
+  <div class="toc-item"><span class="n">3</span><span class="t">Getting started: the setup wizard (onboarding)</span></div>
+  <div class="toc-item"><span class="n">4</span><span class="t">Your brand and visual theme</span></div>
+  <div class="toc-item"><span class="n">5</span><span class="t">Services</span></div>
+  <div class="toc-item"><span class="n">6</span><span class="t">Schedules and availability</span></div>
+  <div class="toc-item"><span class="n">7</span><span class="t">Calendar</span></div>
+  <div class="toc-item"><span class="n">8</span><span class="t">Your public page and the patient booking flow</span></div>
+  <div class="toc-item"><span class="n">9</span><span class="t">Patients</span></div>
+  <div class="toc-item"><span class="n">10</span><span class="t">Protected clinical module</span></div>
+  <div class="toc-item"><span class="n">11</span><span class="t">Consent forms and legal documents</span></div>
+  <div class="toc-item"><span class="n">12</span><span class="t">Payments center</span></div>
+  <div class="toc-item"><span class="n">13</span><span class="t">Payment reconciliation</span></div>
+  <div class="toc-item"><span class="n">14</span><span class="t">Session packages</span></div>
+  <div class="toc-item"><span class="n">15</span><span class="t">Therapeutic processes</span></div>
+  <div class="toc-item"><span class="n">16</span><span class="t">Group sessions and workshops</span></div>
+  <div class="toc-item"><span class="n">17</span><span class="t">Waitlist</span></div>
+  <div class="toc-item"><span class="n">18</span><span class="t">Post-appointment follow-up</span></div>
+  <div class="toc-item"><span class="n">19</span><span class="t">Resource library</span></div>
+  <div class="toc-item"><span class="n">20</span><span class="t">Reviews</span></div>
+  <div class="toc-item"><span class="n">21</span><span class="t">Reports</span></div>
+  <div class="toc-item"><span class="n">22</span><span class="t">Business opportunity panel</span></div>
+  <div class="toc-item"><span class="n">23</span><span class="t">Patient portal</span></div>
+  <div class="toc-item"><span class="n">24</span><span class="t">Support and the Clinical Continuity Plan</span></div>
+  <div class="toc-item"><span class="n">25</span><span class="t">Frequently asked questions</span></div>
+  <div class="toc-item"><span class="n">26</span><span class="t">Contact</span></div>
+</div>
+
+<h1 class="section"><span class="section-num">1.</span>Welcome</h1>
+<p>Mi Consultorio Pro is a complete system for running the operations of a clinic, independent practice, or wellness center: scheduling, patients, payments, consent forms, treatment processes and support in one place, with your own public page where patients can book 24/7.</p>
+<p>It's built for professionals in: general medicine and specialties, dentistry and orthodontics, psychology and psychiatry, physical therapy, nutrition, functional and integrative medicine, acupuncture and traditional Chinese medicine, homeopathy, naturopathy, neural therapy, chiropractic, osteopathy, biomagnetism, bioenergetics, reiki, emotional healing and biodecoding, emotional coaching and mentoring, breathwork and meditation therapies, body therapies and massage, and wellness centers in general.</p>
+<div class="intro-box">
+  <strong>You don't need any technical knowledge.</strong> The system is designed for you to set it up yourself, with a guided step-by-step wizard. If you know how to use WhatsApp or social media, you can use Mi Consultorio Pro.
+</div>
+<p>This guide describes <strong>every functionality of the system</strong>, organized the same way they appear in your dashboard menu. You don't need to read it start to finish — use it as a reference and jump to whichever module you need at any given moment.</p>
+
+<h1 class="section"><span class="section-num">2.</span>Activating your account after purchase</h1>
+<p>Mi Consultorio Pro is sold as <strong>a single, complete annual plan</strong>: $39 USD per year, support included (Clinical Continuity Plan), renewed every year. There are no limited tiers or trial versions with locked features: the moment you create your account, you have access to every module described in this guide for the 12 months of your plan.</p>
+<ol>
+  <li>Complete your purchase through Hotmart.</li>
+  <li>You'll receive a welcome email with a direct link to create your account at <strong>mcpro.seitonhome.com/register</strong>.</li>
+  <li>Enter your clinic's name, your name, your email, and a password.</li>
+  <li>Your clinic is created immediately, with full access to every module for 1 year — you don't need to enter any code.</li>
+</ol>
+<div class="tip-box"><span class="label">Important</span>Keep your email and password somewhere safe. If you have front-desk or administrative staff, you can give them their own access later from your dashboard, with permissions adjusted to their role.</div>
+<div class="intro-box"><strong>If your plan expires without being renewed</strong>, the system stops being operational (you can't use scheduling, patients, or payments) until you renew — but you never lose your data. You can always log in and download all of your clinic's information as a file, even with an expired plan.</div>
+
+<h1 class="section"><span class="section-num">3.</span>Getting started: the setup wizard</h1>
+<p>When you create your account, the system walks you through a <strong>12-step wizard</strong> before publishing your clinic. You can move back and forth between steps; a sidebar shows which ones you've already completed, and a percentage ("X% configured") appears at the top.</p>
+<ol>
+  <li><strong>Clinic details</strong> — commercial name, legal name, contact information.</li>
+  <li><strong>Logo and colors</strong> — your logo and brand colors.</li>
+  <li><strong>Type of practice</strong> — medical, dental, psychological, alternative medicine, wellness, etc. This automatically adjusts the language your patients see ("appointment" vs. "session" vs. "treatment"; "patient" vs. "client").</li>
+  <li><strong>Professionals</strong> — who provides care: you and/or your team.</li>
+  <li><strong>Locations or virtual mode</strong> — one or more physical locations, or virtual-only.</li>
+  <li><strong>Services</strong> — what you offer, with suggested templates based on your type of practice.</li>
+  <li><strong>Schedules</strong> — your availability.</li>
+  <li><strong>Payments</strong> — how you'll get paid.</li>
+  <li><strong>Consent forms</strong> — the legal texts patients accept before booking, with suggested templates based on your type of practice.</li>
+  <li><strong>Your public page</strong> — the web address where patients will find you.</li>
+  <li><strong>Test booking</strong> — a practice booking to confirm everything works as expected.</li>
+  <li><strong>Publish</strong> — you activate your clinic so the public can see it and book.</li>
+</ol>
+<p>After publishing, an <strong>activation checklist</strong> on your home dashboard reminds you of useful tasks: add a logo, choose a visual theme, create your first service, set up a schedule, activate a payment method, review your data policy, publish your page, create your first appointment, share your booking link, and try the flow as if you were a patient.</p>
+<div class="tip-box"><span class="label">Tip</span>You don't need to finish everything at once. Activate the essentials and keep adjusting services, schedules and legal texts as you go.</div>
+
+<h1 class="section"><span class="section-num">4.</span>Your brand and visual theme</h1>
+<p>From <strong>Settings → Brand</strong> you customize how your clinic looks to your patients:</p>
+<ul>
+  <li><strong>Commercial name</strong>, editable at any time.</li>
+  <li><strong>Logo</strong>, shown on your public page and in your communications.</li>
+  <li><strong>Cover image</strong>, a banner shown at the top of your public page.</li>
+  <li><strong>Featured professional photo</strong>, a portrait next to your name in the header.</li>
+  <li><strong>Five ready-made visual themes</strong>, each designed for a type of practice:
+    <table>
+      <tr><th>Theme</th><th>Ideal for</th></tr>
+      <tr><td>Modern Clinical</td><td>General medicine, specialists, psychiatry</td></tr>
+      <tr><td>Premium Wellness</td><td>Therapists, energy healing, coaching, holistic centers</td></tr>
+      <tr><td>Integrative</td><td>Functional medicine, acupuncture, homeopathy</td></tr>
+      <tr><td>Emotional Therapeutic</td><td>Psychology, emotional therapy</td></tr>
+      <tr><td>Premium Dental</td><td>Cosmetic dentistry, orthodontics</td></tr>
+    </table>
+  </li>
+  <li><strong>Custom theme</strong>, where you set your own primary and secondary colors.</li>
+  <li><strong>Typographic style</strong>: standard, elegant, or technical.</li>
+</ul>
+<p>Your theme is applied automatically across your dashboard, your public page, your booking flow, and your patient portal.</p>
+
+<h1 class="section"><span class="section-num">5.</span>Services</h1>
+<p>In <strong>Services</strong> you define exactly what you offer. Each service includes:</p>
+<ul>
+  <li>Name, description, category and duration.</li>
+  <li><strong>Classification</strong>: licensed health service, alternative/complementary therapy, wellness service, educational/coaching service, or non-clinical service — this automatically adjusts language, disclaimers and suggested consent forms.</li>
+  <li>Price, and whether you want it shown publicly or not.</li>
+  <li>Payment type: no charge, deposit, full payment, manual, or in-person.</li>
+  <li>Modality: in-person, virtual, or both.</li>
+  <li>Assigned professional and location, calendar color.</li>
+  <li>Whether it requires an additional, service-specific consent form.</li>
+  <li>Minimum advance-booking time and maximum cancellation window.</li>
+  <li>Pre-appointment instructions and a post-appointment message.</li>
+  <li>A service-specific disclaimer.</li>
+  <li>Whether it can be sold as a <strong>session package</strong> or as a <strong>group service</strong> (with a maximum capacity).</li>
+</ul>
+<p>You can activate or deactivate a service without deleting it — useful if you stop offering it temporarily.</p>
+
+<h1 class="section"><span class="section-num">6.</span>Schedules and availability</h1>
+<p>In <strong>Settings → Schedules</strong> you set each professional's availability: which days and hours they work, with a configurable buffer between appointments. You can also block off specific windows (vacation, a booked-out day, an emergency). The system automatically calculates which time slots are open for booking, subtracting your existing appointments and blocks.</p>
+
+<h1 class="section"><span class="section-num">7.</span>Calendar</h1>
+<p>In <strong>Calendar</strong> you manage your appointments for the day, week, or any range you choose, with filters by professional, service and status.</p>
+<ul>
+  <li>Every appointment moves through clear statuses: requested, pending payment, pending manual confirmation, confirmed, paid, checked in, in progress, completed, cancelled, rescheduled, no-show, or expired.</li>
+  <li>You can confirm, reschedule, mark as "no-show", or cancel an appointment — every change is logged.</li>
+  <li>The system automatically prevents double-booking the same professional.</li>
+  <li>In-person, virtual, and (depending on your setup) group appointments.</li>
+</ul>
+
+<h1 class="section"><span class="section-num">8.</span>Your public page and the patient booking flow</h1>
+<p>Every clinic gets its own public page (for example, <em>mcpro.seitonhome.com/c/your-clinic</em>), which works as a professional mini-landing page: your logo, cover image and photo, name, description, services with prices (if you choose to show them), duration, modality, address or Google Maps link, WhatsApp, and your booking button.</p>
+<p>The patient booking flow, with no account required, is:</p>
+<ol>
+  <li>Choose a service.</li>
+  <li>Choose a professional (if you have more than one) and a location or modality.</li>
+  <li>Choose an available date and time.</li>
+  <li>Enter their contact details.</li>
+  <li>Accept the data policy and any required consent forms.</li>
+  <li>Choose a payment method, if the service requires one.</li>
+  <li>Confirm the booking and receive confirmation with date, time, service, professional, address or virtual link, pre-appointment instructions, and a secure link to manage their appointment (reschedule or cancel, depending on what you allow).</li>
+</ol>
+
+<h1 class="section"><span class="section-num">9.</span>Patients</h1>
+<p>In <strong>Patients</strong> you keep the administrative record of everyone who consults you: name, ID, contact information, date of birth, city, emergency contact. Each patient record shows, in separate tabs:</p>
+<ul>
+  <li>Their appointment history.</li>
+  <li>Their payments.</li>
+  <li>The consent forms they've accepted, with the exact date and version.</li>
+  <li>Their documents (uploaded securely, with download links that expire).</li>
+  <li>Administrative notes.</li>
+  <li>Their active packages and remaining sessions, if applicable.</li>
+</ul>
+<p>Administrative data is always kept separate from clinical data (see next section).</p>
+
+<h1 class="section"><span class="section-num">10.</span>Protected clinical module</h1>
+<p>For professionals who need to keep private notes on each patient, the <strong>clinical module</strong> offers a separate, access-restricted space:</p>
+<ul>
+  <li>Reason for consultation, private notes, progress, recommendations and follow-up plan.</li>
+  <li>Additional protected files.</li>
+  <li>PDF export.</li>
+  <li><strong>Access audit</strong>: every time someone opens a patient's clinical record, it's logged who and when.</li>
+</ul>
+<div class="intro-box">This module is an internal record for the professional, meant to give continuity and privacy to your own follow-up — it does not replace an official, interoperable clinical history in the regulatory sense.</div>
+
+<h1 class="section"><span class="section-num">11.</span>Consent forms and legal documents</h1>
+<p>In <strong>Consent</strong> you edit the legal texts your patients accept when booking: data processing policy, personal and sensitive data authorization, general informed consent, teleconsultation consent, service-specific consent, cancellation and refund policy, your clinic's terms and conditions, and disclaimers for alternative medicine, wellness, or non-clinical services.</p>
+<p>Every time you edit a text, the system saves a <strong>new version</strong>. So if you ever need to verify what a patient accepted, you know exactly which text it was, with the date, time, IP address, and device they accepted it from.</p>
+<div class="tip-box"><span class="label">Important</span>You are responsible for the legal content of these texts. The system gives you the tooling (versioning, proof of acceptance, suggested templates by type of practice) but does not draft or legally validate the content for you — check your obligations with an advisor if you have questions.</div>
+
+<h1 class="section"><span class="section-num">12.</span>Payments center</h1>
+<p>From <strong>Payments → Settings</strong> you activate the methods you'll use to get paid. No card data is ever stored, and your payment gateway credentials are kept encrypted.</p>
+<ul>
+  <li><strong>Bank transfer</strong>: the patient transfers and your team confirms manually.</li>
+  <li><strong>In-person payment</strong>: the patient pays when they arrive.</li>
+  <li><strong>Wompi</strong>: automatic payments by card, PSE and more.</li>
+  <li><strong>Mercado Pago</strong>: automatic checkout.</li>
+  <li><strong>ePayco</strong>: automatic checkout with card, PSE and cash.</li>
+  <li><strong>External payment link</strong>: if you already have a payment link on another platform, just paste it in.</li>
+  <li>Every service can require a <strong>deposit</strong> or <strong>full payment</strong>, and you decide whether confirmation is automatic or manual.</li>
+</ul>
+
+<h1 class="section"><span class="section-num">13.</span>Payment reconciliation</h1>
+<p>In <strong>Payments → Reconciliation</strong> you review payments that need manual confirmation: patient, service, expected amount, gateway or method, external reference, and attached proof of payment (if the patient uploaded one). You can <strong>confirm</strong>, <strong>reject</strong>, or <strong>mark under review</strong> any payment — every action is logged with who did it and when.</p>
+
+<h1 class="section"><span class="section-num">14.</span>Session packages</h1>
+<p>For professionals who sell full treatment processes, not just single appointments: in <strong>Packages</strong> you create a package with a name, number of sessions, total price, deposit, start date and validity period. The system automatically tracks used and remaining sessions and suggests the next one. Statuses: active, completed, paused, expired, or cancelled.</p>
+
+<h1 class="section"><span class="section-num">15.</span>Therapeutic processes</h1>
+<p>In <strong>Processes</strong> you track an ongoing course of care with a patient: the goal of the process, number of sessions, progress, next session, private notes, tasks or recommendations, and resources sent. Statuses: active, paused, completed, abandoned, or cancelled.</p>
+
+<h1 class="section"><span class="section-num">16.</span>Group sessions and workshops</h1>
+<p>In <strong>Groups</strong> you schedule workshops, circles, group classes, meditations, or wellness days: name, description, maximum and available spots, list of attendees, date, time, location or virtual link, and payment status per attendee.</p>
+
+<h1 class="section"><span class="section-num">17.</span>Waitlist</h1>
+<p>If a time slot is full, a patient can join the <strong>Waitlist</strong> with their desired service, professional and date preferences. When a spot opens up — for example, from a cancellation — you can reach out directly to whoever is on the list to offer them that opening.</p>
+
+<h1 class="section"><span class="section-num">18.</span>Post-appointment follow-up</h1>
+<p>In <strong>Follow-ups</strong> you schedule automated communications after an appointment: a thank-you message, an invitation to book a follow-up, a satisfaction survey, a review request, a reminder for the next appointment, or sending resources.</p>
+
+<h1 class="section"><span class="section-num">19.</span>Resource library</h1>
+<p>In <strong>Resources</strong> you upload PDFs, audio, video and guides (exercises, meditations, instructions, educational material) to send to your patients after a session. Each patient sees, from their own portal, only the resources you specifically assigned to them.</p>
+
+<h1 class="section"><span class="section-num">20.</span>Reviews</h1>
+<p>In <strong>Reviews</strong> you manage the rating and comment your patients leave after an appointment, and set each one's status (private, approved, or featured) as part of your quality process — always checking that no review reveals sensitive information before approving it.</p>
+
+<h1 class="section"><span class="section-num">21.</span>Reports</h1>
+<p>In <strong>Reports</strong> you check your numbers: appointments per month, revenue, payments by method, most-booked services, new and returning patients, no-shows, cancellations, and more — with clear charts and CSV export for your accountant or your own spreadsheet.</p>
+
+<h1 class="section"><span class="section-num">22.</span>Business opportunity panel</h1>
+<p>In <strong>Opportunities</strong> the system surfaces practical signals to help grow your clinic, based on your own data: patients without a next appointment, payments pending confirmation, open time slots this week, cancelled appointments you could recover through your waitlist, and packages about to run out. It's not automated marketing — it's an actionable summary of your own information.</p>
+
+<h1 class="section"><span class="section-num">23.</span>Patient portal</h1>
+<p>Your patients have their own access, no password required: they go to <em>mcpro.seitonhome.com/portal</em>, enter their email, and receive a secure, one-time link. From there they can see:</p>
+<ul>
+  <li>Their next appointment and their appointment history.</li>
+  <li>Their active package and remaining sessions.</li>
+  <li>The resources you've sent them.</li>
+  <li>Their payments.</li>
+  <li>The consent forms they've accepted.</li>
+  <li>A button to reschedule or cancel, depending on what you allow.</li>
+</ul>
+<p>If the same email has history at more than one of your clinics (or at other clinics that also use Mi Consultorio Pro), the patient can choose which one to view, all with a single sign-in.</p>
+
+<h1 class="section"><span class="section-num">24.</span>Support and the Clinical Continuity Plan</h1>
+<p>In <strong>Support</strong> you open a ticket whenever something isn't working as expected or you have a question, choosing a category (access, calendar, payments, gateways, reminders, public page, patients, reports, design, legal topics, settings, technical error, feature request, backup/restore, security) and a priority.</p>
+<p style="font-size:9.5pt;color:#64748B;margin:0 0 8px;">Elapsed calendar time (not business hours/days), counted from ticket creation:</p>
+<table>
+  <tr><th>Priority</th><th>First response</th><th>Target resolution</th></tr>
+  <tr><td>Critical</td><td>1 hour</td><td>8 hours</td></tr>
+  <tr><td>High</td><td>4 hours</td><td>2 days</td></tr>
+  <tr><td>Medium</td><td>24 hours</td><td>5 days</td></tr>
+  <tr><td>Low</td><td>48 hours</td><td>Based on product roadmap</td></tr>
+</table>
+<p>Your $39 USD annual plan <strong>includes the Clinical Continuity Plan</strong> — it's not a separate subscription or an extra cost. License and support renew together, once a year.</p>
+
+<h1 class="section"><span class="section-num">25.</span>Frequently asked questions</h1>
+<p><strong>Is it a one-time payment or a subscription?</strong><br>It's an annual plan of $39 USD, not a monthly fee: you pay once a year and it includes every module plus support (Clinical Continuity Plan). It renews every year; if you don't renew, the system pauses but your data stays available for download.</p>
+<p><strong>What happens if I don't renew my plan?</strong><br>The system stops being operational (you can't use scheduling, patients, or payments) until you renew, but no data is ever deleted or hidden. You can log in at any time, even with an expired plan, and download all of your clinic's information.</p>
+<p><strong>Do I need any technical knowledge?</strong><br>No. The setup wizard guides you step by step.</p>
+<p><strong>How do I charge my patients?</strong><br>By bank transfer, in person, or automatically with Wompi, Mercado Pago, or ePayco.</p>
+<p><strong>Is my data and my patients' data secure?</strong><br>Each clinic's data is completely isolated — no one from another clinic can see it. Clinical notes are kept separate from administrative data, with access auditing.</p>
+<p><strong>Does it work for alternative medicine or unconventional therapies?</strong><br>Yes. The system classifies each service and adapts wording, disclaimers, and consent forms accordingly, using responsible language that doesn't replace a medical evaluation when one is needed.</p>
+<p><strong>Can I try it before buying?</strong><br>Yes, there's a public demo mode with sample data from a real clinic.</p>
+<p><strong>What happens if I need help after purchasing?</strong><br>You open a ticket from Support, with response times based on your priority level (see section 24).</p>
+
+<h1 class="section"><span class="section-num">26.</span>Contact</h1>
+<p>Questions before or after buying?</p>
+<ul>
+  <li>Email: <strong>servicioalcliente@seitonhome.com</strong></li>
+  <li>WhatsApp: <strong>+57 314 5445117</strong></li>
+  <li>Dashboard: <strong>mcpro.seitonhome.com/login</strong></li>
+</ul>
+<div class="footer-note">
+  Mi Consultorio Pro is a digital product by Seiton Home. This document is a usage guide for the system, not legal, health, tax, or regulatory advice — each clinic is responsible for validating its own legal, health, and data-protection obligations with the relevant authorities.
+</div>
+
+</body>
+</html>

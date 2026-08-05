@@ -83,10 +83,16 @@ export default async function ManageBookingPage({ params }: { params: Promise<{ 
           <p className="text-center text-sm text-muted-foreground">Esta cita ya no admite cambios desde aquí.</p>
         )}
 
-        <div className="text-center">
+        <div className="space-y-1 text-center">
           <Button variant="link" render={<Link href={`/c/${clinic?.slug}`} />}>
             Ver más servicios de {clinic?.commercial_name}
           </Button>
+          <p className="text-xs text-muted-foreground">
+            ¿Quieres ver todo tu historial, pagos y documentos?{" "}
+            <Link href="/portal/login" className="font-medium underline underline-offset-4">
+              Ingresa a tu portal
+            </Link>
+          </p>
         </div>
       </div>
     </ThemeProvider>

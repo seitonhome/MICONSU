@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef } from "react";
 import { upsertLicense, type AdminActionState } from "../../actions";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,13 @@ export function LicenseForm({
 }) {
   const action = upsertLicense.bind(null, clinicId);
   const [state, formAction, isPending] = useActionState(action, initialState);
+  const endsAtRef = useRef<HTMLInputElement>(null);
+
+  const renewOneYear = () => {
+    const oneYearFromNow = new Date();
+    oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+    if (endsAtRef.current) endsAtRef.current.value = oneYearFromNow.toISOString().slice(0, 10);
+  };
 
   return (
     <form action={formAction} className="grid gap-4 sm:grid-cols-2">
@@ -50,6 +57,24 @@ export function LicenseForm({
             <SelectItem value="cancelled">Cancelada</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+      <div className="space-y-2 sm:col-span-2">
+        <Label htmlFor="ends_at">Vence el (plan anual)</Label>
+        <div className="flex items-center gap-2">
+          <Input
+            ref={endsAtRef}
+            id="ends_at"
+            name="ends_at"
+            type="date"
+            defaultValue={license?.ends_at ? license.ends_at.slice(0, 10) : ""}
+          />
+          <Button type="button" variant="outline" size="sm" onClick={renewOneYear}>
+            Renovar 1 año desde hoy
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Al pasar esta fecha, el consultorio queda bloqueado (agenda, pacientes, pagos) hasta renovar — sus datos nunca se borran.
+        </p>
       </div>
       <div className="space-y-2">
         <Label htmlFor="professionals_allowed">Profesionales permitidos</Label>

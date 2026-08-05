@@ -1,6 +1,7 @@
 import { requireCurrentProfile } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardShell } from "@/components/patterns/dashboard-shell";
+import { LicenseExpiredScreen } from "@/components/patterns/license-expired-screen";
 import { ThemeProvider, type VisualTheme } from "@/components/themes/theme-provider";
 import { getClinicEntitlements, planAtLeast, hasModule } from "@/lib/modules";
 
@@ -18,6 +19,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     workshops: false,
     resources: false,
   };
+  let licenseBlocked = false;
+  let licenseEndsAt: string | null = null;
 
   if (profile.clinicId) {
     const [{ data: clinic }, { data: branding }, entitlements] = await Promise.all([
@@ -39,6 +42,20 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       workshops: hasModule(entitlements, "group_workshops"),
       resources: hasModule(entitlements, "digital_resources"),
     };
+    // Plan anual vencido/suspendido/cancelado: se bloquea la operación del
+    // sistema, nunca el acceso a los propios datos (ver getClinicEntitlements
+    // y app/api/export/clinic-data). No bloquea si simplemente no hay fila de
+    // licencia (edge case, no debería pasar en un consultorio real).
+    licenseBlocked = entitlements.licenseType !== null && !entitlements.licenseActive;
+    licenseEndsAt = entitlements.licenseEndsAt;
+  }
+
+  if (licenseBlocked) {
+    return (
+      <ThemeProvider theme={visualTheme} primaryColor={primaryColor} secondaryColor={secondaryColor} className="contents">
+        <LicenseExpiredScreen clinicName={clinicName} isOwner={profile.role === "clinic_owner"} endsAt={licenseEndsAt} />
+      </ThemeProvider>
+    );
   }
 
   return (

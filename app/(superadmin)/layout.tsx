@@ -4,6 +4,8 @@ import { requireRole } from "@/lib/auth/session";
 const NAV_ITEMS = [
   { href: "/admin", label: "Resumen" },
   { href: "/admin/consultorios", label: "Consultorios" },
+  { href: "/admin/licencias", label: "Licencias" },
+  { href: "/admin/modulos", label: "Módulos" },
   { href: "/admin/soporte", label: "Soporte" },
 ];
 

@@ -208,7 +208,7 @@ export async function createBookingAction(
       .select("id")
       .single();
 
-    if (providerRow?.provider_key === "wompi" && paymentIntent) {
+    if (providerRow && providerRow.provider_key !== "manual_transfer" && providerRow.provider_key !== "in_person" && paymentIntent) {
       const provider = getPaymentProvider(providerRow);
       if (provider?.createCheckoutSession) {
         const session = await provider.createCheckoutSession({

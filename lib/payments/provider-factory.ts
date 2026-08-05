@@ -3,6 +3,10 @@ import { decryptCredentials } from "./crypto";
 import { ManualTransferProvider } from "./providers/manual-transfer";
 import { InPersonProvider } from "./providers/in-person";
 import { WompiProvider } from "./providers/wompi";
+import { MercadoPagoProvider } from "./providers/mercado-pago";
+import { EpaycoProvider } from "./providers/epayco";
+import { ExternalPaymentLinkProvider } from "./providers/external-link";
+import { PayUProvider, BoldProvider, PlaceToPayProvider } from "./providers/stubs";
 import type { PaymentProvider } from "./types";
 import type { Database } from "@/lib/supabase/types";
 
@@ -31,8 +35,33 @@ export function getPaymentProvider(row: ProviderRow): PaymentProvider | null {
         row.is_sandbox,
       );
     }
-    // mercado_pago, payu, epayco, bold, placetopay: arquitectura preparada
-    // (Fase 2), sin implementación todavía.
+    case "mercado_pago": {
+      if (!row.encrypted_credentials) return null;
+      const creds = decryptCredentials(row.encrypted_credentials);
+      return new MercadoPagoProvider(
+        { accessToken: creds.accessToken, webhookSecret: creds.webhookSecret },
+        row.is_sandbox,
+      );
+    }
+    case "epayco": {
+      if (!row.encrypted_credentials) return null;
+      const creds = decryptCredentials(row.encrypted_credentials);
+      return new EpaycoProvider(
+        { publicKey: creds.publicKey, privateKey: creds.privateKey, customerId: creds.customerId },
+        row.is_sandbox,
+      );
+    }
+    case "external_link": {
+      if (!row.encrypted_credentials) return null;
+      const creds = decryptCredentials(row.encrypted_credentials);
+      return new ExternalPaymentLinkProvider(creds.linkUrl);
+    }
+    case "payu":
+      return new PayUProvider();
+    case "bold":
+      return new BoldProvider();
+    case "placetopay":
+      return new PlaceToPayProvider();
     default:
       return null;
   }

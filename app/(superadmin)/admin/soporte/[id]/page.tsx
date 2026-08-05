@@ -8,6 +8,7 @@ import { StatusSelect } from "./status-select";
 import { AssignButton } from "./assign-button";
 import { AdminCommentForm } from "./admin-comment-form";
 import { SUPPORT_TICKET_PRIORITY_LABELS, SUPPORT_TICKET_CATEGORY_LABELS } from "@/lib/domain/labels";
+import { evaluateSla, formatHours } from "@/lib/domain/sla";
 
 export default async function AdminTicketDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -26,6 +27,7 @@ export default async function AdminTicketDetailPage({ params }: { params: Promis
     ? await supabase.from("profiles").select("id, full_name").in("id", authorIds)
     : { data: [] as { id: string; full_name: string }[] };
   const authorNameById = new Map((authors ?? []).map((a) => [a.id, a.full_name]));
+  const sla = evaluateSla(ticket);
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -40,6 +42,13 @@ export default async function AdminTicketDetailPage({ params }: { params: Promis
           {SUPPORT_TICKET_PRIORITY_LABELS[ticket.priority]}
         </p>
         {ticket.description && <p className="mt-3 text-sm">{ticket.description}</p>}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+        <span>Primera respuesta: {formatHours(sla.firstResponseHoursElapsed)}</span>
+        {sla.resolutionHoursElapsed !== null && <span>Resolución: {formatHours(sla.resolutionHoursElapsed)}</span>}
+        {sla.firstResponseBreached && <Badge variant="destructive">SLA de respuesta vencido</Badge>}
+        {sla.resolutionBreached && <Badge variant="destructive">SLA de resolución vencido</Badge>}
       </div>
 
       <div className="flex flex-wrap items-center gap-3">

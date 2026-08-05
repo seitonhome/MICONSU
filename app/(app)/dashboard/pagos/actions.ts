@@ -125,6 +125,171 @@ export async function toggleWompiActive(isActive: boolean): Promise<void> {
   revalidatePath("/dashboard/pagos");
 }
 
+export async function configureMercadoPago(
+  _prev: PaymentsActionState | undefined,
+  formData: FormData,
+): Promise<PaymentsActionState> {
+  const { clinicId, profileId, supabase } = await ownerClinicId();
+  const accessToken = (formData.get("access_token") as string)?.trim();
+  const webhookSecret = (formData.get("webhook_secret") as string)?.trim();
+  const isSandbox = formData.get("is_sandbox") === "on";
+
+  if (!accessToken) return { error: "El access token es obligatorio." };
+
+  const encrypted = encryptCredentials({ accessToken, webhookSecret: webhookSecret ?? "" });
+
+  const { error } = await supabase.from("payment_providers").upsert(
+    {
+      clinic_id: clinicId,
+      provider_key: "mercado_pago",
+      display_name: "Mercado Pago",
+      is_active: true,
+      is_sandbox: isSandbox,
+      encrypted_credentials: encrypted,
+    },
+    { onConflict: "clinic_id,provider_key" },
+  );
+
+  if (error) return { error: "No pudimos guardar la configuración de Mercado Pago." };
+
+  await logAudit({
+    clinicId,
+    actorProfileId: profileId,
+    action: "configure_credentials",
+    entityType: "payment_providers",
+    afterData: { provider_key: "mercado_pago", is_sandbox: isSandbox },
+  });
+
+  revalidatePath("/dashboard/pagos");
+  return { success: true };
+}
+
+export async function toggleMercadoPagoActive(isActive: boolean): Promise<void> {
+  const { clinicId, profileId, supabase } = await ownerClinicId();
+  await supabase.from("payment_providers").update({ is_active: isActive }).eq("clinic_id", clinicId).eq("provider_key", "mercado_pago");
+
+  await logAudit({
+    clinicId,
+    actorProfileId: profileId,
+    action: isActive ? "activate" : "deactivate",
+    entityType: "payment_providers",
+    afterData: { provider_key: "mercado_pago", is_active: isActive },
+  });
+
+  revalidatePath("/dashboard/pagos");
+}
+
+export async function configureEpayco(
+  _prev: PaymentsActionState | undefined,
+  formData: FormData,
+): Promise<PaymentsActionState> {
+  const { clinicId, profileId, supabase } = await ownerClinicId();
+  const publicKey = (formData.get("public_key") as string)?.trim();
+  const privateKey = (formData.get("private_key") as string)?.trim();
+  const customerId = (formData.get("customer_id") as string)?.trim();
+  const isSandbox = formData.get("is_sandbox") === "on";
+
+  if (!publicKey || !privateKey || !customerId) {
+    return { error: "La llave pública, la llave privada (p_key) y el ID de cliente son obligatorios." };
+  }
+
+  const encrypted = encryptCredentials({ publicKey, privateKey, customerId });
+
+  const { error } = await supabase.from("payment_providers").upsert(
+    {
+      clinic_id: clinicId,
+      provider_key: "epayco",
+      display_name: "ePayco",
+      is_active: true,
+      is_sandbox: isSandbox,
+      encrypted_credentials: encrypted,
+    },
+    { onConflict: "clinic_id,provider_key" },
+  );
+
+  if (error) return { error: "No pudimos guardar la configuración de ePayco." };
+
+  await logAudit({
+    clinicId,
+    actorProfileId: profileId,
+    action: "configure_credentials",
+    entityType: "payment_providers",
+    afterData: { provider_key: "epayco", is_sandbox: isSandbox },
+  });
+
+  revalidatePath("/dashboard/pagos");
+  return { success: true };
+}
+
+export async function toggleEpaycoActive(isActive: boolean): Promise<void> {
+  const { clinicId, profileId, supabase } = await ownerClinicId();
+  await supabase.from("payment_providers").update({ is_active: isActive }).eq("clinic_id", clinicId).eq("provider_key", "epayco");
+
+  await logAudit({
+    clinicId,
+    actorProfileId: profileId,
+    action: isActive ? "activate" : "deactivate",
+    entityType: "payment_providers",
+    afterData: { provider_key: "epayco", is_active: isActive },
+  });
+
+  revalidatePath("/dashboard/pagos");
+}
+
+export async function configureExternalLink(
+  _prev: PaymentsActionState | undefined,
+  formData: FormData,
+): Promise<PaymentsActionState> {
+  const { clinicId, profileId, supabase } = await ownerClinicId();
+  const linkUrl = (formData.get("link_url") as string)?.trim();
+
+  if (!linkUrl || !/^https?:\/\//.test(linkUrl)) {
+    return { error: "Ingresa una URL válida (debe empezar con http:// o https://)." };
+  }
+
+  const encrypted = encryptCredentials({ linkUrl });
+
+  const { error } = await supabase.from("payment_providers").upsert(
+    {
+      clinic_id: clinicId,
+      provider_key: "external_link",
+      display_name: "Link externo de pago",
+      is_active: true,
+      is_sandbox: false,
+      encrypted_credentials: encrypted,
+    },
+    { onConflict: "clinic_id,provider_key" },
+  );
+
+  if (error) return { error: "No pudimos guardar el link de pago." };
+
+  await logAudit({
+    clinicId,
+    actorProfileId: profileId,
+    action: "configure_credentials",
+    entityType: "payment_providers",
+    afterData: { provider_key: "external_link" },
+  });
+
+  revalidatePath("/dashboard/pagos");
+  return { success: true };
+}
+
+export async function toggleExternalLinkActive(isActive: boolean): Promise<void> {
+  const { clinicId, profileId, supabase } = await ownerClinicId();
+  await supabase.from("payment_providers").update({ is_active: isActive }).eq("clinic_id", clinicId).eq("provider_key", "external_link");
+
+  await logAudit({
+    clinicId,
+    actorProfileId: profileId,
+    action: isActive ? "activate" : "deactivate",
+    entityType: "payment_providers",
+    afterData: { provider_key: "external_link", is_active: isActive },
+  });
+
+  revalidatePath("/dashboard/pagos");
+}
+
 export async function testWompiConnection(): Promise<PaymentsActionState> {
   const { clinicId, supabase } = await ownerClinicId();
   const { data: providerRow } = await supabase

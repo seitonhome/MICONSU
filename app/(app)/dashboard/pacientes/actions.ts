@@ -49,12 +49,24 @@ export async function updatePatient(
   _prev: PatientActionState | undefined,
   formData: FormData,
 ): Promise<PatientActionState> {
-  const { supabase } = await staffClinicId();
+  const { clinicId, profileId, supabase } = await staffClinicId();
   const fields = parsePatientForm(formData);
   if (!fields.full_name) return { error: "El nombre completo es obligatorio." };
 
+  const { data: before } = await supabase.from("patients").select("*").eq("id", id).maybeSingle();
+
   const { error } = await supabase.from("patients").update(fields).eq("id", id);
   if (error) return { error: "No pudimos actualizar el paciente." };
+
+  await logAudit({
+    clinicId,
+    actorProfileId: profileId,
+    action: "update",
+    entityType: "patients",
+    entityId: id,
+    beforeData: before ?? null,
+    afterData: fields,
+  });
 
   revalidatePath("/dashboard/pacientes");
   revalidatePath(`/dashboard/pacientes/${id}`);
@@ -121,7 +133,16 @@ export async function uploadPatientDocument(
 }
 
 export async function deletePatientDocument(patientId: string, id: string): Promise<void> {
-  const { supabase } = await staffClinicId();
+  const { clinicId, profileId, supabase } = await staffClinicId();
   await supabase.from("patient_documents").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+
+  await logAudit({
+    clinicId,
+    actorProfileId: profileId,
+    action: "soft_delete",
+    entityType: "patient_documents",
+    entityId: id,
+  });
+
   revalidatePath(`/dashboard/pacientes/${patientId}`);
 }

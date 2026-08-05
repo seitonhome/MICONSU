@@ -11,6 +11,9 @@ const ENTITLED_STATUSES = new Set(["active", "trial"]);
 export type ClinicEntitlements = {
   licenseType: LicenseType | null;
   licenseActive: boolean;
+  /** true cuando hay licencia pero su fecha de vencimiento ya pasó (plan anual sin renovar). */
+  licenseExpired: boolean;
+  licenseEndsAt: string | null;
   enabledModules: Set<ModuleKey>;
   professionalsAllowed: number;
   locationsAllowed: number;
@@ -18,26 +21,36 @@ export type ClinicEntitlements = {
 
 /**
  * Fuente única de verdad para "qué puede usar este consultorio": lee su
- * licencia (plan + estado) y sus módulos adicionales activos. Sin fila en
- * `licenses` (consultorio sin licencia asignada por el superadmin todavía)
- * se trata como no habilitado para nada por encima de Plan Esencial — el
- * sistema sigue funcionando, pero las funciones de Fase 2 quedan bloqueadas
- * hasta que haya una licencia activa, igual que describe el brief comercial.
+ * licencia (plan + estado + vencimiento) y sus módulos adicionales activos.
+ *
+ * Mi Consultorio Pro se vende como un solo plan completo y anual ($39
+ * USD/año, incluye soporte — ver landing en seiton/mi-consultorio-pro), así
+ * que create_clinic_and_assign_owner() otorga licencia 'centro' activa y
+ * todos los módulos habilitados por 1 año desde el registro (migración
+ * 20260802100000_annual_plan.sql). Al vencer `ends_at` sin renovación,
+ * licenseActive pasa a false — app/(app)/layout.tsx usa esto para bloquear
+ * la operación del consultorio (agenda, pacientes, pagos, etc.) sin borrar
+ * ni ocultar sus datos: el dueño sigue pudiendo iniciar sesión para
+ * exportarlos desde /api/export/clinic-data.
  */
 export async function getClinicEntitlements(clinicId: string): Promise<ClinicEntitlements> {
   const supabase = await createClient();
   const [{ data: license }, { data: modules }] = await Promise.all([
     supabase
       .from("licenses")
-      .select("license_type, status, professionals_allowed, locations_allowed")
+      .select("license_type, status, ends_at, professionals_allowed, locations_allowed")
       .eq("clinic_id", clinicId)
       .maybeSingle(),
     supabase.from("enabled_modules").select("module_key").eq("clinic_id", clinicId).eq("is_active", true),
   ]);
 
+  const expired = Boolean(license?.ends_at && new Date(license.ends_at).getTime() < Date.now());
+
   return {
     licenseType: (license?.license_type as LicenseType | undefined) ?? null,
-    licenseActive: Boolean(license && ENTITLED_STATUSES.has(license.status)),
+    licenseActive: Boolean(license && ENTITLED_STATUSES.has(license.status) && !expired),
+    licenseExpired: Boolean(license) && (expired || license?.status === "expired"),
+    licenseEndsAt: license?.ends_at ?? null,
     enabledModules: new Set((modules ?? []).map((m) => m.module_key)),
     professionalsAllowed: license?.professionals_allowed ?? 1,
     locationsAllowed: license?.locations_allowed ?? 1,

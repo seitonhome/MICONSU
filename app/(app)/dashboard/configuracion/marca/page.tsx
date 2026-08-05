@@ -6,11 +6,10 @@ export default async function MarcaPage() {
   const profile = await requireRole(["clinic_owner"]);
   const supabase = await createClient();
 
-  const { data: branding } = await supabase
-    .from("clinic_branding")
-    .select("*")
-    .eq("clinic_id", profile.clinicId!)
-    .maybeSingle();
+  const [{ data: branding }, { data: clinic }] = await Promise.all([
+    supabase.from("clinic_branding").select("*").eq("clinic_id", profile.clinicId!).maybeSingle(),
+    supabase.from("clinics").select("commercial_name").eq("id", profile.clinicId!).single(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -20,7 +19,7 @@ export default async function MarcaPage() {
           Tu logo y tema se usan en tu página pública, recordatorios y portal de pacientes.
         </p>
       </div>
-      <BrandingForm branding={branding ?? null} />
+      <BrandingForm branding={branding ?? null} commercialName={clinic?.commercial_name ?? ""} />
     </div>
   );
 }

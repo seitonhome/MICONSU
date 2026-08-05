@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { ManualTransferForm } from "./manual-transfer-form";
 import { WompiForm } from "./wompi-form";
 import { InPersonToggle } from "./in-person-toggle";
+import { MercadoPagoForm } from "./mercado-pago-form";
+import { EpaycoForm } from "./epayco-form";
+import { ExternalLinkForm } from "./external-link-form";
 
 export default async function PagosPage() {
   const profile = await requireRole(["clinic_owner", "finance_user"]);
@@ -19,6 +22,9 @@ export default async function PagosPage() {
   const manual = providers?.find((p) => p.provider_key === "manual_transfer");
   const wompi = providers?.find((p) => p.provider_key === "wompi");
   const inPerson = providers?.find((p) => p.provider_key === "in_person");
+  const mercadoPago = providers?.find((p) => p.provider_key === "mercado_pago");
+  const epayco = providers?.find((p) => p.provider_key === "epayco");
+  const externalLink = providers?.find((p) => p.provider_key === "external_link");
 
   let manualInstructions = "";
   if (manual) {
@@ -78,9 +84,50 @@ export default async function PagosPage() {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>Mercado Pago</CardTitle>
+          <CardDescription>Pagos automáticos con tarjeta y otros medios locales.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <MercadoPagoForm
+            isConfigured={Boolean(mercadoPago?.encrypted_credentials)}
+            isActive={mercadoPago?.is_active ?? false}
+            isSandbox={mercadoPago?.is_sandbox ?? true}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>ePayco</CardTitle>
+          <CardDescription>Pagos automáticos con tarjeta, PSE y efectivo.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <EpaycoForm
+            isConfigured={Boolean(epayco?.encrypted_credentials)}
+            isActive={epayco?.is_active ?? false}
+            isSandbox={epayco?.is_sandbox ?? true}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Link externo de pago</CardTitle>
+          <CardDescription>¿Ya tienes un link de cobro en otra plataforma? Pégalo aquí.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ExternalLinkForm
+            isConfigured={Boolean(externalLink?.encrypted_credentials)}
+            isActive={externalLink?.is_active ?? false}
+          />
+        </CardContent>
+      </Card>
+
       <Card className="opacity-60">
         <CardHeader>
-          <CardTitle>Mercado Pago, PayU, ePayco, Bold, PlaceToPay</CardTitle>
+          <CardTitle>PayU, Bold, PlaceToPay</CardTitle>
           <CardDescription>Arquitectura preparada — disponibles próximamente.</CardDescription>
         </CardHeader>
         <CardContent />

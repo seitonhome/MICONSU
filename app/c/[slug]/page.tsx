@@ -55,13 +55,27 @@ export default async function ClinicPublicPage({ params }: { params: Promise<{ s
       theme={(branding?.visual_theme as VisualTheme) ?? "clinico_moderno"}
       primaryColor={branding?.primary_color}
       secondaryColor={branding?.secondary_color}
+      fontStyle={branding?.font_style}
       className="min-h-screen bg-background"
     >
       <header className="border-b bg-background">
+        {branding?.cover_image_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={branding.cover_image_url} alt="" className="h-40 w-full object-cover sm:h-56" />
+        )}
         <div className="mx-auto max-w-3xl px-4 py-10 text-center">
-          {branding?.logo_url && (
+          {branding?.professional_photo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={branding.logo_url} alt={clinic.commercial_name} className="mx-auto mb-4 size-20 rounded-2xl object-cover" />
+            <img
+              src={branding.professional_photo_url}
+              alt={clinic.commercial_name}
+              className="mx-auto mb-4 size-24 rounded-full border-4 border-background object-cover shadow-sm"
+            />
+          ) : (
+            branding?.logo_url && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={branding.logo_url} alt={clinic.commercial_name} className="mx-auto mb-4 size-20 rounded-2xl object-cover" />
+            )
           )}
           <h1 className="text-3xl font-semibold tracking-tight">{clinic.commercial_name}</h1>
           {clinic.description && <p className="mt-3 text-muted-foreground">{clinic.description}</p>}

@@ -3,9 +3,9 @@
 -- "Sanación Integral" — usado por /demo/alternativa para mostrar el sistema
 -- a prospectos. Reutiliza las tablas de producción con clinics.is_demo = true.
 -- Fechas relativas a CURRENT_DATE para que la demo siempre luzca vigente.
--- Nota: Fase 1 no incluye aún paquetes de sesiones, talleres grupales,
--- reseñas ni biblioteca de recursos (llegan en Fase 2); este seed cubre lo
--- que sí existe hoy: agenda, servicios, pacientes, pagos, consentimientos.
+-- Cubre agenda, servicios, pacientes, pagos, consentimientos (Fase 1) y
+-- paquetes de sesiones, taller grupal, biblioteca de recursos y reseñas
+-- (Fase 2, migraciones 20260714100100/100200).
 -- ============================================================================
 
 -- ── Clínica demo ─────────────────────────────────────────────────────────
@@ -264,8 +264,64 @@ select '11111111-1111-1111-1111-111111111101', sp.id, 'active', current_date - 3
 from public.support_plans sp where sp.plan_key = 'profesional'
 on conflict (clinic_id) do nothing;
 
+-- ── Paquetes de sesiones (Fase 2) ────────────────────────────────────────
+
+insert into public.session_packages (
+  id, clinic_id, patient_id, professional_id, service_id, name, total_sessions, sessions_used,
+  price_total, deposit_amount, starts_at, valid_until, status
+) values (
+  '11111111-1111-1111-1111-111111111180', '11111111-1111-1111-1111-111111111101',
+  '11111111-1111-1111-1111-111111111142', '11111111-1111-1111-1111-111111111120',
+  '11111111-1111-1111-1111-111111111141',
+  'Paquete de biosanación · 5 sesiones', 5, 2, 700000, 150000,
+  current_date - 21, current_date + 70, 'active'
+)
+on conflict (id) do nothing;
+
+insert into public.package_sessions (clinic_id, package_id, appointment_id, session_number, used_at) values
+  ('11111111-1111-1111-1111-111111111101', '11111111-1111-1111-1111-111111111180', null, 1, now() - interval '21 days'),
+  ('11111111-1111-1111-1111-111111111101', '11111111-1111-1111-1111-111111111180', null, 2, now() - interval '7 days');
+
+-- ── Sesión grupal / taller (Fase 2) ──────────────────────────────────────
+
+insert into public.group_sessions (
+  id, clinic_id, professional_id, service_id, location_id, name, description,
+  starts_at, ends_at, modality, max_capacity, status
+) values (
+  '11111111-1111-1111-1111-111111111190', '11111111-1111-1111-1111-111111111101',
+  '11111111-1111-1111-1111-111111111120', '11111111-1111-1111-1111-111111111143',
+  '11111111-1111-1111-1111-111111111111',
+  'Sanando el vínculo familiar', 'Espacio grupal para explorar patrones familiares desde la biodescodificación.',
+  (current_date + 5 + time '17:00')::timestamptz, (current_date + 5 + time '19:00')::timestamptz,
+  'in_person', 12, 'scheduled'
+)
+on conflict (id) do nothing;
+
+insert into public.group_session_attendees (clinic_id, group_session_id, patient_id, payment_status, attended) values
+  ('11111111-1111-1111-1111-111111111101', '11111111-1111-1111-1111-111111111190', '11111111-1111-1111-1111-111111111140', 'paid', false),
+  ('11111111-1111-1111-1111-111111111101', '11111111-1111-1111-1111-111111111190', '11111111-1111-1111-1111-111111111142', 'pending', false)
+on conflict do nothing;
+
+-- ── Biblioteca de recursos y envíos (Fase 2) ─────────────────────────────
+
+insert into public.resource_library (id, clinic_id, title, description, resource_type, file_url, is_active) values
+  ('11111111-1111-1111-1111-111111111191', '11111111-1111-1111-1111-111111111101', 'Guía de respiración consciente', 'Ejercicio corto de respiración para practicar entre sesiones.', 'guide', '11111111-1111-1111-1111-111111111101/resources/guia-respiracion-demo.pdf', true),
+  ('11111111-1111-1111-1111-111111111192', '11111111-1111-1111-1111-111111111101', 'Meditación de cierre', 'Audio guiado de 10 minutos para después de tu sesión.', 'audio', '11111111-1111-1111-1111-111111111101/resources/meditacion-cierre-demo.mp3', true)
+on conflict (id) do nothing;
+
+insert into public.assigned_resources (clinic_id, resource_id, patient_id, appointment_id, assigned_at) values
+  ('11111111-1111-1111-1111-111111111101', '11111111-1111-1111-1111-111111111191', '11111111-1111-1111-1111-111111111140', '11111111-1111-1111-1111-111111111154', now() - interval '7 days'),
+  ('11111111-1111-1111-1111-111111111101', '11111111-1111-1111-1111-111111111192', '11111111-1111-1111-1111-111111111140', '11111111-1111-1111-1111-111111111154', now() - interval '7 days');
+
+-- ── Reseñas (Fase 2) ──────────────────────────────────────────────────────
+
+insert into public.reviews (clinic_id, patient_id, appointment_id, professional_id, service_id, rating, comment, status) values
+  ('11111111-1111-1111-1111-111111111101', '11111111-1111-1111-1111-111111111140', '11111111-1111-1111-1111-111111111154', '11111111-1111-1111-1111-111111111120', '11111111-1111-1111-1111-111111111140', 5, 'Mariana me acompañó con muchísima calidez. Sentí un espacio seguro para todo mi proceso.', 'approved'),
+  ('11111111-1111-1111-1111-111111111101', '11111111-1111-1111-1111-111111111142', '11111111-1111-1111-1111-111111111155', '11111111-1111-1111-1111-111111111120', '11111111-1111-1111-1111-111111111141', 4, 'Muy buena experiencia, el espacio virtual también funcionó muy bien.', 'private')
+on conflict do nothing;
+
 -- ── Índice de demo comercial ─────────────────────────────────────────────
 
 insert into public.demo_data_profiles (vertical_key, clinic_id, display_name, description, is_active) values
-  ('alternativa', '11111111-1111-1111-1111-111111111101', 'Medicina alternativa · Biosanación emocional', 'Demo de Sanación Integral: agenda, pagos, servicios y página pública para medicina alternativa y bienestar.', true)
+  ('alternativa', '11111111-1111-1111-1111-111111111101', 'Medicina alternativa · Biosanación emocional', 'Demo de Sanación Integral: agenda, pagos, servicios, paquetes, taller grupal, recursos y página pública para medicina alternativa y bienestar.', true)
 on conflict (vertical_key) do nothing;

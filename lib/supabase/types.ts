@@ -353,6 +353,7 @@ export type Database = {
           emergency_contact_phone: string | null;
           administrative_notes: string | null;
           status: string;
+          user_id: string | null;
           created_at: string;
           updated_at: string;
           deleted_at: string | null;
@@ -371,6 +372,7 @@ export type Database = {
           emergency_contact_phone?: string | null;
           administrative_notes?: string | null;
           status?: string;
+          user_id?: string | null;
           created_at?: string;
           updated_at?: string;
           deleted_at?: string | null;
@@ -389,6 +391,7 @@ export type Database = {
           emergency_contact_phone?: string | null;
           administrative_notes?: string | null;
           status?: string;
+          user_id?: string | null;
           created_at?: string;
           updated_at?: string;
           deleted_at?: string | null;
@@ -1305,6 +1308,7 @@ export type Database = {
           status: "active" | "trial" | "suspended" | "expired" | "cancelled";
           purchased_at: string | null;
           trial_ends_at: string | null;
+          ends_at: string | null;
           internal_notes: string | null;
           created_at: string;
           updated_at: string;
@@ -1318,6 +1322,7 @@ export type Database = {
           status?: "active" | "trial" | "suspended" | "expired" | "cancelled";
           purchased_at?: string | null;
           trial_ends_at?: string | null;
+          ends_at?: string | null;
           internal_notes?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -1331,6 +1336,7 @@ export type Database = {
           status?: "active" | "trial" | "suspended" | "expired" | "cancelled";
           purchased_at?: string | null;
           trial_ends_at?: string | null;
+          ends_at?: string | null;
           internal_notes?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -1433,6 +1439,39 @@ export type Database = {
           ends_at?: string | null;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      support_subscription_renewals: {
+        Row: {
+          id: string;
+          clinic_id: string;
+          support_plan_id: string;
+          status: "active" | "expiring_soon" | "expired" | "suspended";
+          started_at: string;
+          ends_at: string | null;
+          changed_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          clinic_id: string;
+          support_plan_id: string;
+          status: "active" | "expiring_soon" | "expired" | "suspended";
+          started_at: string;
+          ends_at?: string | null;
+          changed_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          clinic_id?: string;
+          support_plan_id?: string;
+          status?: "active" | "expiring_soon" | "expired" | "suspended";
+          started_at?: string;
+          ends_at?: string | null;
+          changed_by?: string | null;
+          created_at?: string;
         };
         Relationships: [];
       };
@@ -2347,6 +2386,10 @@ export type Database = {
       create_clinic_and_assign_owner: {
         Args: { p_commercial_name: string; p_slug: string };
         Returns: Database["public"]["Tables"]["clinics"]["Row"];
+      };
+      claim_patient_records: {
+        Args: Record<string, never>;
+        Returns: void;
       };
       has_conflicting_appointment: {
         Args: {

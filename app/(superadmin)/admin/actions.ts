@@ -3,13 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole, requireCurrentProfile } from "@/lib/auth/session";
+import { logAudit } from "@/lib/security/audit";
 import type { Database } from "@/lib/supabase/types";
 
 export type AdminActionState = { error?: string; success?: boolean };
 
-async function superAdminClient() {
-  await requireRole(["super_admin"]);
-  return createClient();
+async function superAdminProfile() {
+  return requireRole(["super_admin"]);
 }
 
 export async function upsertLicense(
@@ -17,28 +17,48 @@ export async function upsertLicense(
   _prev: AdminActionState | undefined,
   formData: FormData,
 ): Promise<AdminActionState> {
-  const supabase = await superAdminClient();
+  const actor = await superAdminProfile();
+  const supabase = await createClient();
 
   const licenseType = formData.get("license_type") as "esencial" | "profesional" | "centro";
   const status = formData.get("status") as Database["public"]["Tables"]["licenses"]["Row"]["status"];
   const professionalsAllowed = Number(formData.get("professionals_allowed")) || 1;
   const locationsAllowed = Number(formData.get("locations_allowed")) || 1;
   const internalNotes = (formData.get("internal_notes") as string) || null;
+  const endsAtInput = (formData.get("ends_at") as string) || null;
+  const endsAt = endsAtInput ? new Date(`${endsAtInput}T23:59:59Z`).toISOString() : null;
 
-  const { error } = await supabase.from("licenses").upsert(
-    {
-      clinic_id: clinicId,
-      license_type: licenseType,
-      status,
-      professionals_allowed: professionalsAllowed,
-      locations_allowed: locationsAllowed,
-      internal_notes: internalNotes,
-      purchased_at: new Date().toISOString(),
-    },
-    { onConflict: "clinic_id" },
-  );
+  const { data: before } = await supabase.from("licenses").select("*").eq("clinic_id", clinicId).maybeSingle();
+
+  const { data: after, error } = await supabase
+    .from("licenses")
+    .upsert(
+      {
+        clinic_id: clinicId,
+        license_type: licenseType,
+        status,
+        professionals_allowed: professionalsAllowed,
+        locations_allowed: locationsAllowed,
+        internal_notes: internalNotes,
+        ends_at: endsAt,
+        purchased_at: before?.purchased_at ?? new Date().toISOString(),
+      },
+      { onConflict: "clinic_id" },
+    )
+    .select("*")
+    .single();
 
   if (error) return { error: "No pudimos guardar la licencia." };
+
+  await logAudit({
+    clinicId,
+    actorProfileId: actor.id,
+    action: "upsert",
+    entityType: "licenses",
+    entityId: clinicId,
+    beforeData: before ?? null,
+    afterData: after,
+  });
 
   revalidatePath(`/admin/consultorios/${clinicId}`);
   return { success: true };
@@ -49,7 +69,8 @@ export async function upsertSupportSubscription(
   _prev: AdminActionState | undefined,
   formData: FormData,
 ): Promise<AdminActionState> {
-  const supabase = await superAdminClient();
+  const actor = await superAdminProfile();
+  const supabase = await createClient();
 
   const planKey = formData.get("plan_key") as "esencial" | "profesional" | "centro";
   const status = formData.get("status") as Database["public"]["Tables"]["support_subscriptions"]["Row"]["status"];
@@ -58,17 +79,46 @@ export async function upsertSupportSubscription(
   const { data: plan } = await supabase.from("support_plans").select("id").eq("plan_key", planKey).single();
   if (!plan) return { error: "Plan de soporte no encontrado." };
 
-  const { error } = await supabase.from("support_subscriptions").upsert(
-    {
-      clinic_id: clinicId,
-      support_plan_id: plan.id,
-      status,
-      ends_at: endsAt,
-    },
-    { onConflict: "clinic_id" },
-  );
+  const { data: before } = await supabase
+    .from("support_subscriptions")
+    .select("*")
+    .eq("clinic_id", clinicId)
+    .maybeSingle();
+
+  const { data: after, error } = await supabase
+    .from("support_subscriptions")
+    .upsert(
+      {
+        clinic_id: clinicId,
+        support_plan_id: plan.id,
+        status,
+        ends_at: endsAt,
+      },
+      { onConflict: "clinic_id" },
+    )
+    .select("*")
+    .single();
 
   if (error) return { error: "No pudimos guardar la suscripción de soporte." };
+
+  await supabase.from("support_subscription_renewals").insert({
+    clinic_id: clinicId,
+    support_plan_id: plan.id,
+    status,
+    started_at: after.started_at,
+    ends_at: endsAt,
+    changed_by: actor.id,
+  });
+
+  await logAudit({
+    clinicId,
+    actorProfileId: actor.id,
+    action: "upsert",
+    entityType: "support_subscriptions",
+    entityId: clinicId,
+    beforeData: before ?? null,
+    afterData: after,
+  });
 
   revalidatePath(`/admin/consultorios/${clinicId}`);
   return { success: true };
@@ -79,7 +129,8 @@ export async function toggleModule(
   moduleKey: Database["public"]["Enums"]["module_key"],
   isActive: boolean,
 ): Promise<void> {
-  const supabase = await superAdminClient();
+  const actor = await superAdminProfile();
+  const supabase = await createClient();
 
   await supabase.from("enabled_modules").upsert(
     {
@@ -91,6 +142,15 @@ export async function toggleModule(
     },
     { onConflict: "clinic_id,module_key" },
   );
+
+  await logAudit({
+    clinicId,
+    actorProfileId: actor.id,
+    action: isActive ? "activate" : "deactivate",
+    entityType: "enabled_modules",
+    entityId: clinicId,
+    afterData: { module_key: moduleKey, is_active: isActive },
+  });
 
   revalidatePath(`/admin/consultorios/${clinicId}`);
 }

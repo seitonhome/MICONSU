@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Mi Consultorio Pro — Guía de usuario</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm 22mm 18mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: #1E293B;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .cover {
+    height: 257mm;
+    margin: -20mm -18mm -22mm -18mm;
+    background: linear-gradient(150deg, #0F1923 0%, #14313A 55%, #0F1923 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    page-break-after: always;
+  }
+  .cover .mark {
+    width: 84px; height: 84px; border-radius: 22px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(126,200,200,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px; margin-bottom: 28px;
+  }
+  .cover .eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #7EC8C8; margin-bottom: 18px;
+  }
+  .cover h1 { font-size: 34pt; font-weight: 900; margin: 0 0 14px; letter-spacing: -0.02em; max-width: 480px; }
+  .cover .sub { font-size: 13pt; color: rgba(255,255,255,0.65); max-width: 420px; line-height: 1.6; margin-bottom: 40px; }
+  .cover .meta { font-size: 9.5pt; color: rgba(255,255,255,0.35); }
+  .cover .lang-badge {
+    margin-top: 60px; font-size: 10pt; font-weight: 700; color: #C99A3D;
+    border: 1px solid rgba(201,154,61,0.5); border-radius: 999px; padding: 8px 20px;
+  }
+
+  h1.section {
+    font-size: 18pt; font-weight: 900; color: #0F1923; margin: 0 0 4px;
+    page-break-before: always;
+    border-bottom: 3px solid #0E7C86; padding-bottom: 10px;
+  }
+  .section-num { color: #0E7C86; font-weight: 800; margin-right: 6px; }
+  h1.section:first-of-type { page-break-before: avoid; }
+  h2 { font-size: 12.5pt; font-weight: 800; color: #0E7C86; margin: 20px 0 8px; }
+  p { margin: 0 0 10px; }
+  ul, ol { margin: 0 0 12px; padding-left: 20px; }
+  li { margin-bottom: 5px; }
+  strong { color: #0F1923; }
+
+  .intro-box {
+    background: #F0FAFA; border-left: 4px solid #0E7C86; border-radius: 8px;
+    padding: 14px 18px; margin: 14px 0 18px; font-size: 10pt; color: #14313A;
+  }
+  .tip-box {
+    background: #FDF8ED; border-left: 4px solid #C99A3D; border-radius: 8px;
+    padding: 12px 18px; margin: 14px 0; font-size: 9.5pt; color: #4A3A10;
+  }
+  .tip-box .label { font-weight: 800; color: #92400E; text-transform: uppercase; font-size: 8.5pt; letter-spacing: 0.06em; display: block; margin-bottom: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 9.5pt; }
+  th, td { border: 1px solid #E2E8F0; padding: 7px 10px; text-align: left; }
+  th { background: #F0FAFA; color: #0F1923; font-weight: 700; }
+
+  .toc { }
+  .toc-item {
+    display: flex; justify-content: space-between; padding: 7px 0;
+    border-bottom: 1px dotted #CBD5E1; font-size: 10.5pt;
+  }
+  .toc-item .n { color: #0E7C86; font-weight: 800; width: 26px; flex-shrink: 0; }
+  .toc-item .t { flex: 1; }
+
+  .footer-note { font-size: 8.5pt; color: #94A3B8; margin-top: 30px; border-top: 1px solid #E2E8F0; padding-top: 10px; }
+  .badge { display: inline-block; background: #F0FAFA; color: #0E7C86; border-radius: 999px; padding: 2px 10px; font-size: 8.5pt; font-weight: 700; margin: 2px 4px 2px 0; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="eyebrow">Software para consultorios y centros de bienestar</div>
+  <div class="mark">🩺</div>
+  <h1>Mi Consultorio Pro</h1>
+  <p class="sub">Guía de usuario completa — agenda, pacientes, pagos, consentimientos, procesos y soporte, explicados paso a paso.</p>
+  <p class="lang-badge">Versión en español</p>
+  <p class="meta" style="margin-top:40px;">Un producto de Seiton Home · mcpro.seitonhome.com · Versión de la guía: agosto 2026</p>
+</div>
+
+<h1 class="section" style="border:none;page-break-before:avoid;">Contenido</h1>
+<div class="toc">
+  <div class="toc-item"><span class="n">1</span><span class="t">Bienvenida — qué es Mi Consultorio Pro y para quién es</span></div>
+  <div class="toc-item"><span class="n">2</span><span class="t">Cómo activar tu cuenta después de comprar</span></div>
+  <div class="toc-item"><span class="n">3</span><span class="t">Primeros pasos: el asistente de configuración (onboarding)</span></div>
+  <div class="toc-item"><span class="n">4</span><span class="t">Tu marca y tema visual</span></div>
+  <div class="toc-item"><span class="n">5</span><span class="t">Servicios</span></div>
+  <div class="toc-item"><span class="n">6</span><span class="t">Horarios y disponibilidad</span></div>
+  <div class="toc-item"><span class="n">7</span><span class="t">Agenda</span></div>
+  <div class="toc-item"><span class="n">8</span><span class="t">Tu página pública y la reserva del paciente</span></div>
+  <div class="toc-item"><span class="n">9</span><span class="t">Pacientes</span></div>
+  <div class="toc-item"><span class="n">10</span><span class="t">Módulo clínico protegido</span></div>
+  <div class="toc-item"><span class="n">11</span><span class="t">Consentimientos y documentos legales</span></div>
+  <div class="toc-item"><span class="n">12</span><span class="t">Centro de pagos</span></div>
+  <div class="toc-item"><span class="n">13</span><span class="t">Conciliación de pagos</span></div>
+  <div class="toc-item"><span class="n">14</span><span class="t">Paquetes de sesiones</span></div>
+  <div class="toc-item"><span class="n">15</span><span class="t">Procesos terapéuticos</span></div>
+  <div class="toc-item"><span class="n">16</span><span class="t">Sesiones grupales y talleres</span></div>
+  <div class="toc-item"><span class="n">17</span><span class="t">Lista de espera</span></div>
+  <div class="toc-item"><span class="n">18</span><span class="t">Seguimiento postconsulta</span></div>
+  <div class="toc-item"><span class="n">19</span><span class="t">Biblioteca de recursos</span></div>
+  <div class="toc-item"><span class="n">20</span><span class="t">Reseñas</span></div>
+  <div class="toc-item"><span class="n">21</span><span class="t">Reportes</span></div>
+  <div class="toc-item"><span class="n">22</span><span class="t">Panel de oportunidad comercial</span></div>
+  <div class="toc-item"><span class="n">23</span><span class="t">Portal del paciente</span></div>
+  <div class="toc-item"><span class="n">24</span><span class="t">Soporte y Plan Continuidad Clínica</span></div>
+  <div class="toc-item"><span class="n">25</span><span class="t">Preguntas frecuentes</span></div>
+  <div class="toc-item"><span class="n">26</span><span class="t">Contacto</span></div>
+</div>
+
+<h1 class="section"><span class="section-num">1.</span>Bienvenida</h1>
+<p>Mi Consultorio Pro es un sistema completo para organizar la operación de un consultorio, práctica independiente o centro de bienestar: agenda, pacientes, pagos, consentimientos, procesos y soporte en un solo lugar, con una página pública propia donde tus pacientes pueden reservar 24/7.</p>
+<p>Está pensado para profesionales de: medicina general y especialidades, odontología y ortodoncia, psicología y psiquiatría, fisioterapia, nutrición, medicina funcional e integrativa, acupuntura y medicina tradicional china, homeopatía, naturopatía, terapia neural, quiropraxia, osteopatía, biomagnetismo, bioenergética, reiki, biosanación y biodescodificación, coaching y mentoría emocional, terapias de respiración y meditación, terapias corporales y masajes, y centros de bienestar en general.</p>
+<div class="intro-box">
+  <strong>No necesitas conocimientos técnicos.</strong> El sistema está diseñado para que lo configures tú mismo, con un asistente guiado paso a paso. Si sabes usar WhatsApp o redes sociales, puedes usar Mi Consultorio Pro.
+</div>
+<p>Esta guía describe <strong>todas las funcionalidades del sistema</strong>, organizadas tal como aparecen en el menú de tu panel. No necesitas leerla de corrido: puedes usarla como referencia, buscando la sección del módulo que te interese en cada momento.</p>
+
+<h1 class="section"><span class="section-num">2.</span>Cómo activar tu cuenta después de comprar</h1>
+<p>Mi Consultorio Pro se vende como <strong>un solo plan completo, anual</strong>: $39 USD al año, incluye soporte (Plan Continuidad Clínica), y se renueva cada año. No hay planes limitados ni versiones de prueba con funciones bloqueadas: en cuanto creas tu cuenta, tienes acceso a todos los módulos descritos en esta guía durante los 12 meses de tu plan.</p>
+<ol>
+  <li>Completa tu compra a través de Hotmart.</li>
+  <li>Recibirás un correo de bienvenida con un enlace directo para crear tu cuenta en <strong>mcpro.seitonhome.com/register</strong>.</li>
+  <li>Ingresa el nombre de tu consultorio, tu nombre, tu correo y una contraseña.</li>
+  <li>Tu consultorio queda creado de inmediato, con acceso completo a todos los módulos por 1 año — no necesitas ingresar ningún código.</li>
+</ol>
+<div class="tip-box"><span class="label">Importante</span>Guarda tu correo y contraseña en un lugar seguro. Si tienes personal de recepción o administración, puedes darles su propio acceso más adelante desde tu panel, con permisos ajustados a su función.</div>
+<div class="intro-box"><strong>Si tu plan vence sin renovarse</strong>, el sistema deja de estar operativo (no puedes usar agenda, pacientes ni pagos) hasta que renueves — pero nunca perdés tus datos. Siempre puedes iniciar sesión y descargar toda la información de tu consultorio en un archivo, incluso con el plan vencido.</div>
+
+<h1 class="section"><span class="section-num">3.</span>Primeros pasos: el asistente de configuración</h1>
+<p>Al crear tu cuenta, el sistema te guía por un asistente de <strong>12 pasos</strong> antes de publicar tu consultorio. Puedes avanzar y volver entre pasos; una barra lateral muestra cuáles ya completaste y un porcentaje de configuración ("X% configurado") en la parte superior.</p>
+<ol>
+  <li><strong>Datos del consultorio</strong> — nombre comercial, nombre legal, datos de contacto.</li>
+  <li><strong>Logo y colores</strong> — tu logo y tus colores de marca.</li>
+  <li><strong>Tipo de práctica</strong> — médico, odontológico, psicológico, medicina alternativa, bienestar, etc. Esto ajusta automáticamente el lenguaje que ven tus pacientes ("cita" vs. "sesión" vs. "tratamiento"; "paciente" vs. "consultante" vs. "cliente").</li>
+  <li><strong>Profesionales</strong> — quién atiende: tú y/o tu equipo.</li>
+  <li><strong>Sedes o modalidad virtual</strong> — una o varias sedes físicas, o modalidad virtual.</li>
+  <li><strong>Servicios</strong> — qué ofreces, con plantillas sugeridas según tu tipo de práctica.</li>
+  <li><strong>Horarios</strong> — tu disponibilidad.</li>
+  <li><strong>Pagos</strong> — cómo vas a cobrar.</li>
+  <li><strong>Consentimientos</strong> — los textos legales que tus pacientes aceptan antes de reservar, con plantillas sugeridas según tu tipo de práctica.</li>
+  <li><strong>Tu página pública</strong> — la dirección web donde te van a encontrar.</li>
+  <li><strong>Prueba de reserva</strong> — una reserva de práctica para confirmar que todo funciona.</li>
+  <li><strong>Publicación</strong> — activas tu consultorio para que el público pueda reservar.</li>
+</ol>
+<p>Después de publicar, un <strong>checklist de activación</strong> en tu panel de inicio te recuerda tareas útiles: agregar logo, elegir tema visual, crear tu primer servicio, configurar horario, activar un método de pago, revisar tu política de datos, publicar tu página, crear tu primera cita, compartir tu link de reserva y probar el flujo como si fueras un paciente.</p>
+<div class="tip-box"><span class="label">Consejo</span>No necesitas completarlo todo de una sola vez. Activa lo esencial y sigue ajustando servicios, horarios y textos legales sobre la marcha.</div>
+
+<h1 class="section"><span class="section-num">4.</span>Tu marca y tema visual</h1>
+<p>Desde <strong>Configuración → Marca</strong> personalizas cómo se ve tu consultorio para tus pacientes:</p>
+<ul>
+  <li><strong>Nombre comercial</strong>, editable en cualquier momento.</li>
+  <li><strong>Logo</strong>, mostrado en tu página pública y en tus comunicaciones.</li>
+  <li><strong>Imagen de portada</strong>, un banner visible en la parte superior de tu página pública.</li>
+  <li><strong>Foto profesional destacada</strong>, un retrato junto a tu nombre en el encabezado.</li>
+  <li><strong>Cinco temas visuales</strong> ya diseñados, cada uno pensado para un tipo de práctica:
+    <table>
+      <tr><th>Tema</th><th>Ideal para</th></tr>
+      <tr><td>Clínico Moderno</td><td>Medicina general, especialistas, psiquiatría</td></tr>
+      <tr><td>Bienestar Premium</td><td>Terapeutas, biosanación, coaching, centros holísticos</td></tr>
+      <tr><td>Integrativo</td><td>Medicina funcional, acupuntura, homeopatía</td></tr>
+      <tr><td>Terapéutico Emocional</td><td>Psicología, terapia emocional</td></tr>
+      <tr><td>Odontológico Premium</td><td>Odontología estética, ortodoncia</td></tr>
+    </table>
+  </li>
+  <li><strong>Tema personalizado</strong>, donde defines tus propios colores principal y secundario.</li>
+  <li><strong>Estilo tipográfico</strong>: estándar, elegante o técnico.</li>
+</ul>
+<p>Tu tema se aplica automáticamente en tu panel, tu página pública, tu flujo de reserva y el portal de tus pacientes.</p>
+
+<h1 class="section"><span class="section-num">5.</span>Servicios</h1>
+<p>En <strong>Servicios</strong> defines exactamente qué ofreces. Cada servicio incluye:</p>
+<ul>
+  <li>Nombre, descripción, categoría y duración.</li>
+  <li><strong>Clasificación</strong>: servicio de salud habilitado, terapia alternativa/complementaria, servicio de bienestar, servicio educativo/de acompañamiento, o servicio no clínico — esto ajusta automáticamente el lenguaje, los disclaimers y los consentimientos sugeridos.</li>
+  <li>Precio, y si quieres que sea visible públicamente o no.</li>
+  <li>Tipo de pago: sin cobro, anticipo, pago completo, manual o presencial.</li>
+  <li>Modalidad: presencial, virtual o ambas.</li>
+  <li>Profesional y sede asignados, color en tu calendario.</li>
+  <li>Si requiere un consentimiento adicional específico.</li>
+  <li>Tiempo mínimo de anticipación y máximo para cancelar.</li>
+  <li>Instrucciones previas para el paciente y mensaje posterior a la cita.</li>
+  <li>Disclaimer específico del servicio.</li>
+  <li>Si permite venderse como <strong>paquete de sesiones</strong> o como <strong>servicio grupal</strong> (con cupo máximo).</li>
+</ul>
+<p>Puedes activar o desactivar un servicio sin borrarlo — útil si dejas de ofrecerlo temporalmente.</p>
+
+<h1 class="section"><span class="section-num">6.</span>Horarios y disponibilidad</h1>
+<p>En <strong>Configuración → Horarios</strong> defines la disponibilidad de cada profesional: qué días y horas atiende, con un tiempo de colchón entre citas configurable. También puedes bloquear franjas puntuales (vacaciones, un día ocupado, una emergencia). El sistema calcula automáticamente qué horas quedan libres para reservar, restando tus citas y bloqueos existentes.</p>
+
+<h1 class="section"><span class="section-num">7.</span>Agenda</h1>
+<p>En <strong>Agenda</strong> gestionas tus citas del día, la semana o el rango que elijas, con filtros por profesional, servicio y estado.</p>
+<ul>
+  <li>Cada cita pasa por estados claros: solicitada, pendiente de pago, pendiente de confirmación manual, confirmada, pagada, registrada (check-in), en curso, completada, cancelada, reprogramada, no asistió, o expirada.</li>
+  <li>Puedes confirmar, reprogramar, marcar "no asistió" o cancelar una cita — cada cambio queda registrado.</li>
+  <li>El sistema valida automáticamente que no se crucen dos citas para el mismo profesional.</li>
+  <li>Citas presenciales, virtuales, y (según tu configuración) grupales.</li>
+</ul>
+
+<h1 class="section"><span class="section-num">8.</span>Tu página pública y la reserva del paciente</h1>
+<p>Cada consultorio tiene su propia página pública (por ejemplo, <em>mcpro.seitonhome.com/c/tu-consultorio</em>), que funciona como una mini landing profesional: tu logo, portada y foto, nombre, descripción, servicios con precios (si eliges mostrarlos), duración, modalidad, dirección o enlace de Google Maps, WhatsApp, y tu botón de reserva.</p>
+<p>El flujo de reserva del paciente, sin necesidad de crear cuenta, es:</p>
+<ol>
+  <li>Elegir servicio.</li>
+  <li>Elegir profesional (si tienes varios) y sede o modalidad.</li>
+  <li>Elegir fecha y hora disponible.</li>
+  <li>Ingresar sus datos de contacto.</li>
+  <li>Aceptar la política de datos y los consentimientos requeridos.</li>
+  <li>Elegir método de pago, si el servicio lo requiere.</li>
+  <li>Confirmar la reserva y recibir la confirmación con fecha, hora, servicio, profesional, dirección o enlace virtual, instrucciones previas, y un enlace seguro para gestionar su cita (reprogramar o cancelar, según lo que permitas).</li>
+</ol>
+
+<h1 class="section"><span class="section-num">9.</span>Pacientes</h1>
+<p>En <strong>Pacientes</strong> llevas el registro administrativo de cada persona que te consulta: nombre, documento, contacto, fecha de nacimiento, ciudad, contacto de emergencia. Cada ficha de paciente muestra, en pestañas separadas:</p>
+<ul>
+  <li>Su historial de citas.</li>
+  <li>Sus pagos.</li>
+  <li>Sus consentimientos aceptados, con fecha y versión exacta.</li>
+  <li>Sus documentos (subidos de forma segura, con enlaces de descarga que expiran).</li>
+  <li>Notas administrativas.</li>
+  <li>Sus paquetes activos y sesiones restantes, si aplica.</li>
+</ul>
+<p>Los datos administrativos están siempre separados de los datos clínicos (ver siguiente sección).</p>
+
+<h1 class="section"><span class="section-num">10.</span>Módulo clínico protegido</h1>
+<p>Para profesionales que necesitan llevar notas privadas de cada paciente, el <strong>módulo clínico</strong> ofrece un espacio separado y con acceso restringido:</p>
+<ul>
+  <li>Motivo de consulta, notas privadas, evolución, recomendaciones y plan de seguimiento.</li>
+  <li>Archivos protegidos adicionales.</li>
+  <li>Exportación a PDF.</li>
+  <li><strong>Auditoría de acceso</strong>: cada vez que alguien abre la ficha clínica de un paciente, queda registrado quién y cuándo.</li>
+</ul>
+<div class="intro-box">Este módulo es un registro interno del profesional, pensado para dar continuidad y privacidad a tu propio seguimiento — no sustituye una historia clínica oficial interoperable en el sentido normativo.</div>
+
+<h1 class="section"><span class="section-num">11.</span>Consentimientos y documentos legales</h1>
+<p>En <strong>Consentimientos</strong> editas los textos legales que tus pacientes aceptan al reservar: política de tratamiento de datos, autorización de datos personales y sensibles, consentimiento informado general, consentimiento de teleconsulta, consentimiento específico por servicio, política de cancelación y reembolso, términos y condiciones de tu consultorio, y disclaimers para medicina alternativa, bienestar o servicios no clínicos.</p>
+<p>Cada vez que editas un texto, el sistema guarda una <strong>nueva versión</strong>. Así, si necesitas comprobar qué aceptó un paciente, sabes exactamente qué texto fue, con fecha, hora, dirección IP y dispositivo desde el que lo aceptó.</p>
+<div class="tip-box"><span class="label">Importante</span>Tú eres responsable del contenido legal de estos textos. El sistema te da la herramienta (versionado, evidencia de aceptación, plantillas sugeridas por tipo de práctica) pero no redacta ni valida el contenido legal por ti — revisa tus obligaciones con un asesor si tienes dudas.</div>
+
+<h1 class="section"><span class="section-num">12.</span>Centro de pagos</h1>
+<p>Desde <strong>Pagos → Configuración</strong> activas los métodos con los que vas a cobrar. No se guardan datos de tarjetas en ningún momento, y las credenciales de tus pasarelas quedan cifradas.</p>
+<ul>
+  <li><strong>Transferencia bancaria</strong>: el paciente transfiere y tu equipo confirma manualmente.</li>
+  <li><strong>Pago presencial</strong>: el paciente paga al llegar a su cita.</li>
+  <li><strong>Wompi</strong>: pagos automáticos con tarjeta, PSE y más.</li>
+  <li><strong>Mercado Pago</strong>: checkout automático.</li>
+  <li><strong>ePayco</strong>: checkout automático con tarjeta, PSE y efectivo.</li>
+  <li><strong>Link externo de pago</strong>: si ya tienes un link de cobro en otra plataforma, lo pegas y listo.</li>
+  <li>Cada servicio puede pedir <strong>anticipo</strong> o <strong>pago completo</strong>, y tú decides si la confirmación es automática o manual.</li>
+</ul>
+
+<h1 class="section"><span class="section-num">13.</span>Conciliación de pagos</h1>
+<p>En <strong>Pagos → Conciliación</strong> revisas los pagos que necesitan confirmación manual: paciente, servicio, valor esperado, pasarela o método, referencia externa y comprobante adjunto (si el paciente subió uno). Puedes <strong>confirmar</strong>, <strong>rechazar</strong> o <strong>marcar en revisión</strong> cada pago — cada acción queda registrada con quién la hizo y cuándo.</p>
+
+<h1 class="section"><span class="section-num">14.</span>Paquetes de sesiones</h1>
+<p>Para profesionales que venden procesos completos, no solo citas sueltas: en <strong>Paquetes</strong> creas un paquete con nombre, número de sesiones, precio total, anticipo, fecha de inicio y vigencia. El sistema lleva automáticamente el conteo de sesiones usadas y restantes, y sugiere la próxima sesión. Estados: activo, completado, pausado, vencido o cancelado.</p>
+
+<h1 class="section"><span class="section-num">15.</span>Procesos terapéuticos</h1>
+<p>En <strong>Procesos</strong> das seguimiento a un acompañamiento continuo con un paciente: objetivo del proceso, número de sesiones, avance, próxima sesión, notas privadas, tareas o recomendaciones, y recursos enviados. Estados: activo, pausado, completado, abandonado o cancelado.</p>
+
+<h1 class="section"><span class="section-num">16.</span>Sesiones grupales y talleres</h1>
+<p>En <strong>Grupales</strong> agendas talleres, círculos, clases grupales, meditaciones o jornadas de bienestar: nombre, descripción, cupos máximos y disponibles, lista de inscritos, fecha, hora, lugar o enlace virtual, y estado de pago por inscrito.</p>
+
+<h1 class="section"><span class="section-num">17.</span>Lista de espera</h1>
+<p>Si un horario está lleno, un paciente puede quedar en <strong>Lista de espera</strong> con su servicio, profesional y preferencia de fechas deseados. Cuando se libera un espacio — por ejemplo, por una cancelación — puedes contactar directamente a quien está en la lista para ofrecerle ese cupo.</p>
+
+<h1 class="section"><span class="section-num">18.</span>Seguimiento postconsulta</h1>
+<p>En <strong>Seguimientos</strong> programas comunicaciones automáticas después de una cita: mensaje de agradecimiento, invitación a reservar un control, encuesta de satisfacción, solicitud de reseña, recordatorio de próxima cita, o envío de recursos.</p>
+
+<h1 class="section"><span class="section-num">19.</span>Biblioteca de recursos</h1>
+<p>En <strong>Recursos</strong> subes PDFs, audios, videos y guías (ejercicios, meditaciones, indicaciones, material educativo) para enviar a tus pacientes después de una sesión. Cada paciente ve, desde su portal, únicamente los recursos que tú le asignaste.</p>
+
+<h1 class="section"><span class="section-num">20.</span>Reseñas</h1>
+<p>En <strong>Reseñas</strong> gestionas la calificación y el comentario que dejan tus pacientes después de una cita, y decides el estado de cada una (privada, aprobada o destacada) como parte de tu proceso de calidad — revisando siempre que ninguna reseña revele información sensible antes de aprobarla.</p>
+
+<h1 class="section"><span class="section-num">21.</span>Reportes</h1>
+<p>En <strong>Reportes</strong> consultas tus cifras: citas por mes, ingresos, pagos por método, servicios más reservados, pacientes nuevos y recurrentes, no-shows, cancelaciones, y más — con gráficos claros y exportación a CSV para tu contador o tu propia hoja de cálculo.</p>
+
+<h1 class="section"><span class="section-num">22.</span>Panel de oportunidad comercial</h1>
+<p>En <strong>Oportunidades</strong> el sistema te muestra señales prácticas para hacer crecer tu consultorio, basadas en tu propia información: pacientes sin próxima cita, pagos pendientes por confirmar, horarios libres esta semana, citas canceladas que podrías recuperar con tu lista de espera, y paquetes próximos a terminar. No es marketing automatizado — es un resumen accionable de tus propios datos.</p>
+
+<h1 class="section"><span class="section-num">23.</span>Portal del paciente</h1>
+<p>Tus pacientes tienen su propio acceso, sin contraseña: entran a <em>mcpro.seitonhome.com/portal</em>, ingresan su correo y reciben un enlace seguro de un solo uso. Desde ahí ven:</p>
+<ul>
+  <li>Su próxima cita y su historial de citas.</li>
+  <li>Su paquete activo y sesiones restantes.</li>
+  <li>Los recursos que le enviaste.</li>
+  <li>Sus pagos.</li>
+  <li>Los consentimientos que aceptó.</li>
+  <li>Un botón para reprogramar o cancelar, según lo que permitas.</li>
+</ul>
+<p>Si un mismo correo tiene historial en más de uno de tus consultorios (o en otros consultorios que también usan Mi Consultorio Pro), el paciente puede elegir cuál ver, todo con un solo inicio de sesión.</p>
+
+<h1 class="section"><span class="section-num">24.</span>Soporte y Plan Continuidad Clínica</h1>
+<p>En <strong>Soporte</strong> creas un ticket cuando algo no funciona como esperas o tienes una duda, eligiendo categoría (acceso, agenda, pagos, pasarelas, recordatorios, página pública, pacientes, reportes, diseño, temas legales, configuración, error técnico, solicitud de mejora, backup/restauración, seguridad) y prioridad.</p>
+<p style="font-size:9.5pt;color:#64748B;margin:0 0 8px;">Tiempos corridos (no hábiles), contados desde la creación del ticket:</p>
+<table>
+  <tr><th>Prioridad</th><th>Primera respuesta</th><th>Resolución objetivo</th></tr>
+  <tr><td>Crítica</td><td>1 hora</td><td>8 horas</td></tr>
+  <tr><td>Alta</td><td>4 horas</td><td>2 días</td></tr>
+  <tr><td>Media</td><td>24 horas</td><td>5 días</td></tr>
+  <tr><td>Baja</td><td>48 horas</td><td>Según roadmap de producto</td></tr>
+</table>
+<p>Tu plan anual de $39 USD <strong>incluye el Plan Continuidad Clínica</strong> — no es una suscripción aparte ni un costo adicional. Licencia y soporte se renuevan juntos, una vez al año.</p>
+
+<h1 class="section"><span class="section-num">25.</span>Preguntas frecuentes</h1>
+<p><strong>¿Es pago único o mensualidad?</strong><br>Es un plan anual de $39 USD, no una mensualidad: pagas una vez al año e incluye todos los módulos y el soporte (Plan Continuidad Clínica). Se renueva cada año; si no renuevas, el sistema se pausa pero tus datos siguen disponibles para descargar.</p>
+<p><strong>¿Qué pasa si no renuevo mi plan?</strong><br>El sistema deja de estar operativo (no puedes usar agenda, pacientes ni pagos) hasta que renueves, pero nunca se elimina ni se oculta ningún dato. Puedes iniciar sesión en cualquier momento, incluso con el plan vencido, y descargar toda la información de tu consultorio.</p>
+<p><strong>¿Necesito saber de tecnología?</strong><br>No. El asistente de configuración te guía paso a paso.</p>
+<p><strong>¿Cómo les cobro a mis pacientes?</strong><br>Por transferencia manual, en consultorio, o automáticamente con Wompi, Mercado Pago o ePayco.</p>
+<p><strong>¿Mis datos y los de mis pacientes están seguros?</strong><br>Cada consultorio tiene sus datos completamente aislados — nadie de otro consultorio puede verlos. Las notas clínicas están separadas de los datos administrativos, con auditoría de acceso.</p>
+<p><strong>¿Sirve para medicina alternativa o terapias no convencionales?</strong><br>Sí. El sistema clasifica cada servicio y adapta textos, disclaimers y consentimientos según esa clasificación, con lenguaje responsable que no reemplaza una valoración médica cuando es necesaria.</p>
+<p><strong>¿Puedo probarlo antes de comprar?</strong><br>Sí, hay un modo demo público con datos ficticios de un consultorio real.</p>
+<p><strong>¿Qué pasa si necesito ayuda después de comprar?</strong><br>Creas un ticket desde Soporte, con tiempos de respuesta según tu prioridad (ver sección 24).</p>
+
+<h1 class="section"><span class="section-num">26.</span>Contacto</h1>
+<p>¿Dudas antes o después de comprar?</p>
+<ul>
+  <li>Correo: <strong>servicioalcliente@seitonhome.com</strong></li>
+  <li>WhatsApp: <strong>+57 314 5445117</strong></li>
+  <li>Panel: <strong>mcpro.seitonhome.com/login</strong></li>
+</ul>
+<div class="footer-note">
+  Mi Consultorio Pro es un producto digital de Seiton Home. Este documento es una guía de uso del sistema, no asesoría legal, sanitaria, tributaria o regulatoria — cada consultorio es responsable de validar sus propias obligaciones legales, sanitarias y de protección de datos ante las autoridades competentes.
+</div>
+
+</body>
+</html>
