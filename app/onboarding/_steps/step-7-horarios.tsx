@@ -61,7 +61,11 @@ export function Step7Horarios({
               <Label htmlFor="professional_id">Profesional</Label>
               <Select name="professional_id" defaultValue={professionals[0]?.id}>
                 <SelectTrigger id="professional_id" className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {(value: string) =>
+                      professionals.find((p) => p.id === value)?.full_name ?? value
+                    }
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {professionals.map((p) => (

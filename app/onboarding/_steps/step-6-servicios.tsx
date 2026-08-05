@@ -83,7 +83,11 @@ export function Step6Servicios({
             <Label htmlFor="classification">Clasificación</Label>
             <Select name="classification" defaultValue="servicio_bienestar">
               <SelectTrigger id="classification" className="w-full">
-                <SelectValue />
+                <SelectValue>
+                  {(value: keyof typeof SERVICE_CLASSIFICATION_LABELS) =>
+                    SERVICE_CLASSIFICATION_LABELS[value] ?? value
+                  }
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(SERVICE_CLASSIFICATION_LABELS).map(([value, label]) => (
@@ -98,7 +102,9 @@ export function Step6Servicios({
             <Label htmlFor="modality">Modalidad</Label>
             <Select name="modality" defaultValue="both">
               <SelectTrigger id="modality" className="w-full">
-                <SelectValue />
+                <SelectValue>
+                  {(value: keyof typeof MODALITY_LABELS) => MODALITY_LABELS[value] ?? value}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(MODALITY_LABELS).map(([value, label]) => (

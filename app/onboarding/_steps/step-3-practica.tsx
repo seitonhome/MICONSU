@@ -24,7 +24,11 @@ export function Step3Practica({ currentType }: { currentType: PractitionerType |
           <Label htmlFor="practitioner_type">Tipo de práctica</Label>
           <Select name="practitioner_type" defaultValue={currentType ?? undefined}>
             <SelectTrigger id="practitioner_type" className="w-full">
-              <SelectValue placeholder="Selecciona una opción" />
+              <SelectValue placeholder="Selecciona una opción">
+                {(value: PractitionerType | null) =>
+                  value ? PRACTITIONER_TYPE_LABELS[value] : "Selecciona una opción"
+                }
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {PRACTITIONER_TYPES.map((type) => (

@@ -64,7 +64,9 @@ export function Step4Profesionales({
             <Label htmlFor="practitioner_type">Tipo de práctica</Label>
             <Select name="practitioner_type" defaultValue={defaultPractitionerType ?? "otro"}>
               <SelectTrigger id="practitioner_type" className="w-full">
-                <SelectValue />
+                <SelectValue>
+                  {(value: PractitionerType) => PRACTITIONER_TYPE_LABELS[value] ?? value}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {PRACTITIONER_TYPES.map((type) => (
