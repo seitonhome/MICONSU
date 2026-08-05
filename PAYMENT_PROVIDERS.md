@@ -51,19 +51,29 @@ interface PaymentProvider {
 - `supportsAutomaticCheckout = false`. El paciente paga al llegar a la cita.
 - Igual que transferencia manual: sin checkout ni webhook, `mapExternalStatusToInternalStatus()` devuelve `pending_confirmation`.
 
-## 4. Providers preparados para el futuro (no implementados aún)
+### Mercado Pago (`lib/payments/providers/mercado-pago.ts`) — pasarela automática real
 
-El check constraint de `payment_providers.provider_key` en la base de datos ya reserva las claves para pasarelas colombianas comunes, aunque su lógica de integración (`lib/payments/providers/*.ts`) todavía no existe:
+- `supportsAutomaticCheckout = true`. Checkout, consulta de estado y validación de webhook implementados de forma análoga a Wompi, traduciendo el vocabulario propio de Mercado Pago a `InternalPaymentStatus`.
 
-- `mercado_pago` — Mercado Pago.
+### ePayco (`lib/payments/providers/epayco.ts`) — pasarela automática real
+
+- `supportsAutomaticCheckout = true`. Igual patrón: checkout, webhook y mapeo de estados propios.
+
+### Link externo de pago (`lib/payments/providers/external-link.ts`)
+
+- `supportsAutomaticCheckout = false`. Para consultorios que ya tienen un link de cobro en otra plataforma — lo pegan y el sistema solo lo usa como redirect, sin checkout ni webhook propio.
+
+Estos tres se agregaron el 2026-08-04/05 (antes de esa fecha este documento los listaba como "no implementados" — si ves ese texto en una copia vieja, está desactualizado).
+
+## 4. Providers reservados, no implementados (stubs no funcionales)
+
+El check constraint de `payment_providers.provider_key` reserva además estas claves, con clases stub que existen para no fallar el contrato de la interfaz pero que **no hacen ninguna integración real** (`lib/payments/providers/stubs.ts`):
+
 - `payu` — PayU.
-- `epayco` — ePayco.
 - `bold` — Bold.
 - `placetopay` — PlaceToPay.
 
-También existe la clave `external_link` en el modelo de datos, para pagos gestionados por un link externo generado fuera del sistema.
-
-Agregar cualquiera de estos providers implica: crear una clase que implemente `PaymentProvider`, registrar su `provider_key` (ya permitido por la restricción de base de datos), y sumarla al selector del Centro de Pagos en `/dashboard/pagos` — sin tocar conciliación, reportes ni el resto del flujo de citas, gracias al patrón adaptador.
+Agregar una integración real para cualquiera de estos implica: reemplazar su stub por una clase que implemente `PaymentProvider` de verdad, y sumarla al selector del Centro de Pagos en `/dashboard/pagos` — sin tocar conciliación, reportes ni el resto del flujo de citas, gracias al patrón adaptador.
 
 ## 5. Credenciales por consultorio, no variables de entorno globales
 

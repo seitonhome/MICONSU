@@ -1,6 +1,8 @@
 # Mi Consultorio Pro — Arquitectura y Plan Maestro
 
 > Documento previo a la escritura de código, según lo solicitado. Cubre: arquitectura general, modelo de datos, mapa de pantallas, flujos (paciente, profesional, pagos, soporte), roles y permisos, plan por fases, y riesgos con mitigaciones.
+>
+> **Nota (2026-08-05): este es el plan original, anterior al código real.** La implementación final diverge en varios puntos — no hay carpetas `services/`/`repositories/`, y los grupos de rutas reales son `(app)`, `(superadmin)`, `(marketing)` más rutas sueltas (`c/`, `p/`, `portal/`, `demo/`, `reserva/`), no `(public-booking)`/`(portal)`/`(demo)` como se planeó aquí. Úsalo para entender la intención y las decisiones de arquitectura (siguen vigentes), no como mapa literal de archivos — para eso, ver `AGENTS.md` y explorar `app/` directamente.
 
 ---
 

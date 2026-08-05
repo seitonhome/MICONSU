@@ -14,12 +14,14 @@ El equipo de soporte del producto (rol `support_agent`, con visibilidad transver
 
 ## 2. Prioridades y SLA (Plan Continuidad Clínica)
 
+Tiempos corridos (no hábiles), contados desde la creación del ticket (`lib/domain/sla.ts`):
+
 | Prioridad | Primera respuesta | Resolución objetivo |
 |---|---|---|
-| **Crítica** (`critical`) | 1 hora | 4 a 8 horas hábiles |
-| **Alta** (`high`) | 4 horas | 1 a 2 días |
-| **Media** (`medium`) | 1 día | 2 a 5 días |
-| **Baja** (`low`) | 2 días | Se atiende según roadmap/prioridad de producto |
+| **Crítica** (`critical`) | 1 hora | 8 horas |
+| **Alta** (`high`) | 4 horas | 2 días |
+| **Media** (`medium`) | 24 horas | 5 días |
+| **Baja** (`low`) | 48 horas | Se atiende según roadmap/prioridad de producto |
 
 Ejemplos de qué prioridad corresponde a cada situación (criterio comercial, no una regla automática del sistema):
 

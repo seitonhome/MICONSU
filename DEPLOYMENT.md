@@ -28,7 +28,7 @@ Todas están documentadas en `.env.example`, en la raíz del repo. Cópialo a `.
 
 ## 3. Aplicar migraciones de base de datos
 
-Las migraciones viven en `supabase/migrations/`, ordenadas cronológicamente por su prefijo de timestamp:
+Las migraciones viven en `supabase/migrations/`, ordenadas cronológicamente por su prefijo de timestamp. Lista completa a 2026-08-05:
 
 1. `20260704160000_core_tenant.sql` — tenant núcleo, roles, RLS base.
 2. `20260704160100_scheduling.sql` — agenda, disponibilidad, citas.
@@ -40,23 +40,25 @@ Las migraciones viven en `supabase/migrations/`, ordenadas cronológicamente por
 8. `20260706130000_professional_global_slug.sql` — slugs globales de profesional.
 9. `20260706140000_patient_notes.sql` — notas de paciente.
 10. `20260706150000_notifications.sql` — plantillas y logs de notificaciones.
+11. `20260714100000_clinical_module.sql` — módulo clínico protegido.
+12. `20260714100100_packages_and_groups.sql` — paquetes de sesiones y sesiones grupales.
+13. `20260714100200_engagement_and_resources.sql` — seguimientos, biblioteca de recursos, reseñas.
+14. `20260715090000_rate_limiting.sql` — rate limiting propio en Postgres.
+15. `20260731100000_patient_portal.sql` — portal del paciente (magic link).
+16. `20260731110000_support_renewal_history.sql` — historial de renovación de soporte.
+17. `20260731130000_single_plan_auto_provision.sql` — auto-otorga licencia completa al registrarse.
+18. `20260802100000_annual_plan.sql` — plan anual con vencimiento real (`licenses.ends_at`).
+19. `20260804120000_fix_self_register_trigger_bug.sql` — fix crítico: el trigger `prevent_self_privilege_escalation` bloqueaba todo registro nuevo (ver `AGENTS.md`).
 
-Aplícalas con la CLI de Supabase:
+**Antes de asumir que esta lista sigue completa**: corre `ls supabase/migrations/` y compara — si hay archivos más nuevos que el último de esta lista, probablemente no se han aplicado aún a la base de datos real (no hay forma de saberlo desde el código; confírmalo con el usuario o en el SQL Editor).
 
-```bash
-supabase link --project-ref <project-ref>
-supabase db push
-```
+### El CLI de Supabase no conecta desde esta máquina — usa el SQL Editor
 
-**Nota importante de este proyecto (ver también la memoria de `docs/00-ARQUITECTURA-Y-PLAN.md`):** la conexión directa de la CLI (IPv6) puede fallar dependiendo de tu red/ISP, con timeouts al intentar `db push`. Si eso ocurre, usa el **connection pooler** de Supabase en vez de la conexión directa:
+`supabase link` / `supabase db push` **fallan de forma consistente y confirmada** por un bloqueo de IPv6 en esta red (no es un "puede pasar según tu ISP" — ya se intentó con pooler, con `--db-url` explícito, y ninguno conecta). No pierdas tiempo reintentando la CLI. El camino que sí funciona, y como se aplicó el esquema completo la primera vez:
 
-```
-host: aws-0-<region>.pooler.supabase.com
-port: 6543
-user: postgres.<project-ref>
-```
-
-Puedes forzar el uso del pooler pasando la cadena de conexión completa a `supabase db push --db-url` con ese host/usuario, en vez de depender del `project-ref` resuelto automáticamente. Como último recurso, si el pooler tampoco es accesible desde tu entorno, las migraciones se pueden pegar y ejecutar manualmente en el **SQL Editor** del dashboard de Supabase, en el mismo orden — así fue como se aplicó el esquema la primera vez en este proyecto.
+1. Concatena todos los archivos de `supabase/migrations/*.sql` en orden de timestamp (y `supabase/seed/*.sql` después, si también quieres los datos demo) en un solo script.
+2. Pégalo y ejecútalo en el **SQL Editor** del dashboard de Supabase del proyecto activo (`hmmnmkuubysplmnlckaf`).
+3. Si el editor falla en algún punto, probablemente hizo rollback de **todo** el script (se ejecuta como una sola transacción) — no asumas que la parte anterior a la falla quedó aplicada; corrige el error y vuelve a correr el script completo desde el principio.
 
 ## 4. Despliegue en Vercel
 
@@ -89,6 +91,7 @@ El endpoint de webhook (`app/api/webhooks/[provider]/route.ts` según la arquite
 
 ## 7. Checklist mínimo antes de dar de alta un consultorio en producción
 
+- **El código está realmente en `master` y desplegado** — corre `git status` y `git log origin/master..HEAD` antes de asumirlo; el 2026-08-04 se descubrió meses de trabajo terminado que nunca se había subido (ver `AGENTS.md`).
 - Migraciones aplicadas y verificadas (RLS activo en cada tabla — puedes confirmarlo consultando `pg_policies` en el SQL Editor).
 - Variables de entorno de producción configuradas, especialmente `APP_ENCRYPTION_KEY` (única, no reutilizada de desarrollo) y `SUPABASE_SERVICE_ROLE_KEY`.
 - `CRON_SECRET` configurado y validado en `/api/cron/reminders`.
