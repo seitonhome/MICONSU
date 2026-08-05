@@ -159,7 +159,9 @@ function NavLinks({
             </p>
             <div className="space-y-1">
               {items.map((item) => {
-                const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                const active =
+                  pathname === item.href ||
+                  (item.href !== "/dashboard" && pathname.startsWith(`${item.href}/`));
                 const Icon = item.icon;
                 return (
                   <Link

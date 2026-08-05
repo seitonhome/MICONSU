@@ -47,7 +47,7 @@ export function BookingWizard({
 }) {
   const router = useRouter();
   const needsProfessionalStep = professionals.length > 1;
-  const [step, setStep] = useState(needsProfessionalStep ? 0 : 1);
+  const [step, setStep] = useState(0);
 
   const [professionalId, setProfessionalId] = useState(
     preselectedProfessionalId ?? professionals[0]?.id ?? "",
