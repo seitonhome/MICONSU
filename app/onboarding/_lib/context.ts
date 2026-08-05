@@ -72,7 +72,7 @@ export function computeStepCompletion(ctx: OnboardingContext): StepCompletion {
     8: ctx.paymentProviders.some((p) => p.is_active),
     9: ctx.consentDocuments.length > 0,
     10: ctx.services.length > 0 && (ctx.branding?.logo_url ? true : false),
-    11: true,
+    11: false,
     12: ctx.clinic.is_published,
   };
 }

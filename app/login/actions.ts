@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { loginSchema } from "@/lib/validation/auth";
+import { slugify } from "@/lib/utils/slugify";
 import { checkRateLimit, getClientIp } from "@/lib/security/rate-limit";
 
 export type AuthActionState = { error?: string };
@@ -30,10 +31,39 @@ export async function login(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { data: signInData, error } = await supabase.auth.signInWithPassword(parsed.data);
 
   if (error) {
     return { error: "Correo o contraseña incorrectos." };
+  }
+
+  // Si el registro se detuvo en "confirma tu correo" (signUp sin sesión
+  // inmediata), create_clinic_and_assign_owner() nunca se llegó a ejecutar.
+  // Este es el primer login con sesión real: si el perfil sigue sin
+  // consultorio y quedó guardado el nombre pendiente en el registro,
+  // completamos la creación aquí antes de mandarlo al dashboard vacío.
+  const pendingClinicName = signInData.user?.user_metadata?.clinic_name as string | undefined;
+  if (pendingClinicName) {
+    const { data: profile } = await supabase.from("profiles").select("clinic_id").eq("id", signInData.user!.id).maybeSingle();
+
+    if (profile && !profile.clinic_id) {
+      const baseSlug = slugify(pendingClinicName) || "consultorio";
+      let slug = baseSlug;
+
+      for (let attempt = 0; attempt <= 5; attempt += 1) {
+        const { error: clinicError } = await supabase.rpc("create_clinic_and_assign_owner", {
+          p_commercial_name: pendingClinicName,
+          p_slug: slug,
+        });
+
+        if (!clinicError) {
+          redirect("/onboarding/1");
+        }
+
+        if (attempt === 5) break;
+        slug = `${baseSlug}-${attempt + 1}`;
+      }
+    }
   }
 
   redirect("/dashboard");

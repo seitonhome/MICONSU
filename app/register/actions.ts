@@ -36,7 +36,7 @@ export async function register(
     email,
     password,
     options: {
-      data: { full_name: fullName },
+      data: { full_name: fullName, clinic_name: clinicName },
       emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/login`,
     },
   });
