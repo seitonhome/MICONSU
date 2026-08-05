@@ -20,6 +20,7 @@ import {
   Heart,
   Star,
   ListTree,
+  BookOpenCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -103,6 +104,7 @@ const NAV_ITEMS: NavItem[] = [
     show: (r) => r === "clinic_owner" || r === "finance_user",
   },
   { href: "/dashboard/consentimientos", label: "Consentimientos", icon: ShieldCheck, show: (r) => r === "clinic_owner" },
+  { href: "/dashboard/ayuda", label: "Ayuda", icon: BookOpenCheck, show: () => true },
   { href: "/dashboard/soporte", label: "Soporte", icon: LifeBuoy, show: () => true },
   { href: "/dashboard/configuracion", label: "Configuración", icon: Settings, show: (r) => r === "clinic_owner" },
 ];
