@@ -37,6 +37,18 @@ export async function login(
     return { error: "Correo o contraseña incorrectos." };
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("clinic_id, role")
+    .eq("id", signInData.user!.id)
+    .maybeSingle();
+
+  // El equipo del producto no tiene consultorio propio: mandarlo al
+  // dashboard de clínica lo deja en una pantalla vacía sin navegación útil.
+  if (profile?.role === "super_admin") {
+    redirect("/admin");
+  }
+
   // Si el registro se detuvo en "confirma tu correo" (signUp sin sesión
   // inmediata), create_clinic_and_assign_owner() nunca se llegó a ejecutar.
   // Este es el primer login con sesión real: si el perfil sigue sin
@@ -44,8 +56,6 @@ export async function login(
   // completamos la creación aquí antes de mandarlo al dashboard vacío.
   const pendingClinicName = signInData.user?.user_metadata?.clinic_name as string | undefined;
   if (pendingClinicName) {
-    const { data: profile } = await supabase.from("profiles").select("clinic_id").eq("id", signInData.user!.id).maybeSingle();
-
     if (profile && !profile.clinic_id) {
       const baseSlug = slugify(pendingClinicName) || "consultorio";
       let slug = baseSlug;
