@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth/session";
 import type { Database } from "@/lib/supabase/types";
+import { MAX_BRANDING_IMAGE_BYTES, formatMaxSize } from "@/lib/storage/limits";
 
 export type BrandingActionState = { error?: string; success?: boolean };
 
@@ -26,9 +27,30 @@ export async function updateClinicBranding(
 
   if (!commercialName) return { error: "El nombre comercial es obligatorio." };
 
+  for (const [file, label] of [
+    [logoFile, "El logo"],
+    [coverFile, "La imagen de portada"],
+    [photoFile, "La foto profesional"],
+  ] as const) {
+    if (file && file.size > MAX_BRANDING_IMAGE_BYTES) {
+      return { error: `${label} supera el tamaño máximo permitido (${formatMaxSize(MAX_BRANDING_IMAGE_BYTES)}).` };
+    }
+  }
+
   async function uploadImage(file: File, prefix: string): Promise<string | undefined> {
     if (!file || file.size === 0) return undefined;
     const ext = file.name.split(".").pop() || "png";
+
+    // Cada actualización de marca sube un archivo con nombre único (timestamp), así que
+    // sin esto la imagen anterior de este tipo queda huérfana en el bucket para siempre.
+    const { data: existing } = await supabase.storage.from("branding").list(clinicId, { search: prefix });
+    const toRemove = (existing ?? [])
+      .filter((f) => f.name.startsWith(`${prefix}-`))
+      .map((f) => `${clinicId}/${f.name}`);
+    if (toRemove.length > 0) {
+      await supabase.storage.from("branding").remove(toRemove);
+    }
+
     const path = `${clinicId}/${prefix}-${Date.now()}.${ext}`;
     const { error: uploadError } = await supabase.storage.from("branding").upload(path, file, {
       upsert: true,

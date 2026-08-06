@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth/session";
 import { logAudit } from "@/lib/security/audit";
+import { MAX_PATIENT_DOCUMENT_BYTES, formatMaxSize } from "@/lib/storage/limits";
 
 export type PatientActionState = { error?: string; success?: boolean };
 
@@ -105,6 +106,9 @@ export async function uploadPatientDocument(
   const isClinical = formData.get("is_clinical") === "on";
 
   if (!file || file.size === 0) return { error: "Selecciona un archivo." };
+  if (file.size > MAX_PATIENT_DOCUMENT_BYTES) {
+    return { error: `El archivo supera el tamaño máximo permitido (${formatMaxSize(MAX_PATIENT_DOCUMENT_BYTES)}).` };
+  }
 
   const {
     data: { user },
@@ -135,7 +139,14 @@ export async function uploadPatientDocument(
 
 export async function deletePatientDocument(patientId: string, id: string): Promise<void> {
   const { clinicId, profileId, supabase } = await staffClinicId();
+
+  const { data: doc } = await supabase.from("patient_documents").select("file_url").eq("id", id).maybeSingle();
+
   await supabase.from("patient_documents").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+
+  if (doc?.file_url) {
+    await supabase.storage.from("clinical-documents").remove([doc.file_url]);
+  }
 
   await logAudit({
     clinicId,

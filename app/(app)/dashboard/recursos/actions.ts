@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth/session";
+import { MAX_RESOURCE_FILE_BYTES, formatMaxSize } from "@/lib/storage/limits";
 
 export type ResourceActionState = { error?: string; success?: boolean };
 
@@ -25,6 +26,9 @@ export async function uploadResource(
   const file = formData.get("file") as File | null;
   if (!title) return { error: "El título es obligatorio." };
   if (!file || file.size === 0) return { error: "Selecciona un archivo." };
+  if (file.size > MAX_RESOURCE_FILE_BYTES) {
+    return { error: `El archivo supera el tamaño máximo permitido (${formatMaxSize(MAX_RESOURCE_FILE_BYTES)}).` };
+  }
 
   const {
     data: { user },
