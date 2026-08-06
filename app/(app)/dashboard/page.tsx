@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Lightbulb,
   BarChart3,
+  ListChecks,
 } from "lucide-react";
 import { requireCurrentProfile } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -149,10 +150,16 @@ export default async function DashboardPage() {
     {
       icon: CalendarX,
       title: `${cancelledCount ?? 0} citas canceladas este mes`,
+      description: "Activa la lista de espera para recuperar espacios cancelados.",
+      href: "/dashboard/lista-espera",
+    },
+    {
+      icon: ListChecks,
+      title: `${waitlistCount ?? 0} pacientes en lista de espera`,
       description:
         waitlistCount && waitlistCount > 0
-          ? `Tienes ${waitlistCount} pacientes en lista de espera que podrían tomar esos espacios.`
-          : "Activa la lista de espera para recuperar espacios cancelados.",
+          ? "Podrían tomar el espacio de una cita cancelada o reprogramada."
+          : "Cuando un paciente no encuentre horario, agrégalo aquí.",
       href: "/dashboard/lista-espera",
     },
     {
