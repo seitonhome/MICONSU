@@ -66,8 +66,3 @@ export function hasModule(entitlements: ClinicEntitlements, key: ModuleKey): boo
   return entitlements.enabledModules.has(key);
 }
 
-export const PLAN_LABELS: Record<LicenseType, string> = {
-  esencial: "Plan Esencial",
-  profesional: "Plan Profesional",
-  centro: "Plan Centro",
-};

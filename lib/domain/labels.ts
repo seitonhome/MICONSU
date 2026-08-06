@@ -50,6 +50,12 @@ export const PAYMENT_STATUS_LABELS: Record<Database["public"]["Enums"]["payment_
 
 export const WEEKDAY_LABELS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
+export const PLAN_LABELS: Record<"esencial" | "profesional" | "centro", string> = {
+  esencial: "Plan Esencial",
+  profesional: "Plan Profesional",
+  centro: "Plan Centro",
+};
+
 export const SUPPORT_TICKET_CATEGORY_LABELS: Record<
   Database["public"]["Enums"]["support_ticket_category"],
   string

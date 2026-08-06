@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   CalendarDays,
   Users,
+  UserRound,
   Stethoscope,
   CreditCard,
   BarChart3,
@@ -57,6 +58,12 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/dashboard", label: "Inicio", icon: BarChart3, show: () => true },
       { href: "/dashboard/agenda", label: "Agenda", icon: CalendarDays, show: () => true },
       { href: "/dashboard/pacientes", label: "Pacientes", icon: Users, show: () => true },
+      {
+        href: "/dashboard/profesionales",
+        label: "Profesionales",
+        icon: UserRound,
+        show: (r) => r === "clinic_owner",
+      },
       {
         href: "/dashboard/lista-espera",
         label: "Lista de espera",

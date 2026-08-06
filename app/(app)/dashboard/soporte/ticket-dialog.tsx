@@ -17,6 +17,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createTicket, type SupportActionState } from "./actions";
 import { SUPPORT_TICKET_CATEGORY_LABELS, SUPPORT_TICKET_PRIORITY_LABELS } from "@/lib/domain/labels";
+import type { Database } from "@/lib/supabase/types";
+
+type TicketCategory = Database["public"]["Enums"]["support_ticket_category"];
+type TicketPriority = Database["public"]["Enums"]["support_ticket_priority"];
 
 const initialState: SupportActionState = {};
 
@@ -49,7 +53,9 @@ export function TicketDialog() {
               <Label htmlFor="category">Categoría</Label>
               <Select name="category" defaultValue="error_tecnico">
                 <SelectTrigger id="category" className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {(value: TicketCategory) => SUPPORT_TICKET_CATEGORY_LABELS[value] ?? value}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {Object.entries(SUPPORT_TICKET_CATEGORY_LABELS).map(([value, label]) => (
@@ -64,7 +70,9 @@ export function TicketDialog() {
               <Label htmlFor="priority">Prioridad</Label>
               <Select name="priority" defaultValue="medium">
                 <SelectTrigger id="priority" className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {(value: TicketPriority) => SUPPORT_TICKET_PRIORITY_LABELS[value] ?? value}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {Object.entries(SUPPORT_TICKET_PRIORITY_LABELS).map(([value, label]) => (

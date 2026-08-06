@@ -22,6 +22,14 @@ import type { Database } from "@/lib/supabase/types";
 
 const initialState: ServiceActionState = {};
 
+const PAYMENT_TYPE_LABELS: Record<string, string> = {
+  none: "No requiere pago",
+  deposit: "Anticipo",
+  full: "Pago completo",
+  manual: "Transferencia manual",
+  in_person: "Pago presencial",
+};
+
 type ServiceRow = Database["public"]["Tables"]["services"]["Row"];
 type CategoryRow = Database["public"]["Tables"]["service_categories"]["Row"];
 
@@ -78,7 +86,9 @@ export function ServiceDialog({
               <Label htmlFor="category_id">Categoría (opcional)</Label>
               <Select name="category_id" defaultValue={service?.category_id ?? undefined}>
                 <SelectTrigger id="category_id" className="w-full">
-                  <SelectValue placeholder="Sin categoría" />
+                  <SelectValue placeholder="Sin categoría">
+                    {(value: string) => categories.find((c) => c.id === value)?.name ?? value}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((c) => (
@@ -93,7 +103,11 @@ export function ServiceDialog({
               <Label htmlFor="classification">Clasificación</Label>
               <Select name="classification" defaultValue={service?.classification ?? "servicio_bienestar"}>
                 <SelectTrigger id="classification" className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {(value: keyof typeof SERVICE_CLASSIFICATION_LABELS) =>
+                      SERVICE_CLASSIFICATION_LABELS[value] ?? value
+                    }
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {Object.entries(SERVICE_CLASSIFICATION_LABELS).map(([value, label]) => (
@@ -119,7 +133,9 @@ export function ServiceDialog({
               <Label htmlFor="modality">Modalidad</Label>
               <Select name="modality" defaultValue={service?.modality ?? "both"}>
                 <SelectTrigger id="modality" className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {(value: keyof typeof MODALITY_LABELS) => MODALITY_LABELS[value] ?? value}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {Object.entries(MODALITY_LABELS).map(([value, label]) => (
@@ -143,7 +159,7 @@ export function ServiceDialog({
               <Label htmlFor="payment_type">Tipo de pago</Label>
               <Select name="payment_type" defaultValue={service?.payment_type ?? "none"}>
                 <SelectTrigger id="payment_type" className="w-full">
-                  <SelectValue />
+                  <SelectValue>{(value: string) => PAYMENT_TYPE_LABELS[value] ?? value}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">No requiere pago</SelectItem>

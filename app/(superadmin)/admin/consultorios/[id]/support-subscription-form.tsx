@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SUPPORT_SUBSCRIPTION_STATUS_LABELS, PLAN_LABELS } from "@/lib/domain/labels";
+import type { LicenseType } from "@/lib/modules";
 import type { Database } from "@/lib/supabase/types";
 
 const initialState: AdminActionState = {};
@@ -28,7 +30,7 @@ export function SupportSubscriptionForm({
         <Label htmlFor="plan_key">Plan de soporte</Label>
         <Select name="plan_key" defaultValue={planKey}>
           <SelectTrigger id="plan_key" className="w-full">
-            <SelectValue />
+            <SelectValue>{(value: LicenseType) => PLAN_LABELS[value] ?? value}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="esencial">Esencial</SelectItem>
@@ -41,7 +43,7 @@ export function SupportSubscriptionForm({
         <Label htmlFor="status">Estado</Label>
         <Select name="status" defaultValue={subscription?.status ?? "active"}>
           <SelectTrigger id="status" className="w-full">
-            <SelectValue />
+            <SelectValue>{(value: string) => SUPPORT_SUBSCRIPTION_STATUS_LABELS[value] ?? value}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="active">Activo</SelectItem>

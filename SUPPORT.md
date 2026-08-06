@@ -23,6 +23,16 @@ que no llegó también al PQR central. El endpoint de Seiton no requiere
 autenticación pero tiene rate limit de 5 solicitudes/30min por IP de
 origen — no hay retry automático si se topa con ese límite.
 
+**Sincronización de estado (Seiton → miconsu):** como el equipo suele
+gestionar y cerrar los tickets desde `/admin/pqr` de Seiton en vez de
+`/admin/soporte` de esta app, `app/(app)/dashboard/soporte/sync.ts`
+consulta el estado del ticket en Seiton (`GET /api/pqr?email=...`) cada
+vez que el dueño del consultorio abre la lista o el detalle de un ticket
+no cerrado, y actualiza el estado local si difiere. Es solo lectura
+(`pull`), no hay webhook de Seiton hacia miconsu — el estado se refresca
+al visitar la página, no en tiempo real. Solo aplica a tickets con
+`seiton_ticket_id` (los creados después de este cambio).
+
 ## 2. Prioridades y SLA (Plan Continuidad Clínica)
 
 Tiempos corridos (no hábiles), contados desde la creación del ticket (`lib/domain/sla.ts`):

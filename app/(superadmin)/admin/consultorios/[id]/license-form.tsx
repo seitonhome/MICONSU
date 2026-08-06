@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { LICENSE_STATUS_LABELS, PLAN_LABELS } from "@/lib/domain/labels";
+import type { LicenseType } from "@/lib/modules";
 import type { Database } from "@/lib/supabase/types";
 
 const initialState: AdminActionState = {};
@@ -34,7 +36,7 @@ export function LicenseForm({
         <Label htmlFor="license_type">Plan</Label>
         <Select name="license_type" defaultValue={license?.license_type ?? "esencial"}>
           <SelectTrigger id="license_type" className="w-full">
-            <SelectValue />
+            <SelectValue>{(value: LicenseType) => PLAN_LABELS[value] ?? value}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="esencial">Esencial</SelectItem>
@@ -47,7 +49,7 @@ export function LicenseForm({
         <Label htmlFor="status">Estado</Label>
         <Select name="status" defaultValue={license?.status ?? "trial"}>
           <SelectTrigger id="status" className="w-full">
-            <SelectValue />
+            <SelectValue>{(value: string) => LICENSE_STATUS_LABELS[value] ?? value}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="trial">Prueba</SelectItem>

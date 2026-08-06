@@ -1489,6 +1489,7 @@ export type Database = {
           first_response_at: string | null;
           resolved_at: string | null;
           csat_score: number | null;
+          seiton_ticket_id: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -1505,6 +1506,7 @@ export type Database = {
           first_response_at?: string | null;
           resolved_at?: string | null;
           csat_score?: number | null;
+          seiton_ticket_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -1521,6 +1523,7 @@ export type Database = {
           first_response_at?: string | null;
           resolved_at?: string | null;
           csat_score?: number | null;
+          seiton_ticket_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };

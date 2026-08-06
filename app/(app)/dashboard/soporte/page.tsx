@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { TicketDialog } from "./ticket-dialog";
+import { syncTicketsStatusFromSeiton } from "./sync";
 import {
   SUPPORT_TICKET_STATUS_LABELS,
   SUPPORT_TICKET_PRIORITY_LABELS,
@@ -33,6 +34,8 @@ export default async function SoportePage() {
   const { data: supportPlan } = subscription
     ? await supabase.from("support_plans").select("name").eq("id", subscription.support_plan_id).maybeSingle()
     : { data: null };
+
+  const seitonUpdates = await syncTicketsStatusFromSeiton(tickets ?? []);
 
   return (
     <div className="space-y-8">
@@ -94,19 +97,24 @@ export default async function SoportePage() {
         </div>
       ) : (
         <ul className="divide-y rounded-xl border">
-          {tickets.map((t) => (
-            <li key={t.id}>
-              <Link href={`/dashboard/soporte/${t.id}`} className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-muted/50">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{t.subject}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {SUPPORT_TICKET_PRIORITY_LABELS[t.priority]} · {new Date(t.created_at).toLocaleDateString("es-CO")}
-                  </p>
-                </div>
-                <Badge variant="outline">{SUPPORT_TICKET_STATUS_LABELS[t.status]}</Badge>
-              </Link>
-            </li>
-          ))}
+          {tickets.map((t) => {
+            const currentStatus = seitonUpdates.get(t.id) ?? t.status;
+            return (
+              <li key={t.id}>
+                <Link href={`/dashboard/soporte/${t.id}`} className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-muted/50">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{t.subject}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {SUPPORT_TICKET_PRIORITY_LABELS[t.priority]} · {new Date(t.created_at).toLocaleDateString("es-CO")}
+                    </p>
+                  </div>
+                  <Badge variant="outline">
+                    {SUPPORT_TICKET_STATUS_LABELS[currentStatus as keyof typeof SUPPORT_TICKET_STATUS_LABELS] ?? currentStatus}
+                  </Badge>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

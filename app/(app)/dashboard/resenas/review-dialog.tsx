@@ -51,7 +51,9 @@ export function ReviewDialog({
             <Label htmlFor="rating">Calificación (1 a 5)</Label>
             <Select name="rating" defaultValue="5">
               <SelectTrigger id="rating" className="w-full">
-                <SelectValue />
+                <SelectValue>
+                  {(value: string) => `${"★".repeat(Number(value))}${"☆".repeat(5 - Number(value))}`}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {[5, 4, 3, 2, 1].map((n) => (
@@ -67,7 +69,9 @@ export function ReviewDialog({
             <Label htmlFor="patient_id">Paciente (opcional)</Label>
             <Select name="patient_id">
               <SelectTrigger id="patient_id" className="w-full">
-                <SelectValue placeholder="Anónimo" />
+                <SelectValue placeholder="Anónimo">
+                  {(value: string) => patients.find((p) => p.id === value)?.full_name ?? value}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {patients.map((p) => (
@@ -82,7 +86,9 @@ export function ReviewDialog({
             <Label htmlFor="professional_id">Profesional (opcional)</Label>
             <Select name="professional_id">
               <SelectTrigger id="professional_id" className="w-full">
-                <SelectValue placeholder="Sin especificar" />
+                <SelectValue placeholder="Sin especificar">
+                  {(value: string) => professionals.find((p) => p.id === value)?.full_name ?? value}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {professionals.map((p) => (
@@ -97,7 +103,9 @@ export function ReviewDialog({
             <Label htmlFor="service_id">Servicio (opcional)</Label>
             <Select name="service_id">
               <SelectTrigger id="service_id" className="w-full">
-                <SelectValue placeholder="Sin especificar" />
+                <SelectValue placeholder="Sin especificar">
+                  {(value: string) => services.find((s) => s.id === value)?.name ?? value}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {services.map((s) => (

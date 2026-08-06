@@ -83,7 +83,9 @@ export function ConsentDialog({
                 }}
               >
                 <SelectTrigger id="document_type" className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {(value: ConsentType) => CONSENT_TEMPLATES[value]?.title ?? value}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {(Object.keys(CONSENT_TEMPLATES) as ConsentType[]).map((type) => (
@@ -110,7 +112,9 @@ export function ConsentDialog({
               <Label htmlFor="service_id">Aplica solo a un servicio (opcional)</Label>
               <Select name="service_id">
                 <SelectTrigger id="service_id" className="w-full">
-                  <SelectValue placeholder="Todos los servicios" />
+                  <SelectValue placeholder="Todos los servicios">
+                    {(value: string) => services.find((s) => s.id === value)?.name ?? value}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {services.map((s) => (

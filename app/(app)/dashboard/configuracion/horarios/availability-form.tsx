@@ -55,7 +55,7 @@ export function AvailabilityForm({
             <Label htmlFor="professional_id">Profesional</Label>
             <Select name="professional_id" defaultValue={professionals[0]?.id}>
               <SelectTrigger id="professional_id" className="w-full sm:w-64">
-                <SelectValue />
+                <SelectValue>{(value: string) => professionalName(value)}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {professionals.map((p) => (

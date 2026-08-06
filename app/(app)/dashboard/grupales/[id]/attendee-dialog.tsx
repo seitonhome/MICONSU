@@ -46,7 +46,9 @@ export function AttendeeDialog({
         <form action={formAction} className="space-y-4">
           <Select name="patient_id" defaultValue={patients[0]?.id}>
             <SelectTrigger className="w-full">
-              <SelectValue />
+              <SelectValue>
+                {(value: string) => patients.find((p) => p.id === value)?.full_name ?? value}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {patients.map((p) => (

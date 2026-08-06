@@ -60,7 +60,9 @@ export function ResourceDialog() {
             <Label htmlFor="resource_type">Tipo</Label>
             <Select name="resource_type" defaultValue="pdf">
               <SelectTrigger id="resource_type" className="w-full">
-                <SelectValue />
+                <SelectValue>
+                  {(value: string) => RESOURCE_TYPES.find((t) => t.value === value)?.label ?? value}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {RESOURCE_TYPES.map((t) => (

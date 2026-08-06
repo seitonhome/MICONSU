@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CommentForm } from "./comment-form";
+import { syncTicketsStatusFromSeiton } from "../sync";
 import {
   SUPPORT_TICKET_STATUS_LABELS,
   SUPPORT_TICKET_PRIORITY_LABELS,
@@ -25,6 +26,9 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
     .single();
 
   if (!ticket) notFound();
+
+  const seitonUpdates = await syncTicketsStatusFromSeiton([ticket]);
+  const currentStatus = seitonUpdates.get(ticket.id) ?? ticket.status;
 
   const { data: comments } = await supabase
     .from("support_ticket_comments")
@@ -48,7 +52,9 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
       <div>
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-semibold">{ticket.subject}</h1>
-          <Badge variant="outline">{SUPPORT_TICKET_STATUS_LABELS[ticket.status]}</Badge>
+          <Badge variant="outline">
+            {SUPPORT_TICKET_STATUS_LABELS[currentStatus as keyof typeof SUPPORT_TICKET_STATUS_LABELS] ?? currentStatus}
+          </Badge>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
           {SUPPORT_TICKET_CATEGORY_LABELS[ticket.category]} · Prioridad {SUPPORT_TICKET_PRIORITY_LABELS[ticket.priority]} ·{" "}

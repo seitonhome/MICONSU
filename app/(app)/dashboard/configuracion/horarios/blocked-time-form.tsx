@@ -53,7 +53,7 @@ export function BlockedTimeForm({
           <Label htmlFor="professional_id">Profesional</Label>
           <Select name="professional_id">
             <SelectTrigger id="professional_id" className="w-full sm:w-64">
-              <SelectValue placeholder="Todo el consultorio" />
+              <SelectValue placeholder="Todo el consultorio">{(value: string) => professionalName(value)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {professionals.map((p) => (

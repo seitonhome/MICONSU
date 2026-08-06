@@ -52,7 +52,9 @@ export function FollowupDialog({ patients }: { patients: Database["public"]["Tab
             <Label htmlFor="patient_id">Paciente</Label>
             <Select name="patient_id" defaultValue={patients[0]?.id}>
               <SelectTrigger id="patient_id" className="w-full">
-                <SelectValue />
+                <SelectValue>
+                  {(value: string) => patients.find((p) => p.id === value)?.full_name ?? value}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {patients.map((p) => (
@@ -67,7 +69,9 @@ export function FollowupDialog({ patients }: { patients: Database["public"]["Tab
             <Label htmlFor="followup_type">Tipo</Label>
             <Select name="followup_type" defaultValue="thank_you">
               <SelectTrigger id="followup_type" className="w-full">
-                <SelectValue />
+                <SelectValue>
+                  {(value: string) => TYPES.find((t) => t.value === value)?.label ?? value}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {TYPES.map((t) => (

@@ -18,7 +18,7 @@ export function StatusSelect({ ticketId, status }: { ticketId: string; status: S
       onValueChange={(value) => startTransition(() => updateTicketStatus(ticketId, value as Status))}
     >
       <SelectTrigger className="w-fit">
-        <SelectValue />
+        <SelectValue>{(value: Status) => SUPPORT_TICKET_STATUS_LABELS[value] ?? value}</SelectValue>
       </SelectTrigger>
       <SelectContent>
         {Object.entries(SUPPORT_TICKET_STATUS_LABELS).map(([value, label]) => (

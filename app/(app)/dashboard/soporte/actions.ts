@@ -40,7 +40,7 @@ export async function createTicket(
   if (error || !ticket) return { error: "No pudimos crear el ticket." };
 
   if (profile.email) {
-    await forwardTicketToSeitonPqr({
+    const seitonTicketId = await forwardTicketToSeitonPqr({
       customerName: profile.fullName,
       customerEmail: profile.email,
       subject,
@@ -48,6 +48,9 @@ export async function createTicket(
       priority,
       description,
     });
+    if (seitonTicketId) {
+      await supabase.from("support_tickets").update({ seiton_ticket_id: seitonTicketId }).eq("id", ticket.id);
+    }
   }
 
   redirect(`/dashboard/soporte/${ticket.id}`);

@@ -75,7 +75,9 @@ export function GroupSessionDialog({
               <Label htmlFor="modality">Modalidad</Label>
               <Select name="modality" defaultValue="in_person" onValueChange={(v) => setModality(v as "in_person" | "virtual")}>
                 <SelectTrigger id="modality" className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {(value: string) => (value === "virtual" ? "Virtual" : "Presencial")}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="in_person">Presencial</SelectItem>
@@ -93,7 +95,9 @@ export function GroupSessionDialog({
                 <Label htmlFor="location_id">Sede (opcional)</Label>
                 <Select name="location_id">
                   <SelectTrigger id="location_id" className="w-full">
-                    <SelectValue placeholder="Sin sede específica" />
+                    <SelectValue placeholder="Sin sede específica">
+                      {(value: string) => locations.find((l) => l.id === value)?.name ?? value}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {locations.map((l) => (
@@ -109,7 +113,9 @@ export function GroupSessionDialog({
               <Label htmlFor="professional_id">Profesional a cargo (opcional)</Label>
               <Select name="professional_id">
                 <SelectTrigger id="professional_id" className="w-full">
-                  <SelectValue placeholder="Sin asignar" />
+                  <SelectValue placeholder="Sin asignar">
+                    {(value: string) => professionals.find((p) => p.id === value)?.full_name ?? value}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {professionals.map((p) => (
@@ -124,7 +130,9 @@ export function GroupSessionDialog({
               <Label htmlFor="service_id">Servicio asociado (opcional)</Label>
               <Select name="service_id">
                 <SelectTrigger id="service_id" className="w-full">
-                  <SelectValue placeholder="Sin servicio específico" />
+                  <SelectValue placeholder="Sin servicio específico">
+                    {(value: string) => services.find((s) => s.id === value)?.name ?? value}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {services.map((s) => (

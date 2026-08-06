@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { LicenseType } from "@/lib/modules";
-import { PLAN_LABELS } from "@/lib/modules";
+import { PLAN_LABELS } from "@/lib/domain/labels";
 
 export function ModuleLocked({
   title,
