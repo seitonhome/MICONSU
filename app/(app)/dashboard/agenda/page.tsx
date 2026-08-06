@@ -34,7 +34,7 @@ function toDateInputValue(d: Date) {
 export default async function AgendaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ date?: string; professional?: string }>;
+  searchParams: Promise<{ date?: string; professional?: string; patient?: string; status?: string }>;
 }) {
   const profile = await requireRole(["clinic_owner", "assistant", "receptionist", "professional"]);
   const supabase = await createClient();
@@ -42,6 +42,13 @@ export default async function AgendaPage({
 
   const date = params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date) ? params.date : toDateInputValue(new Date());
   const professionalFilter = params.professional ?? "";
+  const patientFilter = params.patient ?? "";
+  const statusFilter = (params.status ?? "") as Status | "";
+
+  // Cuando se filtra por paciente, se muestran todas sus citas (pasadas y
+  // futuras) en vez de limitarlo a un solo día — si no, para ver el
+  // historial de un paciente había que ir día por día abriendo cita por cita.
+  const filteringByPatient = Boolean(patientFilter);
 
   const dayStart = new Date(`${date}T00:00:00`);
   const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
@@ -70,13 +77,22 @@ export default async function AgendaPage({
     .from("appointments")
     .select("*")
     .eq("clinic_id", profile.clinicId!)
-    .is("deleted_at", null)
-    .gte("starts_at", dayStart.toISOString())
-    .lt("starts_at", dayEnd.toISOString())
-    .order("starts_at");
+    .is("deleted_at", null);
+
+  if (filteringByPatient) {
+    appointmentsQuery = appointmentsQuery.eq("patient_id", patientFilter).order("starts_at", { ascending: false }).limit(100);
+  } else {
+    appointmentsQuery = appointmentsQuery
+      .gte("starts_at", dayStart.toISOString())
+      .lt("starts_at", dayEnd.toISOString())
+      .order("starts_at");
+  }
 
   if (professionalFilter) {
     appointmentsQuery = appointmentsQuery.eq("professional_id", professionalFilter);
+  }
+  if (statusFilter) {
+    appointmentsQuery = appointmentsQuery.eq("status", statusFilter);
   }
 
   const { data: appointments } = await appointmentsQuery;
@@ -93,7 +109,11 @@ export default async function AgendaPage({
         <div>
           <h1 className="text-2xl font-semibold">Agenda</h1>
           <p className="mt-1 text-muted-foreground">
-            {isToday ? `Hoy tienes ${appointments?.length ?? 0} citas.` : `Citas del ${date}.`}
+            {filteringByPatient
+              ? `${appointments?.length ?? 0} citas de ${patientById.get(patientFilter)?.full_name ?? "este paciente"}.`
+              : isToday
+                ? `Hoy tienes ${appointments?.length ?? 0} citas.`
+                : `Citas del ${date}.`}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -114,26 +134,39 @@ export default async function AgendaPage({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <AgendaFilters date={date} professionalId={professionalFilter} professionals={professionals ?? []} />
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" render={<Link href={`/dashboard/agenda?date=${prevDate}&professional=${professionalFilter}`} />}>
-            <ChevronLeft className="size-4" />
-          </Button>
-          <Button variant="outline" size="sm" render={<Link href={`/dashboard/agenda?date=${toDateInputValue(new Date())}&professional=${professionalFilter}`} />}>
-            Hoy
-          </Button>
-          <Button variant="ghost" size="icon" render={<Link href={`/dashboard/agenda?date=${nextDate}&professional=${professionalFilter}`} />}>
-            <ChevronRight className="size-4" />
-          </Button>
-        </div>
+        <AgendaFilters
+          date={date}
+          professionalId={professionalFilter}
+          patientId={patientFilter}
+          status={statusFilter}
+          professionals={professionals ?? []}
+          patients={patients ?? []}
+        />
+        {!filteringByPatient && (
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" render={<Link href={`/dashboard/agenda?date=${prevDate}&professional=${professionalFilter}&status=${statusFilter}`} />}>
+              <ChevronLeft className="size-4" />
+            </Button>
+            <Button variant="outline" size="sm" render={<Link href={`/dashboard/agenda?date=${toDateInputValue(new Date())}&professional=${professionalFilter}&status=${statusFilter}`} />}>
+              Hoy
+            </Button>
+            <Button variant="ghost" size="icon" render={<Link href={`/dashboard/agenda?date=${nextDate}&professional=${professionalFilter}&status=${statusFilter}`} />}>
+              <ChevronRight className="size-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
       {!appointments || appointments.length === 0 ? (
         <div className="rounded-2xl border border-dashed p-10 text-center">
           <CalendarPlus className="mx-auto size-8 text-muted-foreground" />
-          <p className="mt-3 font-medium">No tienes citas para este día.</p>
+          <p className="mt-3 font-medium">
+            {filteringByPatient ? "Este paciente no tiene citas registradas." : "No tienes citas para este día."}
+          </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Comparte tu link de reserva o activa la lista de espera para llenar espacios libres.
+            {filteringByPatient
+              ? "Ajusta los filtros para ver otras citas."
+              : "Comparte tu link de reserva o activa la lista de espera para llenar espacios libres."}
           </p>
         </div>
       ) : (
@@ -142,10 +175,17 @@ export default async function AgendaPage({
             const professional = professionalById.get(appt.professional_id);
             const service = serviceById.get(appt.service_id);
             const patient = patientById.get(appt.patient_id);
-            const time = new Date(appt.starts_at).toLocaleTimeString("es-CO", {
-              hour: "2-digit",
-              minute: "2-digit",
-            });
+            const time = filteringByPatient
+              ? new Date(appt.starts_at).toLocaleString("es-CO", {
+                  day: "2-digit",
+                  month: "short",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : new Date(appt.starts_at).toLocaleTimeString("es-CO", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
 
             return (
               <li key={appt.id} className="flex items-center justify-between gap-4 px-4 py-3">

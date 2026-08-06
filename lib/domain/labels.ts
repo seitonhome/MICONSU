@@ -35,6 +35,17 @@ export const APPOINTMENT_STATUS_LABELS: Record<
   expired: "Expirada",
 };
 
+export const DOCUMENT_TYPE_LABELS: Record<string, string> = {
+  CC: "Cédula de ciudadanía",
+  CE: "Cédula de extranjería",
+  TI: "Tarjeta de identidad",
+  RC: "Registro civil",
+  PA: "Pasaporte",
+  NIT: "NIT",
+  PEP: "Permiso especial de permanencia",
+  OTRO: "Otro",
+};
+
 export const PAYMENT_STATUS_LABELS: Record<Database["public"]["Enums"]["payment_status"], string> = {
   pending: "Pendiente",
   pending_confirmation: "Pendiente de confirmación",

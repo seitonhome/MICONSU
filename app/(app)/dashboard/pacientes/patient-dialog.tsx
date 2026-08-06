@@ -15,22 +15,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createPatient, updatePatient, type PatientActionState } from "./actions";
+import { DOCUMENT_TYPE_LABELS } from "@/lib/domain/labels";
 import type { Database } from "@/lib/supabase/types";
 
 const initialState: PatientActionState = {};
 
 type PatientRow = Database["public"]["Tables"]["patients"]["Row"];
-
-const DOCUMENT_TYPES: Record<string, string> = {
-  CC: "Cédula de ciudadanía",
-  CE: "Cédula de extranjería",
-  TI: "Tarjeta de identidad",
-  RC: "Registro civil",
-  PA: "Pasaporte",
-  NIT: "NIT",
-  PEP: "Permiso especial de permanencia",
-  OTRO: "Otro",
-};
 
 export function PatientDialog({ patient }: { patient?: PatientRow }) {
   const [open, setOpen] = useState(false);
@@ -74,11 +64,11 @@ export function PatientDialog({ patient }: { patient?: PatientRow }) {
               <Select name="document_type" defaultValue={patient?.document_type ?? undefined}>
                 <SelectTrigger id="document_type" className="w-full">
                   <SelectValue placeholder="Selecciona un tipo">
-                    {(value: string) => DOCUMENT_TYPES[value] ?? value}
+                    {(value: string) => DOCUMENT_TYPE_LABELS[value] ?? value}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(DOCUMENT_TYPES).map(([value, label]) => (
+                  {Object.entries(DOCUMENT_TYPE_LABELS).map(([value, label]) => (
                     <SelectItem key={value} value={value}>
                       {label}
                     </SelectItem>

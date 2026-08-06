@@ -1,10 +1,18 @@
 import Link from "next/link";
-import { Users } from "lucide-react";
+import { Users, Search } from "lucide-react";
 import { requireRole } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { DOCUMENT_TYPE_LABELS } from "@/lib/domain/labels";
 import { PatientDialog } from "./patient-dialog";
+
+function initials(fullName: string): string {
+  const parts = fullName.trim().split(/\s+/);
+  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase();
+}
 
 export default async function PacientesPage({
   searchParams,
@@ -35,22 +43,29 @@ export default async function PacientesPage({
         <div>
           <h1 className="text-2xl font-semibold">Pacientes</h1>
           <p className="mt-1 text-muted-foreground">
-            Cuando alguien reserve, aparecerá aquí automáticamente. También puedes registrarlos manualmente.
+            {patients && patients.length > 0
+              ? `${patients.length} paciente${patients.length === 1 ? "" : "s"} registrado${patients.length === 1 ? "" : "s"}.`
+              : "Cuando alguien reserve, aparecerá aquí automáticamente. También puedes registrarlos manualmente."}
           </p>
         </div>
         {canManage && <PatientDialog />}
       </div>
 
-      <form className="max-w-sm">
+      <form className="flex max-w-sm items-center gap-2">
         <Input name="q" defaultValue={q} placeholder="Buscar por nombre, documento, teléfono o correo" />
+        <Button type="submit" variant="outline" size="icon" aria-label="Buscar">
+          <Search className="size-4" />
+        </Button>
       </form>
 
       {!patients || patients.length === 0 ? (
         <div className="rounded-2xl border border-dashed p-10 text-center">
           <Users className="mx-auto size-8 text-muted-foreground" />
-          <p className="mt-3 font-medium">No tienes pacientes registrados.</p>
+          <p className="mt-3 font-medium">
+            {q ? "No encontramos pacientes con esa búsqueda." : "No tienes pacientes registrados."}
+          </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Cuando alguien reserve, aparecerá aquí automáticamente.
+            {q ? "Prueba con otro nombre, documento, teléfono o correo." : "Cuando alguien reserve, aparecerá aquí automáticamente."}
           </p>
         </div>
       ) : (
@@ -59,15 +74,26 @@ export default async function PacientesPage({
             <li key={p.id}>
               <Link
                 href={`/dashboard/pacientes/${p.id}`}
-                className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-muted/50"
+                className="flex items-center gap-4 px-4 py-3 hover:bg-muted/50"
               >
-                <div className="min-w-0">
+                <Avatar>
+                  <AvatarFallback>{initials(p.full_name) || "?"}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{p.full_name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {[p.phone, p.email].filter(Boolean).join(" · ") || "Sin contacto"}
+                  <p className="truncate text-xs text-muted-foreground">
+                    {p.document_number
+                      ? `${DOCUMENT_TYPE_LABELS[p.document_type ?? ""] ?? p.document_type ?? "Doc."} ${p.document_number}`
+                      : "Sin documento"}
                   </p>
                 </div>
-                <Badge variant={p.status === "active" ? "secondary" : "outline"}>
+                <div className="hidden min-w-0 flex-1 text-right sm:block">
+                  <p className="truncate text-xs text-muted-foreground">
+                    {[p.phone, p.email].filter(Boolean).join(" · ") || "Sin contacto"}
+                  </p>
+                  {p.city && <p className="truncate text-xs text-muted-foreground">{p.city}</p>}
+                </div>
+                <Badge variant={p.status === "active" ? "secondary" : "outline"} className="shrink-0">
                   {p.status === "active" ? "Activo" : "Inactivo"}
                 </Badge>
               </Link>
