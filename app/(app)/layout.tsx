@@ -10,6 +10,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const supabase = await createClient();
 
   let clinicName = "Tu consultorio";
+  let logoUrl: string | null = null;
   let visualTheme: VisualTheme = "clinico_moderno";
   let primaryColor: string | null = null;
   let secondaryColor: string | null = null;
@@ -27,12 +28,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       supabase.from("clinics").select("commercial_name").eq("id", profile.clinicId).single(),
       supabase
         .from("clinic_branding")
-        .select("visual_theme, primary_color, secondary_color")
+        .select("visual_theme, primary_color, secondary_color, logo_url")
         .eq("clinic_id", profile.clinicId)
         .single(),
       getClinicEntitlements(profile.clinicId),
     ]);
     clinicName = clinic?.commercial_name ?? clinicName;
+    logoUrl = branding?.logo_url ?? null;
     visualTheme = (branding?.visual_theme as VisualTheme) ?? visualTheme;
     primaryColor = branding?.primary_color ?? null;
     secondaryColor = branding?.secondary_color ?? null;
@@ -67,6 +69,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     >
       <DashboardShell
         clinicName={clinicName}
+        logoUrl={logoUrl}
         role={profile.role}
         fullName={profile.fullName || "Sin nombre"}
         entitlements={navEntitlements}

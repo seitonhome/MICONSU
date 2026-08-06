@@ -219,12 +219,14 @@ function AccountFooter({ fullName, role, initials }: { fullName: string; role: A
 export function DashboardShell({
   children,
   clinicName,
+  logoUrl,
   role,
   fullName,
   entitlements,
 }: {
   children: React.ReactNode;
   clinicName: string;
+  logoUrl: string | null;
   role: AppRole;
   fullName: string;
   entitlements: NavEntitlements;
@@ -241,9 +243,15 @@ export function DashboardShell({
   return (
     <div className="flex min-h-screen bg-muted/20">
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col overflow-y-auto border-r bg-background md:flex">
-        <div className="px-6 py-5">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Mi Consultorio Pro</p>
-          <p className="mt-1 truncate text-lg font-semibold">{clinicName}</p>
+        <div className="flex items-center gap-3 px-6 py-5">
+          {logoUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logoUrl} alt={clinicName} className="size-9 shrink-0 rounded-lg object-cover" />
+          )}
+          <div className="min-w-0">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Mi Consultorio Pro</p>
+            <p className="mt-1 truncate text-lg font-semibold">{clinicName}</p>
+          </div>
         </div>
         <NavLinks role={role} entitlements={entitlements} pathname={pathname} />
         <AccountFooter fullName={fullName} role={role} initials={initials} />
@@ -251,9 +259,15 @@ export function DashboardShell({
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b bg-background px-4 py-3 md:hidden">
-          <div className="min-w-0">
-            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Mi Consultorio Pro</p>
-            <p className="truncate text-base font-semibold">{clinicName}</p>
+          <div className="flex min-w-0 items-center gap-2">
+            {logoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logoUrl} alt={clinicName} className="size-8 shrink-0 rounded-lg object-cover" />
+            )}
+            <div className="min-w-0">
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Mi Consultorio Pro</p>
+              <p className="truncate text-base font-semibold">{clinicName}</p>
+            </div>
           </div>
           <Button variant="outline" size="icon" aria-label="Abrir menú" onClick={() => setMobileOpen(true)}>
             <Menu className="size-4" />
