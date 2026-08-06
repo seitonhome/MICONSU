@@ -22,6 +22,7 @@ function fillPlaceholders(text: string, data: PaymentEmailData): string {
     .replaceAll("{{dateLabel}}", data.dateLabel)
     .replaceAll("{{timeLabel}}", data.timeLabel)
     .replaceAll("{{managementUrl}}", data.managementUrl)
+    .replaceAll("{{portalUrl}}", data.portalUrl)
     .replaceAll("{{amountLabel}}", data.amountLabel);
 }
 
@@ -81,6 +82,7 @@ export async function notifyAppointment(
     dateLabel: formatDateLabel(startsAt),
     timeLabel: formatTimeLabel(startsAt),
     managementUrl: `${appUrl}/reserva/${appointment.booking_token}`,
+    portalUrl: `${appUrl}/portal/login`,
     amountLabel: `$${Number(appointment.price).toLocaleString("es-CO")}`,
   };
 

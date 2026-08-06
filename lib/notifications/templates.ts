@@ -6,6 +6,7 @@ export type AppointmentEmailData = {
   dateLabel: string;
   timeLabel: string;
   managementUrl: string;
+  portalUrl: string;
 };
 
 export type PaymentEmailData = AppointmentEmailData & {
@@ -18,10 +19,11 @@ export type PaymentEmailData = AppointmentEmailData & {
  * diagnóstico ni motivo de consulta, para no exponer información sensible
  * a quien vea la pantalla del paciente.
  */
-function wrapper(clinicName: string, contentHtml: string): string {
+function wrapper(clinicName: string, portalUrl: string, contentHtml: string): string {
   return `<div style="font-family: -apple-system, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px; color: #1f2937;">
   <p style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 16px;">${clinicName}</p>
   ${contentHtml}
+  <p style="margin-top: 16px; font-size: 13px;"><a href="${portalUrl}" style="color:#0F4C4C;">Ver tu historial, pagos y documentos en tu portal</a></p>
   <p style="margin-top: 32px; font-size: 12px; color: #9ca3af;">Este mensaje fue enviado por Mi Consultorio Pro en nombre de ${clinicName}.</p>
 </div>`;
 }
@@ -35,6 +37,7 @@ export function appointmentConfirmationEmail(data: AppointmentEmailData) {
     subject: `Tu cita está confirmada — ${data.clinicName}`,
     html: wrapper(
       data.clinicName,
+      data.portalUrl,
       `<h2 style="margin:0 0 12px;">${greeting(data.patientFirstName)}</h2>
        <p>Tienes una cita programada con <strong>${data.clinicName}</strong> el ${data.dateLabel} a las ${data.timeLabel}.</p>
        <p><a href="${data.managementUrl}" style="color:#0F4C4C;">Ver, reprogramar o cancelar tu cita</a></p>`,
@@ -47,6 +50,7 @@ export function appointmentReminder24hEmail(data: AppointmentEmailData) {
     subject: `Recordatorio: tienes una cita mañana — ${data.clinicName}`,
     html: wrapper(
       data.clinicName,
+      data.portalUrl,
       `<h2 style="margin:0 0 12px;">${greeting(data.patientFirstName)}</h2>
        <p>Te recordamos tu cita con <strong>${data.clinicName}</strong> mañana, ${data.dateLabel} a las ${data.timeLabel}.</p>
        <p><a href="${data.managementUrl}" style="color:#0F4C4C;">Ver o modificar tu cita</a></p>`,
@@ -59,6 +63,7 @@ export function appointmentReminder2hEmail(data: AppointmentEmailData) {
     subject: `Tu cita es en 2 horas — ${data.clinicName}`,
     html: wrapper(
       data.clinicName,
+      data.portalUrl,
       `<h2 style="margin:0 0 12px;">${greeting(data.patientFirstName)}</h2>
        <p>Tu cita con <strong>${data.clinicName}</strong> es hoy a las ${data.timeLabel}.</p>
        <p><a href="${data.managementUrl}" style="color:#0F4C4C;">Ver detalles de tu cita</a></p>`,
@@ -71,6 +76,7 @@ export function appointmentCancelledEmail(data: AppointmentEmailData) {
     subject: `Tu cita fue cancelada — ${data.clinicName}`,
     html: wrapper(
       data.clinicName,
+      data.portalUrl,
       `<h2 style="margin:0 0 12px;">${greeting(data.patientFirstName)}</h2>
        <p>Tu cita con <strong>${data.clinicName}</strong> del ${data.dateLabel} a las ${data.timeLabel} fue cancelada.</p>
        <p><a href="${data.managementUrl}" style="color:#0F4C4C;">Reservar un nuevo horario</a></p>`,
@@ -83,6 +89,7 @@ export function appointmentRescheduledEmail(data: AppointmentEmailData) {
     subject: `Tu cita fue reprogramada — ${data.clinicName}`,
     html: wrapper(
       data.clinicName,
+      data.portalUrl,
       `<h2 style="margin:0 0 12px;">${greeting(data.patientFirstName)}</h2>
        <p>Tu cita con <strong>${data.clinicName}</strong> ahora es el ${data.dateLabel} a las ${data.timeLabel}.</p>
        <p><a href="${data.managementUrl}" style="color:#0F4C4C;">Ver detalles de tu cita</a></p>`,
@@ -95,6 +102,7 @@ export function paymentPendingEmail(data: PaymentEmailData) {
     subject: `Confirma tu pago — ${data.clinicName}`,
     html: wrapper(
       data.clinicName,
+      data.portalUrl,
       `<h2 style="margin:0 0 12px;">${greeting(data.patientFirstName)}</h2>
        <p>Tu cita con <strong>${data.clinicName}</strong> del ${data.dateLabel} a las ${data.timeLabel} está pendiente de pago (${data.amountLabel}).</p>
        <p><a href="${data.managementUrl}" style="color:#0F4C4C;">Ver instrucciones de pago</a></p>`,
@@ -107,6 +115,7 @@ export function paymentApprovedEmail(data: PaymentEmailData) {
     subject: `Pago confirmado — ${data.clinicName}`,
     html: wrapper(
       data.clinicName,
+      data.portalUrl,
       `<h2 style="margin:0 0 12px;">${greeting(data.patientFirstName)}</h2>
        <p>Confirmamos tu pago de ${data.amountLabel} para tu cita del ${data.dateLabel} a las ${data.timeLabel} con <strong>${data.clinicName}</strong>.</p>
        <p><a href="${data.managementUrl}" style="color:#0F4C4C;">Ver detalles de tu cita</a></p>`,

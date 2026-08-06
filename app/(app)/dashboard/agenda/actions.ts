@@ -82,22 +82,30 @@ export async function createAppointment(
   });
   if (isBlocked) return { error: "Ese horario está bloqueado para el profesional." };
 
-  const { error } = await supabase.from("appointments").insert({
-    clinic_id: clinicId,
-    patient_id: patientId,
-    professional_id: professionalId,
-    service_id: serviceId,
-    location_id: locationId,
-    starts_at: startsAt.toISOString(),
-    ends_at: endsAt.toISOString(),
-    modality,
-    status: "confirmed",
-    price: service.price,
-    deposit_required: service.deposit_amount ?? 0,
-    created_by: profileId,
-  });
+  const { data: appointment, error } = await supabase
+    .from("appointments")
+    .insert({
+      clinic_id: clinicId,
+      patient_id: patientId,
+      professional_id: professionalId,
+      service_id: serviceId,
+      location_id: locationId,
+      starts_at: startsAt.toISOString(),
+      ends_at: endsAt.toISOString(),
+      modality,
+      status: "confirmed",
+      price: service.price,
+      deposit_required: service.deposit_amount ?? 0,
+      created_by: profileId,
+    })
+    .select("id")
+    .single();
 
-  if (error) return { error: "No pudimos crear la cita." };
+  if (error || !appointment) return { error: "No pudimos crear la cita." };
+
+  // No bloquea la respuesta si el correo falla; queda registrado en
+  // notification_logs para poder diagnosticarlo desde el panel.
+  await notifyAppointment(createAdminClient(), appointment.id, "appointment_confirmation");
 
   revalidatePath("/dashboard/agenda");
   return { success: true };
