@@ -4,7 +4,8 @@ import { useActionState, useRef } from "react";
 import { uploadPatientDocument, deletePatientDocument, type PatientActionState } from "../actions";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Trash2, FileText } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Trash2, FileText, Lock } from "lucide-react";
 
 const initialState: PatientActionState = {};
 
@@ -13,7 +14,7 @@ export function DocumentUploadForm({
   documents,
 }: {
   patientId: string;
-  documents: { id: string; file_name: string; signedUrl: string | null; created_at: string }[];
+  documents: { id: string; file_name: string; signedUrl: string | null; created_at: string; is_clinical: boolean }[];
 }) {
   const action = uploadPatientDocument.bind(null, patientId);
   const [state, formAction, isPending] = useActionState(action, initialState);
@@ -32,6 +33,13 @@ export function DocumentUploadForm({
               >
                 <FileText className="size-4 shrink-0 text-muted-foreground" />
                 <span className="truncate">{doc.file_name}</span>
+                {doc.is_clinical ? (
+                  <span className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+                    <Lock className="size-3" /> Solo staff
+                  </span>
+                ) : (
+                  <span className="shrink-0 text-xs text-muted-foreground">Visible al paciente</span>
+                )}
               </a>
               <form action={deletePatientDocument.bind(null, patientId, doc.id)}>
                 <Button type="submit" variant="ghost" size="icon" aria-label="Eliminar">
@@ -49,17 +57,23 @@ export function DocumentUploadForm({
           await formAction(formData);
           formRef.current?.reset();
         }}
-        className="flex items-end gap-2"
+        className="space-y-2"
       >
-        <div className="flex-1 space-y-1">
-          <label htmlFor="file" className="text-xs text-muted-foreground">
-            Subir documento
-          </label>
-          <Input id="file" name="file" type="file" required />
+        <div className="flex items-end gap-2">
+          <div className="flex-1 space-y-1">
+            <label htmlFor="file" className="text-xs text-muted-foreground">
+              Subir documento
+            </label>
+            <Input id="file" name="file" type="file" required />
+          </div>
+          <Button type="submit" variant="outline" disabled={isPending}>
+            {isPending ? "Subiendo..." : "Subir"}
+          </Button>
         </div>
-        <Button type="submit" variant="outline" disabled={isPending}>
-          {isPending ? "Subiendo..." : "Subir"}
-        </Button>
+        <label className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Checkbox name="is_clinical" />
+          Documento clínico (historia, resultados) — solo lo ve el staff, nunca el paciente
+        </label>
       </form>
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
     </div>

@@ -102,6 +102,7 @@ export async function uploadPatientDocument(
   const { clinicId, supabase } = await staffClinicId();
   const file = formData.get("file") as File | null;
   const documentType = (formData.get("document_type") as string) || null;
+  const isClinical = formData.get("is_clinical") === "on";
 
   if (!file || file.size === 0) return { error: "Selecciona un archivo." };
 
@@ -123,7 +124,7 @@ export async function uploadPatientDocument(
     file_url: path,
     file_name: file.name,
     document_type: documentType,
-    is_clinical: false,
+    is_clinical: isClinical,
   });
 
   if (error) return { error: "No pudimos registrar el documento." };

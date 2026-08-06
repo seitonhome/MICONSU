@@ -61,7 +61,13 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
   const documentsWithUrls = await Promise.all(
     (documents ?? []).map(async (doc) => {
       const { data } = await supabase.storage.from("clinical-documents").createSignedUrl(doc.file_url, 3600);
-      return { id: doc.id, file_name: doc.file_name, created_at: doc.created_at, signedUrl: data?.signedUrl ?? null };
+      return {
+        id: doc.id,
+        file_name: doc.file_name,
+        created_at: doc.created_at,
+        is_clinical: doc.is_clinical,
+        signedUrl: data?.signedUrl ?? null,
+      };
     }),
   );
 

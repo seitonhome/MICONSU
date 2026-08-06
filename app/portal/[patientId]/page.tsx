@@ -36,7 +36,7 @@ export default async function PortalPatientPage({ params }: { params: Promise<{ 
 
   if (!patient) notFound();
 
-  const [{ data: clinic }, { data: branding }, { data: appointments }, { data: packages }, { data: consentRecords }, { data: assignedResources }, { data: paymentIntents }] =
+  const [{ data: clinic }, { data: branding }, { data: appointments }, { data: packages }, { data: consentRecords }, { data: assignedResources }, { data: paymentIntents }, { data: documents }] =
     await Promise.all([
       supabase.from("clinics").select("*").eq("id", patient.clinic_id).single(),
       supabase.from("clinic_branding").select("*").eq("clinic_id", patient.clinic_id).maybeSingle(),
@@ -64,6 +64,13 @@ export default async function PortalPatientPage({ params }: { params: Promise<{ 
         .from("payment_intents")
         .select("*")
         .eq("patient_id", patientId)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("patient_documents")
+        .select("*")
+        .eq("patient_id", patientId)
+        .eq("is_clinical", false)
+        .is("deleted_at", null)
         .order("created_at", { ascending: false }),
     ]);
 
@@ -115,6 +122,13 @@ export default async function PortalPatientPage({ params }: { params: Promise<{ 
     }),
   );
   const resources = resourcesWithUrls.filter((r): r is NonNullable<typeof r> => r !== null);
+
+  const documentsWithUrls = await Promise.all(
+    (documents ?? []).map(async (d) => {
+      const { data } = await supabase.storage.from("clinical-documents").createSignedUrl(d.file_url, 3600);
+      return { id: d.id, name: d.file_name, signedUrl: data?.signedUrl ?? null };
+    }),
+  );
 
   return (
     <ThemeProvider
@@ -195,6 +209,31 @@ export default async function PortalPatientPage({ params }: { params: Promise<{ 
                   {r.signedUrl && (
                     <a
                       href={r.signedUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-medium underline underline-offset-4"
+                    >
+                      Ver
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {documentsWithUrls.length > 0 && (
+          <section className="rounded-xl border bg-background p-4">
+            <div className="mb-3 flex items-center gap-2 font-medium">
+              <FileText className="size-4" /> Tus documentos
+            </div>
+            <ul className="space-y-2 text-sm">
+              {documentsWithUrls.map((d) => (
+                <li key={d.id} className="flex items-center justify-between gap-2">
+                  <span>{d.name}</span>
+                  {d.signedUrl && (
+                    <a
+                      href={d.signedUrl}
                       target="_blank"
                       rel="noreferrer"
                       className="text-xs font-medium underline underline-offset-4"
