@@ -91,3 +91,12 @@ export async function updateClinicBranding(
   revalidatePath("/dashboard", "layout");
   return { success: true };
 }
+
+export async function setClinicPublished(published: boolean): Promise<void> {
+  const profile = await requireRole(["clinic_owner"]);
+  const supabase = await createClient();
+
+  await supabase.from("clinics").update({ is_published: published }).eq("id", profile.clinicId!);
+
+  revalidatePath("/dashboard/configuracion/marca");
+}
