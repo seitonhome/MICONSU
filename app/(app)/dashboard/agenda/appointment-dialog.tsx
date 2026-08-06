@@ -63,7 +63,9 @@ export function AppointmentDialog({
               <Label htmlFor="professional_id">Profesional</Label>
               <Select name="professional_id" defaultValue={professionals[0]?.id}>
                 <SelectTrigger id="professional_id" className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {(value: string) => professionals.find((p) => p.id === value)?.full_name ?? value}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {professionals.map((p) => (
@@ -78,7 +80,12 @@ export function AppointmentDialog({
               <Label htmlFor="service_id">Servicio</Label>
               <Select name="service_id" defaultValue={services[0]?.id}>
                 <SelectTrigger id="service_id" className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {(value: string) => {
+                      const s = services.find((s) => s.id === value);
+                      return s ? `${s.name} (${s.duration_minutes} min)` : value;
+                    }}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {services.map((s) => (
@@ -101,7 +108,9 @@ export function AppointmentDialog({
               <Label htmlFor="modality">Modalidad</Label>
               <Select name="modality" defaultValue="in_person">
                 <SelectTrigger id="modality" className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {(value: string) => (value === "virtual" ? "Virtual" : "Presencial")}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="in_person">Presencial</SelectItem>
@@ -114,7 +123,9 @@ export function AppointmentDialog({
                 <Label htmlFor="location_id">Sede (opcional)</Label>
                 <Select name="location_id">
                   <SelectTrigger id="location_id" className="w-full">
-                    <SelectValue placeholder="Sin especificar" />
+                    <SelectValue placeholder="Sin especificar">
+                      {(value: string) => locations.find((l) => l.id === value)?.name ?? value}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {locations.map((l) => (
@@ -156,7 +167,9 @@ export function AppointmentDialog({
                 <Label htmlFor="patient_id">Paciente</Label>
                 <Select name="patient_id" defaultValue={patients[0]?.id}>
                   <SelectTrigger id="patient_id" className="w-full">
-                    <SelectValue />
+                    <SelectValue>
+                      {(value: string) => patients.find((p) => p.id === value)?.full_name ?? value}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {patients.map((p) => (

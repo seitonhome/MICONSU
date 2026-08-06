@@ -233,7 +233,7 @@ export function DashboardShell({
 
   return (
     <div className="flex min-h-screen bg-muted/20">
-      <aside className="hidden w-64 shrink-0 border-r bg-background md:flex md:flex-col">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col overflow-y-auto border-r bg-background md:flex">
         <div className="px-6 py-5">
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Mi Consultorio Pro</p>
           <p className="mt-1 truncate text-lg font-semibold">{clinicName}</p>

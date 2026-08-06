@@ -40,7 +40,11 @@ export function AgendaFilters({
         onValueChange={(value) => updateParams({ professional: value === "all" ? "" : String(value) })}
       >
         <SelectTrigger className="w-auto">
-          <SelectValue placeholder="Todos los profesionales" />
+          <SelectValue placeholder="Todos los profesionales">
+            {(value: string) =>
+              value === "all" ? "Todos los profesionales" : professionals.find((p) => p.id === value)?.full_name ?? value
+            }
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Todos los profesionales</SelectItem>
