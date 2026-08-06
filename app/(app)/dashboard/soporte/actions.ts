@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireCurrentProfile } from "@/lib/auth/session";
+import { forwardTicketToSeitonPqr } from "@/lib/integrations/seiton-pqr";
 import type { Database } from "@/lib/supabase/types";
 
 export type SupportActionState = { error?: string; success?: boolean };
@@ -37,6 +38,17 @@ export async function createTicket(
     .single();
 
   if (error || !ticket) return { error: "No pudimos crear el ticket." };
+
+  if (profile.email) {
+    await forwardTicketToSeitonPqr({
+      customerName: profile.fullName,
+      customerEmail: profile.email,
+      subject,
+      category,
+      priority,
+      description,
+    });
+  }
 
   redirect(`/dashboard/soporte/${ticket.id}`);
 }

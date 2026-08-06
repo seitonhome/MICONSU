@@ -12,6 +12,17 @@ Desde `/dashboard/soporte`, cualquier usuario con rol `clinic_owner`, `professio
 
 El equipo de soporte del producto (rol `support_agent`, con visibilidad transversal a todas las clínicas) y el `super_admin` gestionan el ticket desde `/admin/soporte`: pueden comentar (incluyendo notas internas no visibles para el cliente, `is_internal`), asignarlo a un responsable y cambiar su estado.
 
+**Además**, al crear el ticket, `lib/integrations/seiton-pqr.ts` lo reenvía por
+`POST` a `https://www.seitonhome.com/api/pqr` (`source: "seiton-apps"`,
+`appName: "Mi Consultorio Pro"`), donde aparece en `/admin/pqr` del repo
+`seiton` junto con los tickets de las demás apps del catálogo — ese es el
+inbox que revisa el equipo día a día. Es un reenvío best-effort (no bloquea
+ni depende de que Seiton responda): si falla, el ticket sigue existiendo
+normalmente en `/dashboard/soporte` y `/admin/soporte` de esta app, solo
+que no llegó también al PQR central. El endpoint de Seiton no requiere
+autenticación pero tiene rate limit de 5 solicitudes/30min por IP de
+origen — no hay retry automático si se topa con ese límite.
+
 ## 2. Prioridades y SLA (Plan Continuidad Clínica)
 
 Tiempos corridos (no hábiles), contados desde la creación del ticket (`lib/domain/sla.ts`):
