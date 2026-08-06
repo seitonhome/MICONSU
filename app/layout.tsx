@@ -42,6 +42,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-0 -z-10 bg-[url('/mcprobg.png')] bg-cover bg-center opacity-[0.08]"
+        />
         <TooltipProvider>{children}</TooltipProvider>
         <Toaster />
       </body>
