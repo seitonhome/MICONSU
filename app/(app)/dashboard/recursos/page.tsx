@@ -18,7 +18,7 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 export default async function RecursosPage() {
-  const profile = await requireRole(["clinic_owner", "assistant", "professional"]);
+  const profile = await requireRole(["clinic_owner", "assistant", "receptionist", "professional"]);
   const supabase = await createClient();
 
   const entitlements = await getClinicEntitlements(profile.clinicId!);

@@ -6,7 +6,7 @@ import { requireRole } from "@/lib/auth/session";
 
 export type ReviewActionState = { error?: string; success?: boolean };
 
-const STAFF_ROLES = ["clinic_owner", "assistant", "receptionist"] as const;
+const STAFF_ROLES = ["clinic_owner", "assistant", "receptionist", "professional"] as const;
 
 async function staffClinicId() {
   const profile = await requireRole([...STAFF_ROLES]);

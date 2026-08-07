@@ -48,6 +48,41 @@ export async function createPackage(
   return { success: true };
 }
 
+export async function updatePackage(
+  id: string,
+  _prev: PackageActionState | undefined,
+  formData: FormData,
+): Promise<PackageActionState> {
+  const { supabase } = await staffClinicId();
+
+  const name = (formData.get("name") as string)?.trim();
+  const totalSessions = Number(formData.get("total_sessions"));
+
+  if (!name) return { error: "El nombre del paquete es obligatorio." };
+  if (!totalSessions || totalSessions <= 0) return { error: "El número de sesiones debe ser mayor a 0." };
+
+  const { data: current } = await supabase.from("session_packages").select("sessions_used").eq("id", id).single();
+  if (current && totalSessions < current.sessions_used) {
+    return { error: `Ya se registraron ${current.sessions_used} sesiones; el total no puede ser menor.` };
+  }
+
+  const { error } = await supabase
+    .from("session_packages")
+    .update({
+      name,
+      total_sessions: totalSessions,
+      price_total: Number(formData.get("price_total")) || 0,
+      deposit_amount: Number(formData.get("deposit_amount")) || 0,
+      valid_until: (formData.get("valid_until") as string) || null,
+    })
+    .eq("id", id);
+
+  if (error) return { error: "No pudimos actualizar el paquete." };
+
+  revalidatePath("/dashboard/paquetes");
+  return { success: true };
+}
+
 export async function registerPackageSession(packageId: string): Promise<void> {
   const { clinicId, supabase } = await staffClinicId();
 

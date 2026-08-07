@@ -89,7 +89,10 @@ export default async function PaquetesPage() {
                     </span>
                   </div>
                 </div>
-                <PackageRowActions id={pkg.id} status={pkg.status} isComplete={isComplete} />
+                <div className="flex shrink-0 items-center gap-1">
+                  <PackageDialog pkg={pkg} patients={patients ?? []} professionals={professionals ?? []} services={services ?? []} />
+                  <PackageRowActions id={pkg.id} status={pkg.status} isComplete={isComplete} />
+                </div>
               </li>
             );
           })}

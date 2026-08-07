@@ -60,7 +60,7 @@ export default async function GrupalesPage() {
           <CalendarRange className="mx-auto size-8 text-muted-foreground" />
           <p className="mt-3 font-medium">Aún no tienes talleres programados.</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Crea un taller para vender cupos y gestionar inscritos en un solo lugar.
+            Crea un taller para llevar el control de cupos, inscritos y pagos en un solo lugar.
           </p>
         </div>
       ) : (

@@ -165,6 +165,12 @@ export default async function ClinicPublicPage({ params }: { params: Promise<{ s
           </section>
         )}
 
+        <section className="text-center">
+          <Link href={`/c/${slug}/resena`} className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground">
+            ¿Ya nos visitaste? Déjanos tu reseña
+          </Link>
+        </section>
+
         {clinic.legal_disclaimer && (
           <section className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
             {clinic.legal_disclaimer}

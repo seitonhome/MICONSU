@@ -10,7 +10,7 @@ import { ReviewRowActions } from "./review-row-actions";
 const STATUS_LABELS = { private: "Privada", approved: "Aprobada", featured: "Destacada" } as const;
 
 export default async function ResenasPage() {
-  const profile = await requireRole(["clinic_owner", "assistant", "receptionist"]);
+  const profile = await requireRole(["clinic_owner", "assistant", "receptionist", "professional"]);
   const supabase = await createClient();
 
   const entitlements = await getClinicEntitlements(profile.clinicId!);

@@ -7,7 +7,7 @@ import { MAX_RESOURCE_FILE_BYTES, formatMaxSize } from "@/lib/storage/limits";
 
 export type ResourceActionState = { error?: string; success?: boolean };
 
-const LIBRARY_ROLES = ["clinic_owner", "assistant", "professional"] as const;
+const LIBRARY_ROLES = ["clinic_owner", "assistant", "receptionist", "professional"] as const;
 const ASSIGN_ROLES = ["clinic_owner", "assistant", "receptionist", "professional"] as const;
 
 async function libraryClinicId() {
