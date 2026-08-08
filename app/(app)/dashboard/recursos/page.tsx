@@ -7,6 +7,7 @@ import { ModuleLocked } from "@/components/patterns/module-locked";
 import { ResourceDialog } from "./resource-dialog";
 import { AssignDialog } from "./assign-dialog";
 import { DeactivateButton } from "./deactivate-button";
+import { BADGE_PRIMARY } from "@/lib/utils/badge-styles";
 
 const TYPE_LABELS: Record<string, string> = {
   pdf: "PDF",
@@ -54,7 +55,7 @@ export default async function RecursosPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Biblioteca de recursos</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Biblioteca de recursos</h1>
           <p className="mt-1 text-muted-foreground">
             Sube material educativo y envíalo a tus pacientes después de una sesión.
           </p>
@@ -71,9 +72,9 @@ export default async function RecursosPage() {
           </p>
         </div>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {resourcesWithUrls.map((r) => (
-            <li key={r.id} className="flex items-center justify-between gap-4 px-4 py-3">
+            <li key={r.id} className="flex items-center justify-between gap-4 px-5 py-4">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   {r.signedUrl ? (
@@ -81,14 +82,14 @@ export default async function RecursosPage() {
                       href={r.signedUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="truncate text-sm font-medium underline-offset-2 hover:underline"
+                      className="truncate text-[13.5px] font-semibold text-foreground/90 underline-offset-2 hover:underline"
                     >
                       {r.title}
                     </a>
                   ) : (
-                    <p className="truncate text-sm font-medium">{r.title}</p>
+                    <p className="truncate text-[13.5px] font-semibold text-foreground/90">{r.title}</p>
                   )}
-                  <Badge variant="outline">{TYPE_LABELS[r.resource_type]}</Badge>
+                  <Badge variant="outline" className={BADGE_PRIMARY}>{TYPE_LABELS[r.resource_type]}</Badge>
                 </div>
                 {r.description && <p className="mt-0.5 truncate text-xs text-muted-foreground">{r.description}</p>}
               </div>

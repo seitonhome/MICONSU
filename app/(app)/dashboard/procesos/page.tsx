@@ -6,6 +6,7 @@ import { getClinicEntitlements, planAtLeast } from "@/lib/modules";
 import { ModuleLocked } from "@/components/patterns/module-locked";
 import { ProcessDialog } from "./process-dialog";
 import { ProcessRowActions } from "./process-row-actions";
+import { BADGE_PRIMARY, BADGE_ACCENT, BADGE_OUTLINE, BADGE_DESTRUCTIVE } from "@/lib/utils/badge-styles";
 
 const STATUS_LABELS = {
   active: "Activo",
@@ -14,6 +15,14 @@ const STATUS_LABELS = {
   abandoned: "Abandonado",
   cancelled: "Cancelado",
 } as const;
+
+const STATUS_BADGE_CLASS: Record<keyof typeof STATUS_LABELS, string> = {
+  active: BADGE_PRIMARY,
+  paused: BADGE_OUTLINE,
+  completed: BADGE_ACCENT,
+  abandoned: BADGE_DESTRUCTIVE,
+  cancelled: BADGE_DESTRUCTIVE,
+};
 
 export default async function ProcesosPage() {
   const profile = await requireRole(["clinic_owner", "professional"]);
@@ -53,7 +62,7 @@ export default async function ProcesosPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Procesos terapéuticos</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Procesos terapéuticos</h1>
           <p className="mt-1 text-muted-foreground">
             Acceso restringido: solo tú y el profesional tratante pueden ver estos procesos.
           </p>
@@ -70,15 +79,15 @@ export default async function ProcesosPage() {
           </p>
         </div>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {processes.map((proc) => (
-            <li key={proc.id} className="flex items-center justify-between gap-4 px-4 py-3">
+            <li key={proc.id} className="flex items-center justify-between gap-4 px-5 py-4">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="truncate text-sm font-medium">
+                  <p className="truncate text-[13.5px] font-semibold text-foreground/90">
                     {patientById.get(proc.patient_id)?.full_name ?? "Paciente"}
                   </p>
-                  <Badge variant={proc.status === "active" ? "default" : "outline"}>{STATUS_LABELS[proc.status]}</Badge>
+                  <Badge variant="outline" className={STATUS_BADGE_CLASS[proc.status]}>{STATUS_LABELS[proc.status]}</Badge>
                 </div>
                 <p className="mt-0.5 truncate text-xs text-muted-foreground">
                   {proc.objective || "Sin objetivo definido"} · {professionalById.get(proc.professional_id)?.full_name ?? "Profesional"}

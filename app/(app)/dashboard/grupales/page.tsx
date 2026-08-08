@@ -6,8 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { getClinicEntitlements, planAtLeast, hasModule } from "@/lib/modules";
 import { ModuleLocked } from "@/components/patterns/module-locked";
 import { GroupSessionDialog } from "./group-session-dialog";
+import { BADGE_PRIMARY, BADGE_ACCENT, BADGE_DESTRUCTIVE } from "@/lib/utils/badge-styles";
 
 const STATUS_LABELS = { scheduled: "Programado", completed: "Realizado", cancelled: "Cancelado" } as const;
+const STATUS_BADGE_CLASS: Record<keyof typeof STATUS_LABELS, string> = {
+  scheduled: BADGE_PRIMARY,
+  completed: BADGE_ACCENT,
+  cancelled: BADGE_DESTRUCTIVE,
+};
 
 export default async function GrupalesPage() {
   const profile = await requireRole(["clinic_owner", "assistant", "receptionist", "professional"]);
@@ -47,7 +53,7 @@ export default async function GrupalesPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Sesiones grupales y talleres</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Sesiones grupales y talleres</h1>
           <p className="mt-1 text-muted-foreground">
             Talleres, círculos, clases grupales y jornadas de bienestar con cupos e inscritos.
           </p>
@@ -64,19 +70,19 @@ export default async function GrupalesPage() {
           </p>
         </div>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {sessions.map((s) => {
             const attendees = attendeeCountBySession.get(s.id) ?? 0;
             return (
               <li key={s.id}>
                 <Link
                   href={`/dashboard/grupales/${s.id}`}
-                  className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-muted/50"
+                  className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-muted/40"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="truncate text-sm font-medium">{s.name}</p>
-                      <Badge variant={s.status === "scheduled" ? "default" : "outline"}>{STATUS_LABELS[s.status]}</Badge>
+                      <p className="truncate text-[13.5px] font-semibold text-foreground/90">{s.name}</p>
+                      <Badge variant="outline" className={STATUS_BADGE_CLASS[s.status]}>{STATUS_LABELS[s.status]}</Badge>
                     </div>
                     <p className="mt-0.5 text-xs text-muted-foreground">
                       {new Date(s.starts_at).toLocaleString("es-CO")}

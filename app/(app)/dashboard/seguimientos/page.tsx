@@ -6,6 +6,7 @@ import { getClinicEntitlements, planAtLeast } from "@/lib/modules";
 import { ModuleLocked } from "@/components/patterns/module-locked";
 import { FollowupDialog } from "./followup-dialog";
 import { FollowupRowActions } from "./followup-row-actions";
+import { BADGE_PRIMARY, BADGE_ACCENT, BADGE_OUTLINE } from "@/lib/utils/badge-styles";
 
 const TYPE_LABELS = {
   thank_you: "Agradecimiento",
@@ -16,6 +17,12 @@ const TYPE_LABELS = {
 } as const;
 
 const STATUS_LABELS = { pending: "Pendiente", sent: "Enviado", completed: "Completado", skipped: "Omitido" } as const;
+const STATUS_BADGE_CLASS: Record<keyof typeof STATUS_LABELS, string> = {
+  pending: BADGE_OUTLINE,
+  sent: BADGE_PRIMARY,
+  completed: BADGE_ACCENT,
+  skipped: BADGE_OUTLINE,
+};
 
 export default async function SeguimientosPage() {
   const profile = await requireRole(["clinic_owner", "assistant", "receptionist", "professional"]);
@@ -41,7 +48,7 @@ export default async function SeguimientosPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Seguimiento postconsulta</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Seguimiento postconsulta</h1>
           <p className="mt-1 text-muted-foreground">
             Agradecimientos, encuestas, solicitudes de reseña y renovación de paquetes.
           </p>
@@ -58,13 +65,13 @@ export default async function SeguimientosPage() {
           </p>
         </div>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {followups.map((f) => (
-            <li key={f.id} className="flex items-center justify-between gap-4 px-4 py-3">
+            <li key={f.id} className="flex items-center justify-between gap-4 px-5 py-4">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="truncate text-sm font-medium">{patientById.get(f.patient_id)?.full_name ?? "Paciente"}</p>
-                  <Badge variant={f.status === "pending" ? "outline" : "secondary"}>{STATUS_LABELS[f.status]}</Badge>
+                  <p className="truncate text-[13.5px] font-semibold text-foreground/90">{patientById.get(f.patient_id)?.full_name ?? "Paciente"}</p>
+                  <Badge variant="outline" className={STATUS_BADGE_CLASS[f.status]}>{STATUS_LABELS[f.status]}</Badge>
                 </div>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {TYPE_LABELS[f.followup_type]} · {new Date(f.scheduled_for).toLocaleString("es-CO")}
