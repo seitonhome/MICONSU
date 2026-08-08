@@ -53,7 +53,22 @@ export async function confirmPayment(intentId: string): Promise<void> {
 export async function rejectPayment(intentId: string): Promise<void> {
   const { clinicId, profileId, supabase } = await staffClinicId();
 
+  const { data: intent } = await supabase
+    .from("payment_intents")
+    .select("appointment_id")
+    .eq("id", intentId)
+    .eq("clinic_id", clinicId)
+    .single();
+
   await supabase.from("payment_intents").update({ status: "rejected" }).eq("id", intentId).eq("clinic_id", clinicId);
+
+  // Sin esto, la cita se quedaba "reservada" indefinidamente aunque el pago
+  // que la sostenía se rechazara — el horario nunca se liberaba y el
+  // paciente nunca se enteraba de que su cita no quedó confirmada.
+  if (intent?.appointment_id) {
+    await supabase.from("appointments").update({ status: "cancelled" }).eq("id", intent.appointment_id);
+    await notifyAppointment(createAdminClient(), intent.appointment_id, "appointment_cancelled");
+  }
 
   await supabase.from("payment_reconciliation_logs").insert({
     clinic_id: clinicId,

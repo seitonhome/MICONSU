@@ -16,6 +16,16 @@ async function staffClinicId() {
   return { clinicId: profile.clinicId!, profileId: profile.id, supabase };
 }
 
+// Los documentos administrativos sí los puede subir/borrar un profesional
+// tratante (así lo permite la RLS de patient_documents) — separado de
+// STAFF_ROLES porque el resto de acciones de esta ficha (editar/eliminar
+// el paciente en sí) siguen siendo solo del equipo administrativo.
+async function documentClinicId() {
+  const profile = await requireRole([...STAFF_ROLES, "professional"]);
+  const supabase = await createClient();
+  return { clinicId: profile.clinicId!, profileId: profile.id, supabase };
+}
+
 function parsePatientForm(formData: FormData) {
   return {
     full_name: (formData.get("full_name") as string)?.trim(),
@@ -100,7 +110,7 @@ export async function uploadPatientDocument(
   _prev: PatientActionState | undefined,
   formData: FormData,
 ): Promise<PatientActionState> {
-  const { clinicId, supabase } = await staffClinicId();
+  const { clinicId, supabase } = await documentClinicId();
   const file = formData.get("file") as File | null;
   const documentType = (formData.get("document_type") as string) || null;
   const isClinical = formData.get("is_clinical") === "on";
@@ -138,7 +148,7 @@ export async function uploadPatientDocument(
 }
 
 export async function deletePatientDocument(patientId: string, id: string): Promise<void> {
-  const { clinicId, profileId, supabase } = await staffClinicId();
+  const { clinicId, profileId, supabase } = await documentClinicId();
 
   const { data: doc } = await supabase.from("patient_documents").select("file_url").eq("id", id).maybeSingle();
 

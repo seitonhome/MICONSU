@@ -8,6 +8,7 @@ import { AppointmentDialog } from "./appointment-dialog";
 import { AppointmentActions } from "./appointment-actions";
 import { AgendaFilters } from "./agenda-filters";
 import { APPOINTMENT_STATUS_LABELS } from "@/lib/domain/labels";
+import { bogotaDateInputValue, bogotaMidnightFromDateString } from "@/lib/utils/timezone";
 import type { Database } from "@/lib/supabase/types";
 
 type Status = Database["public"]["Enums"]["appointment_status"];
@@ -27,10 +28,6 @@ const STATUS_BADGE_VARIANT: Partial<Record<Status, "default" | "secondary" | "de
   expired: "destructive",
 };
 
-function toDateInputValue(d: Date) {
-  return d.toISOString().slice(0, 10);
-}
-
 export default async function AgendaPage({
   searchParams,
 }: {
@@ -40,7 +37,7 @@ export default async function AgendaPage({
   const supabase = await createClient();
   const params = await searchParams;
 
-  const date = params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date) ? params.date : toDateInputValue(new Date());
+  const date = params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date) ? params.date : bogotaDateInputValue(new Date());
   const professionalFilter = params.professional ?? "";
   const patientFilter = params.patient ?? "";
   const statusFilter = (params.status ?? "") as Status | "";
@@ -50,10 +47,10 @@ export default async function AgendaPage({
   // historial de un paciente había que ir día por día abriendo cita por cita.
   const filteringByPatient = Boolean(patientFilter);
 
-  const dayStart = new Date(`${date}T00:00:00`);
+  const dayStart = bogotaMidnightFromDateString(date);
   const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
-  const prevDate = toDateInputValue(new Date(dayStart.getTime() - 24 * 60 * 60 * 1000));
-  const nextDate = toDateInputValue(new Date(dayStart.getTime() + 24 * 60 * 60 * 1000));
+  const prevDate = bogotaDateInputValue(new Date(dayStart.getTime() - 24 * 60 * 60 * 1000));
+  const nextDate = bogotaDateInputValue(new Date(dayStart.getTime() + 24 * 60 * 60 * 1000));
 
   const [{ data: professionals }, { data: services }, { data: locations }, { data: patients }] =
     await Promise.all([
@@ -101,7 +98,7 @@ export default async function AgendaPage({
   const serviceById = new Map((services ?? []).map((s) => [s.id, s]));
   const patientById = new Map((patients ?? []).map((p) => [p.id, p]));
 
-  const isToday = date === toDateInputValue(new Date());
+  const isToday = date === bogotaDateInputValue(new Date());
 
   return (
     <div className="space-y-6">
@@ -147,7 +144,7 @@ export default async function AgendaPage({
             <Button variant="ghost" size="icon" render={<Link href={`/dashboard/agenda?date=${prevDate}&professional=${professionalFilter}&status=${statusFilter}`} />}>
               <ChevronLeft className="size-4" />
             </Button>
-            <Button variant="outline" size="sm" render={<Link href={`/dashboard/agenda?date=${toDateInputValue(new Date())}&professional=${professionalFilter}&status=${statusFilter}`} />}>
+            <Button variant="outline" size="sm" render={<Link href={`/dashboard/agenda?date=${bogotaDateInputValue(new Date())}&professional=${professionalFilter}&status=${statusFilter}`} />}>
               Hoy
             </Button>
             <Button variant="ghost" size="icon" render={<Link href={`/dashboard/agenda?date=${nextDate}&professional=${professionalFilter}&status=${statusFilter}`} />}>

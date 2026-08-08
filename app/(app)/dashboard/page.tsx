@@ -15,13 +15,7 @@ import { requireCurrentProfile } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-function startOfDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-function startOfMonth(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), 1);
-}
+import { bogotaStartOfDay, bogotaStartOfMonth } from "@/lib/utils/timezone";
 
 export default async function DashboardPage() {
   const profile = await requireCurrentProfile();
@@ -39,9 +33,9 @@ export default async function DashboardPage() {
   const clinicId = profile.clinicId;
 
   const now = new Date();
-  const todayStart = startOfDay(now);
+  const todayStart = bogotaStartOfDay(now);
   const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
-  const monthStart = startOfMonth(now);
+  const monthStart = bogotaStartOfMonth(now);
 
   const [
     { count: todayCount },

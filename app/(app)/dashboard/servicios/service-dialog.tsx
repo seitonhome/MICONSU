@@ -198,6 +198,10 @@ export function ServiceDialog({
               <Textarea id="pre_instructions" name="pre_instructions" defaultValue={service?.pre_instructions ?? ""} rows={2} />
             </div>
             <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="post_message">Mensaje posterior a la cita (opcional)</Label>
+              <Textarea id="post_message" name="post_message" defaultValue={service?.post_message ?? ""} rows={2} />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="disclaimer">Aviso / disclaimer específico (opcional)</Label>
               <Textarea id="disclaimer" name="disclaimer" defaultValue={service?.disclaimer ?? ""} rows={2} />
             </div>
