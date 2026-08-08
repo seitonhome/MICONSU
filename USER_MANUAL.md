@@ -49,7 +49,7 @@ Cada consultorio tiene su propia página pública. **No es visible hasta que la 
 
 ## 9. Consentimientos
 
-En **Consentimientos** editas los textos legales que tus pacientes aceptan al reservar (política de privacidad, autorización de datos, consentimiento informado, disclaimers de tu tipo de práctica). Cada vez que editas un texto, el sistema guarda una nueva versión — así, si alguna vez necesitas comprobar qué aceptó un paciente, sabes exactamente qué texto fue, con fecha, hora, y desde qué dispositivo lo aceptó. **Recuerda: tú eres responsable del contenido legal de estos textos** — revisa `LEGAL_CHECKLIST_COLOMBIA.md` y consulta a tu asesor si tienes dudas.
+En **Consentimientos** editas los textos legales que tus pacientes aceptan al reservar (política de privacidad, autorización de datos, consentimiento informado, disclaimers de tu tipo de práctica). Una vez creado el documento no tienes que hacer nada más: se le muestra automáticamente al paciente al reservar y debe aceptarlo para poder confirmar su cita, así que funciona como un paso obligatorio, no como un aviso opcional. Cada vez que editas un texto, el sistema guarda una nueva versión sin perder las anteriores, y puedes ver en la ficha de cada paciente qué aceptó y cuándo. Si ya no lo necesitas, puedes desactivarlo sin borrarlo — deja de pedirse a pacientes nuevos, pero conserva el historial de quienes ya lo aceptaron. **Recuerda: tú eres responsable del contenido legal de estos textos** — revisa `LEGAL_CHECKLIST_COLOMBIA.md` y consulta a tu asesor si tienes dudas.
 
 ## 10. Centro de pagos
 
