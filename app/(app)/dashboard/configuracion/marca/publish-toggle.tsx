@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Globe, ExternalLink } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,15 @@ import { setClinicPublished } from "./actions";
 
 export function PublishToggle({ isPublished, publicUrl }: { isPublished: boolean; publicUrl: string }) {
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  function handleClick() {
+    setError(null);
+    startTransition(async () => {
+      const result = await setClinicPublished(!isPublished);
+      if (result.error) setError(result.error);
+    });
+  }
 
   return (
     <Card>
@@ -29,14 +38,11 @@ export function PublishToggle({ isPublished, publicUrl }: { isPublished: boolean
             Ver mi página
           </Button>
         )}
-        <Button
-          variant={isPublished ? "outline" : "default"}
-          disabled={isPending}
-          onClick={() => startTransition(() => setClinicPublished(!isPublished))}
-        >
+        <Button variant={isPublished ? "outline" : "default"} disabled={isPending} onClick={handleClick}>
           {isPending ? "Guardando..." : isPublished ? "Despublicar" : "Publicar mi página"}
         </Button>
       </div>
+      {error && <p className="px-6 pb-4 text-sm text-destructive">{error}</p>}
     </Card>
   );
 }

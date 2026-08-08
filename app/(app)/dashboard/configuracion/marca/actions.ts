@@ -92,11 +92,30 @@ export async function updateClinicBranding(
   return { success: true };
 }
 
-export async function setClinicPublished(published: boolean): Promise<void> {
+export async function setClinicPublished(published: boolean): Promise<{ error?: string }> {
   const profile = await requireRole(["clinic_owner"]);
   const supabase = await createClient();
+  const clinicId = profile.clinicId!;
 
-  await supabase.from("clinics").update({ is_published: published }).eq("id", profile.clinicId!);
+  if (published) {
+    const [{ count: activeServices }, { count: scheduleRules }] = await Promise.all([
+      supabase.from("services").select("id", { count: "exact", head: true }).eq("clinic_id", clinicId).eq("is_active", true).is("deleted_at", null),
+      supabase.from("availability_rules").select("id", { count: "exact", head: true }).eq("clinic_id", clinicId).is("deleted_at", null),
+    ]);
+
+    // Publicar una página sin servicios ni horarios deja al paciente ver una
+    // página vacía sin poder reservar nada — mejor bloquearlo aquí que dejar
+    // que el dueño descubra el problema cuando un paciente ya se quejó.
+    if (!activeServices) {
+      return { error: "Agrega al menos un servicio activo antes de publicar tu página." };
+    }
+    if (!scheduleRules) {
+      return { error: "Configura al menos un horario de disponibilidad antes de publicar tu página." };
+    }
+  }
+
+  await supabase.from("clinics").update({ is_published: published }).eq("id", clinicId);
 
   revalidatePath("/dashboard/configuracion/marca");
+  return {};
 }
