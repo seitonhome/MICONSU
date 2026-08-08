@@ -154,11 +154,16 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
           ) : (
             <ul className="divide-y rounded-xl border">
               {consentRecords.map((c) => (
-                <li key={c.id} className="px-4 py-3">
-                  <p className="text-sm font-medium">{consentDocById.get(c.document_id) ?? "Documento"}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Aceptado el {new Date(c.accepted_at).toLocaleString("es-CO")} (v{c.document_version})
-                  </p>
+                <li key={c.id} className="flex items-center justify-between gap-2 px-4 py-3">
+                  <div>
+                    <p className="text-sm font-medium">{consentDocById.get(c.document_id) ?? "Documento"}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Aceptado el {new Date(c.accepted_at).toLocaleString("es-CO")} (v{c.document_version})
+                    </p>
+                  </div>
+                  {c.revoked_at && (
+                    <Badge variant="destructive">Retirado el {new Date(c.revoked_at).toLocaleDateString("es-CO")}</Badge>
+                  )}
                 </li>
               ))}
             </ul>

@@ -1187,6 +1187,7 @@ export type Database = {
           ip_address: string | null;
           user_agent: string | null;
           acceptance_method: "web_form" | "portal" | "staff_recorded";
+          revoked_at: string | null;
           created_at: string;
         };
         Insert: {
@@ -1200,6 +1201,7 @@ export type Database = {
           ip_address?: string | null;
           user_agent?: string | null;
           acceptance_method?: "web_form" | "portal" | "staff_recorded";
+          revoked_at?: string | null;
           created_at?: string;
         };
         Update: {
@@ -1213,6 +1215,7 @@ export type Database = {
           ip_address?: string | null;
           user_agent?: string | null;
           acceptance_method?: "web_form" | "portal" | "staff_recorded";
+          revoked_at?: string | null;
           created_at?: string;
         };
         Relationships: [];

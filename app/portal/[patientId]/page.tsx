@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { APPOINTMENT_STATUS_LABELS, PAYMENT_STATUS_LABELS } from "@/lib/domain/labels";
 import type { Database } from "@/lib/supabase/types";
+import { RevokeConsentButton } from "./revoke-consent-button";
 
 const PACKAGE_STATUS_LABELS: Record<string, string> = {
   active: "Activo",
@@ -274,11 +275,18 @@ export default async function PortalPatientPage({ params }: { params: Promise<{ 
           {(consentRecords ?? []).length === 0 ? (
             <p className="text-sm text-muted-foreground">No tienes consentimientos registrados.</p>
           ) : (
-            <ul className="space-y-1 text-sm">
+            <ul className="space-y-2 text-sm">
               {(consentRecords ?? []).map((c) => (
-                <li key={c.id} className="flex items-center justify-between text-muted-foreground">
+                <li key={c.id} className="flex items-center justify-between gap-2 text-muted-foreground">
                   <span>{consentDocById.get(c.document_id) ?? "Documento"}</span>
-                  <span>{new Date(c.accepted_at).toLocaleDateString("es-CO")}</span>
+                  {c.revoked_at ? (
+                    <span className="text-xs">Retirado el {new Date(c.revoked_at).toLocaleDateString("es-CO")}</span>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span>{new Date(c.accepted_at).toLocaleDateString("es-CO")}</span>
+                      <RevokeConsentButton consentId={c.id} patientId={patientId} />
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
