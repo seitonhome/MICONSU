@@ -10,7 +10,7 @@ export default function AyudaPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Ayuda</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Ayuda</h1>
         <p className="mt-1 text-muted-foreground">Tips prácticos y la guía de usuario completa, sin salir de tu panel.</p>
       </div>
 
@@ -43,10 +43,10 @@ export default function AyudaPage() {
             </div>
           ))}
 
-          <div className="flex items-center gap-3 rounded-xl border bg-muted/30 p-4">
-            <MessageCircle className="size-5 shrink-0 text-muted-foreground" />
+          <div className="flex items-center gap-3 rounded-[16px] border border-black/[0.07] bg-secondary/40 p-4">
+            <MessageCircle className="size-5 shrink-0 text-primary" />
             <div className="min-w-0 flex-1 text-sm">
-              <p className="font-medium">¿No encontraste lo que buscabas?</p>
+              <p className="font-semibold text-foreground/90">¿No encontraste lo que buscabas?</p>
               <p className="text-muted-foreground">Escríbenos desde Soporte — el tiempo de primera respuesta depende de la prioridad del ticket.</p>
             </div>
             <Button size="sm" variant="outline" render={<Link href="/dashboard/soporte" />}>

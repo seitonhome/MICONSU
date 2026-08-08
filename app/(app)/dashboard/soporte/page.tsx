@@ -12,6 +12,17 @@ import {
   LICENSE_STATUS_LABELS,
   SUPPORT_SUBSCRIPTION_STATUS_LABELS,
 } from "@/lib/domain/labels";
+import { BADGE_PRIMARY, BADGE_ACCENT, BADGE_OUTLINE, BADGE_DESTRUCTIVE } from "@/lib/utils/badge-styles";
+
+const TICKET_STATUS_BADGE_CLASS: Record<string, string> = {
+  open: BADGE_OUTLINE,
+  in_review: BADGE_PRIMARY,
+  waiting_client: BADGE_PRIMARY,
+  in_progress: BADGE_PRIMARY,
+  resolved: BADGE_ACCENT,
+  closed: BADGE_OUTLINE,
+  escalated: BADGE_DESTRUCTIVE,
+};
 
 export default async function SoportePage() {
   const profile = await requireCurrentProfile();
@@ -41,14 +52,14 @@ export default async function SoportePage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Soporte</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Soporte</h1>
           <p className="mt-1 text-muted-foreground">Plan Continuidad Clínica: soporte, backups y continuidad de tu consultorio.</p>
         </div>
         <TicketDialog />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Card>
+        <Card className="rounded-[16px] border-black/[0.07]">
           <CardHeader>
             <CardTitle>Licencia</CardTitle>
             <CardDescription>
@@ -63,14 +74,14 @@ export default async function SoportePage() {
           </CardHeader>
           {license && (
             <div className="px-4 pb-4">
-              <Badge variant={license.status === "active" ? "secondary" : "outline"}>
+              <Badge variant="outline" className={license.status === "active" ? BADGE_ACCENT : BADGE_OUTLINE}>
                 {LICENSE_STATUS_LABELS[license.status] ?? license.status}
               </Badge>
             </div>
           )}
         </Card>
 
-        <Card>
+        <Card className="rounded-[16px] border-black/[0.07]">
           <CardHeader>
             <CardTitle>Plan Continuidad Clínica</CardTitle>
             <CardDescription>
@@ -81,7 +92,7 @@ export default async function SoportePage() {
           </CardHeader>
           {subscription && (
             <div className="px-4 pb-4">
-              <Badge variant={subscription.status === "active" ? "secondary" : "outline"}>
+              <Badge variant="outline" className={subscription.status === "active" ? BADGE_ACCENT : BADGE_OUTLINE}>
                 {SUPPORT_SUBSCRIPTION_STATUS_LABELS[subscription.status] ?? subscription.status}
               </Badge>
             </div>
@@ -96,19 +107,19 @@ export default async function SoportePage() {
           <p className="mt-1 text-sm text-muted-foreground">Crea uno si necesitas ayuda con tu consultorio.</p>
         </div>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {tickets.map((t) => {
             const currentStatus = seitonUpdates.get(t.id) ?? t.status;
             return (
               <li key={t.id}>
-                <Link href={`/dashboard/soporte/${t.id}`} className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-muted/50">
+                <Link href={`/dashboard/soporte/${t.id}`} className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-muted/40">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{t.subject}</p>
+                    <p className="truncate text-[13.5px] font-semibold text-foreground/90">{t.subject}</p>
                     <p className="text-xs text-muted-foreground">
                       {SUPPORT_TICKET_PRIORITY_LABELS[t.priority]} · {new Date(t.created_at).toLocaleDateString("es-CO")}
                     </p>
                   </div>
-                  <Badge variant="outline">
+                  <Badge variant="outline" className={TICKET_STATUS_BADGE_CLASS[currentStatus] ?? BADGE_OUTLINE}>
                     {SUPPORT_TICKET_STATUS_LABELS[currentStatus as keyof typeof SUPPORT_TICKET_STATUS_LABELS] ?? currentStatus}
                   </Badge>
                 </Link>

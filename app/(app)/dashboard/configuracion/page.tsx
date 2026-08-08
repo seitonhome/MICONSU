@@ -42,18 +42,20 @@ export default async function ConfiguracionPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Configuración</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Configuración</h1>
         <p className="mt-1 text-muted-foreground">Ajusta cómo funciona y se ve tu consultorio.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {SETTINGS_LINKS.map((item) => (
           <Link key={item.href} href={item.href}>
-            <Card className="h-full transition-colors hover:border-primary">
+            <Card className="h-full rounded-[16px] border-black/[0.07] transition-colors hover:border-primary/30">
               <CardHeader>
-                <item.icon className="size-5 text-primary" />
-                <CardTitle className="mt-2 text-base">{item.title}</CardTitle>
-                <CardDescription>{item.description}</CardDescription>
+                <div className="flex size-9 items-center justify-center rounded-[10px] bg-secondary">
+                  <item.icon className="size-[18px] text-primary" strokeWidth={1.7} />
+                </div>
+                <CardTitle className="mt-2.5 text-[14.5px] font-bold">{item.title}</CardTitle>
+                <CardDescription className="text-[12.5px]">{item.description}</CardDescription>
               </CardHeader>
               <CardContent />
             </Card>
