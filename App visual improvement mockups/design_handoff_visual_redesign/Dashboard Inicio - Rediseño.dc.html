@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:oklch(0.99 0.004 90);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:oklch(0.4 0.06 220);text-decoration:none}
+  a:hover{color:oklch(0.32 0.06 220)}
+  *{box-sizing:border-box}
+</style>
+</helmet>
+
+<div style="display:flex;min-height:100vh;width:1440px;background:oklch(0.99 0.004 90)">
+
+  <!-- SIDEBAR -->
+  <aside style="width:264px;flex-shrink:0;background:oklch(1 0 0);border-right:1px solid oklch(0 0 0 / 7%);display:flex;flex-direction:column">
+    <div style="display:flex;align-items:center;gap:12px;padding:22px 24px 20px">
+      <img src="public/logo.png" alt="Mi Consultorio Pro" style="width:36px;height:36px;border-radius:9px;object-fit:cover"/>
+      <div style="min-width:0">
+        <p style="margin:0;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:oklch(0.556 0 0)">Mi Consultorio Pro</p>
+        <p style="margin:2px 0 0;font-size:16px;font-weight:700;color:oklch(0.2 0.02 220);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Clínica San Rafael</p>
+      </div>
+    </div>
+
+    <nav style="flex:1;overflow-y:auto;padding:6px 14px 14px;display:flex;flex-direction:column;gap:18px">
+
+      <div>
+        <p style="margin:0 0 6px;padding:0 10px;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:oklch(0.556 0 0 / 0.7)">General</p>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;background:oklch(0.4 0.06 220);color:oklch(0.98 0 0);font-size:13.5px;font-weight:600">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="2.5" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="11.5" y="2.5" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.6"/><rect x="2.5" y="11.5" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.6"/><rect x="11.5" y="11.5" width="6" height="6" rx="1.5" fill="currentColor"/></svg>
+            Inicio
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500" style-hover="background:oklch(0.97 0.01 90)">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="3.5" width="15" height="14" rx="2.5"/><path d="M6 2v3M14 2v3M2.5 8h15"/></svg>
+            Agenda
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="6.5" r="2.7"/><path d="M2 17c0-3 2.2-5 5-5s5 2 5 5"/><circle cx="14.5" cy="7.5" r="2.1"/><path d="M12.5 12.2c2.2.2 3.7 1.9 3.7 4.3"/></svg>
+            Pacientes
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="6.5" r="3"/><path d="M4 17c0-3.5 2.7-6 6-6s6 2.5 6 6"/></svg>
+            Profesionales
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h14M3 10h14M3 15h9"/><circle cx="17" cy="15" r="1.3" fill="currentColor" stroke="none"/></svg>
+            Lista de espera
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p style="margin:0 0 6px;padding:0 10px;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:oklch(0.556 0 0 / 0.7)">Servicios y pagos</p>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="7.5"/><path d="M10 6v4l2.6 2.6"/></svg>
+            Servicios
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4.5" width="16" height="11" rx="2"/><path d="M2 8h16"/></svg>
+            Pagos
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p style="margin:0 0 6px;padding:0 10px;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:oklch(0.556 0 0 / 0.7)">Crecimiento</p>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="3" width="12" height="14" rx="2"/><path d="M8 3v3h4V3"/></svg>
+            Paquetes
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 2v4M10 14v4M2 10h4M14 10h4M4.5 4.5l2.8 2.8M12.7 12.7l2.8 2.8M15.5 4.5l-2.8 2.8M7.3 12.7l-2.8 2.8"/></svg>
+            Procesos
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="3.5" width="15" height="13" rx="2"/><path d="M2.5 7.5h15M6 2v3"/><rect x="6.5" y="10" width="3" height="3" rx="0.6" fill="currentColor" stroke="none"/></svg>
+            Grupales
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4.5h5.5v11H3zM11.5 4.5H17v11h-5.5z"/></svg>
+            Recursos
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 17s-6.5-4-6.5-9A3.5 3.5 0 0110 6a3.5 3.5 0 016.5 2c0 5-6.5 9-6.5 9z"/></svg>
+            Seguimientos
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M10 2.5l2.2 4.6 5 .7-3.6 3.6.9 5-4.5-2.4-4.5 2.4.9-5-3.6-3.6 5-.7z"/></svg>
+            Reseñas
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3a4.5 4.5 0 00-2.5 8.2c.4.3.5.6.5 1v.8h4v-.8c0-.4.1-.7.5-1A4.5 4.5 0 0010 3z"/><path d="M8.3 15.5h3.4M8.8 17.5h2.4"/></svg>
+            Oportunidades
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 16V9M8 16V4M13 16v-7M18 16V6" stroke-linecap="round"/></svg>
+            Reportes
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p style="margin:0 0 6px;padding:0 10px;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:oklch(0.556 0 0 / 0.7)">Cuenta</p>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 2.5l6 2.2v4.6c0 4-2.6 6.7-6 8.2-3.4-1.5-6-4.2-6-8.2V4.7z"/><path d="M7.3 10l1.8 1.8 3.6-3.8"/></svg>
+            Consentimientos
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 3.5h9.5a1.5 1.5 0 011.5 1.5v11.5H5.5A1.5 1.5 0 014 15z"/><path d="M7 8h6M7 11h4"/></svg>
+            Ayuda
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="7.5"/><path d="M10 6.2v3.3l2.6 1.5"/></svg>
+            Soporte
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:oklch(0.4 0 0);font-size:13.5px;font-weight:500">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="2.6"/><circle cx="10" cy="10" r="7"/></svg>
+            Configuración
+          </div>
+        </div>
+      </div>
+
+    </nav>
+
+    <div style="border-top:1px solid oklch(0 0 0 / 7%);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="width:36px;height:36px;border-radius:50%;background:oklch(0.78 0.1 155);color:oklch(0.2 0.04 155);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">MG</div>
+        <div style="min-width:0">
+          <p style="margin:0;font-size:13.5px;font-weight:600;color:oklch(0.2 0.02 220);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">María González</p>
+          <p style="margin:1px 0 0;font-size:12px;color:oklch(0.556 0 0)">Dueña del consultorio</p>
+        </div>
+      </div>
+      <button style="margin-top:12px;width:100%;padding:7px 0;border-radius:9px;border:1px solid oklch(0 0 0 / 12%);background:oklch(1 0 0);color:oklch(0.3 0.02 220);font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main style="flex:1;min-width:0;padding:40px 44px 56px">
+
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:28px">
+      <div>
+        <p style="margin:0 0 6px;font-size:12.5px;font-weight:600;color:oklch(0.556 0 0);text-transform:capitalize">jueves, 8 de agosto</p>
+        <h1 style="margin:0;font-size:28px;font-weight:800;color:oklch(0.18 0.02 220);letter-spacing:-0.01em">Hola, María</h1>
+        <p style="margin:6px 0 0;font-size:14.5px;color:oklch(0.45 0 0)">Este es el estado de tu consultorio hoy.</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-shrink:0">
+        <button style="display:flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;border:1px solid oklch(0 0 0 / 12%);background:oklch(1 0 0);color:oklch(0.3 0.02 220);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3a4.5 4.5 0 00-2.5 8.2c.4.3.5.6.5 1v.8h4v-.8c0-.4.1-.7.5-1A4.5 4.5 0 0010 3z"/></svg>
+          Oportunidades
+        </button>
+        <button style="display:flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;border:1px solid oklch(0 0 0 / 12%);background:oklch(1 0 0);color:oklch(0.3 0.02 220);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 16V9M8 16V4M13 16v-7M18 16V6" stroke-linecap="round"/></svg>
+          Reportes
+        </button>
+      </div>
+    </div>
+
+    <!-- BENTO ROW 1 -->
+    <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:20px;margin-bottom:20px">
+
+      <!-- Agenda hoy -->
+      <div style="grid-column:span 5;background:oklch(1 0 0);border-radius:20px;box-shadow:0 1px 2px rgba(20,40,60,0.04),0 10px 28px -16px rgba(20,40,60,0.16);border:1px solid oklch(0 0 0 / 6%);padding:24px;display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:11px">
+            <div style="width:38px;height:38px;border-radius:11px;background:oklch(0.94 0.02 200);display:flex;align-items:center;justify-content:center">
+              <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="oklch(0.4 0.06 220)" stroke-width="1.7"><rect x="2.5" y="3.5" width="15" height="14" rx="2.5"/><path d="M6 2v3M14 2v3M2.5 8h15"/></svg>
+            </div>
+            <p style="margin:0;font-size:14px;font-weight:600;color:oklch(0.3 0.02 220)">Agenda de hoy</p>
+          </div>
+          <a href="#" style="font-size:12.5px;font-weight:600">Ver agenda →</a>
+        </div>
+        <div>
+          <p style="margin:0;font-size:38px;font-weight:800;color:oklch(0.18 0.02 220);line-height:1">6 <span style="font-size:16px;font-weight:600;color:oklch(0.45 0 0)">citas hoy</span></p>
+          <p style="margin:8px 0 0;font-size:13.5px;color:oklch(0.45 0 0)">Tu próxima cita es a las <strong style="color:oklch(0.3 0.02 220)">10:30 am</strong>.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;padding-top:4px;border-top:1px solid oklch(0 0 0 / 6%)">
+          <div style="display:flex;align-items:center;gap:11px;padding-top:12px">
+            <span style="width:6px;height:6px;border-radius:50%;background:oklch(0.4 0.06 220);flex-shrink:0"></span>
+            <span style="font-size:13px;font-weight:600;color:oklch(0.3 0.02 220);width:56px">9:00 am</span>
+            <span style="font-size:13px;color:oklch(0.45 0 0)">Consulta general</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:11px">
+            <span style="width:6px;height:6px;border-radius:50%;background:oklch(0.78 0.1 155);flex-shrink:0"></span>
+            <span style="font-size:13px;font-weight:600;color:oklch(0.3 0.02 220);width:56px">10:30 am</span>
+            <span style="font-size:13px;color:oklch(0.45 0 0)">Control</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:11px">
+            <span style="width:6px;height:6px;border-radius:50%;background:oklch(0.6 0.05 220);flex-shrink:0"></span>
+            <span style="font-size:13px;font-weight:600;color:oklch(0.3 0.02 220);width:56px">2:00 pm</span>
+            <span style="font-size:13px;color:oklch(0.45 0 0)">Terapia</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ingresos del mes -->
+      <div style="grid-column:span 4;background:oklch(1 0 0);border-radius:20px;box-shadow:0 1px 2px rgba(20,40,60,0.04),0 10px 28px -16px rgba(20,40,60,0.16);border:1px solid oklch(0 0 0 / 6%);padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:11px">
+            <div style="width:38px;height:38px;border-radius:11px;background:oklch(0.94 0.02 200);display:flex;align-items:center;justify-content:center">
+              <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="oklch(0.4 0.06 220)" stroke-width="1.7"><rect x="2" y="4.5" width="16" height="11" rx="2"/><path d="M2 8h16"/></svg>
+            </div>
+            <p style="margin:0;font-size:14px;font-weight:600;color:oklch(0.3 0.02 220)">Ingresos del mes</p>
+          </div>
+          <span style="font-size:11.5px;font-weight:700;color:oklch(0.2 0.04 155);background:oklch(0.78 0.1 155 / 0.28);padding:3px 9px;border-radius:99px">+12%</span>
+        </div>
+        <p style="margin:0;font-size:30px;font-weight:800;color:oklch(0.18 0.02 220);letter-spacing:-0.01em">$4.850.000</p>
+        <div style="display:flex;align-items:end;gap:8px;height:56px">
+          <div style="flex:1;height:38%;background:oklch(0.85 0.03 90);border-radius:5px 5px 0 0"></div>
+          <div style="flex:1;height:52%;background:oklch(0.85 0.03 90);border-radius:5px 5px 0 0"></div>
+          <div style="flex:1;height:44%;background:oklch(0.85 0.03 90);border-radius:5px 5px 0 0"></div>
+          <div style="flex:1;height:68%;background:oklch(0.85 0.03 90);border-radius:5px 5px 0 0"></div>
+          <div style="flex:1;height:60%;background:oklch(0.85 0.03 90);border-radius:5px 5px 0 0"></div>
+          <div style="flex:1;height:100%;background:oklch(0.4 0.06 220);border-radius:5px 5px 0 0"></div>
+        </div>
+        <p style="margin:0;font-size:12.5px;color:oklch(0.45 0 0)"><a href="#">3 pagos</a> pendientes por confirmar</p>
+      </div>
+
+      <!-- Pacientes nuevos -->
+      <div style="grid-column:span 3;background:oklch(1 0 0);border-radius:20px;box-shadow:0 1px 2px rgba(20,40,60,0.04),0 10px 28px -16px rgba(20,40,60,0.16);border:1px solid oklch(0 0 0 / 6%);padding:22px;display:flex;flex-direction:column;justify-content:space-between;gap:14px">
+        <div style="width:38px;height:38px;border-radius:11px;background:oklch(0.78 0.1 155 / 0.22);display:flex;align-items:center;justify-content:center">
+          <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="oklch(0.2 0.04 155)" stroke-width="1.7"><circle cx="7.5" cy="7" r="3"/><path d="M2 17c0-3.3 2.5-5.7 5.5-5.7s5.5 2.4 5.5 5.7"/><path d="M14.5 6v4M12.5 8h4"/></svg>
+        </div>
+        <div>
+          <p style="margin:0;font-size:30px;font-weight:800;color:oklch(0.18 0.02 220)">8</p>
+          <p style="margin:4px 0 0;font-size:13px;color:oklch(0.45 0 0)">pacientes nuevos este mes</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BENTO ROW 2: compact strip -->
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+
+      <div style="flex:1;min-width:190px;background:oklch(1 0 0);border-radius:16px;border:1px solid oklch(0 0 0 / 6%);padding:18px;display:flex;flex-direction:column;gap:10px">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="oklch(0.4 0.06 220)" stroke-width="1.6"><path d="M3 5h14M3 10h14M3 15h9"/><circle cx="17" cy="15" r="1.3" fill="oklch(0.4 0.06 220)" stroke="none"/></svg>
+        <p style="margin:0;font-size:22px;font-weight:800;color:oklch(0.18 0.02 220)">4</p>
+        <p style="margin:0;font-size:12.5px;color:oklch(0.45 0 0)">en lista de espera</p>
+      </div>
+
+      <div style="flex:1;min-width:190px;background:oklch(1 0 0);border-radius:16px;border:1px solid oklch(0 0 0 / 6%);padding:18px;display:flex;flex-direction:column;gap:10px">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="oklch(0.4 0.06 220)" stroke-width="1.6"><rect x="2.5" y="3.5" width="15" height="14" rx="2.5"/><path d="M7.5 8.5l5 5M12.5 8.5l-5 5"/></svg>
+        <p style="margin:0;font-size:22px;font-weight:800;color:oklch(0.18 0.02 220)">2</p>
+        <p style="margin:0;font-size:12.5px;color:oklch(0.45 0 0)">citas canceladas</p>
+      </div>
+
+      <div style="flex:1;min-width:190px;background:oklch(1 0 0);border-radius:16px;border:1px solid oklch(0 0 0 / 6%);padding:18px;display:flex;flex-direction:column;gap:10px">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="oklch(0.4 0.06 220)" stroke-width="1.6"><circle cx="10" cy="6.5" r="2.7"/><path d="M4.5 17c0-3.3 2.5-5.7 5.5-5.7M13 12l4 4M17 12l-4 4"/></svg>
+        <p style="margin:0;font-size:22px;font-weight:800;color:oklch(0.18 0.02 220)">1</p>
+        <p style="margin:0;font-size:12.5px;color:oklch(0.45 0 0)">inasistencia este mes</p>
+      </div>
+
+      <div style="flex:1;min-width:190px;background:oklch(1 0 0);border-radius:16px;border:1px solid oklch(0 0 0 / 6%);padding:18px;display:flex;flex-direction:column;gap:10px">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="oklch(0.4 0.06 220)" stroke-width="1.6"><circle cx="10" cy="10" r="7.5"/><path d="M10 6.2v3.3l2.6 1.5"/></svg>
+        <p style="margin:0;font-size:22px;font-weight:800;color:oklch(0.18 0.02 220)">0</p>
+        <p style="margin:0;font-size:12.5px;color:oklch(0.45 0 0)">tickets de soporte abiertos</p>
+      </div>
+
+      <div style="flex:1.4;min-width:230px;background:oklch(1 0 0);border-radius:16px;border:1px solid oklch(0 0 0 / 6%);padding:18px;display:flex;align-items:center;gap:14px">
+        <div style="width:36px;height:36px;border-radius:10px;background:oklch(0.78 0.1 155 / 0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="oklch(0.2 0.04 155)" stroke-width="1.6"><path d="M10 2.5l6 2.2v4.6c0 4-2.6 6.7-6 8.2-3.4-1.5-6-4.2-6-8.2V4.7z"/><path d="M7.3 10l1.8 1.8 3.6-3.8"/></svg>
+        </div>
+        <div style="min-width:0">
+          <p style="margin:0;font-size:13.5px;font-weight:600;color:oklch(0.3 0.02 220)">Último respaldo correcto</p>
+          <p style="margin:2px 0 0;font-size:12px;color:oklch(0.45 0 0)">8 de agosto · automático</p>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+</x-dc>
+</body>
+</html>

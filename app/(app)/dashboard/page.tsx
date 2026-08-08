@@ -13,11 +13,19 @@ import {
 } from "lucide-react";
 import { requireCurrentProfile } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ActivationChecklist } from "@/components/patterns/activation-checklist";
 import { getOnboardingContext, computeStepCompletion, progressPercent } from "@/app/onboarding/_lib/context";
 import { bogotaStartOfDay, bogotaStartOfMonth } from "@/lib/utils/timezone";
+import { cn } from "@/lib/utils";
+
+// Alturas decorativas de la mini-gráfica de ingresos — no representan el
+// desglose diario real (eso vive en Reportes), solo dan una sensación de
+// tendencia junto al monto total del mes.
+const REVENUE_SPARKLINE_HEIGHTS = [38, 52, 44, 68, 60, 100];
+const AGENDA_DOT_COLORS = ["bg-primary", "bg-accent", "bg-chart-3"];
 
 export default async function DashboardPage() {
   const profile = await requireCurrentProfile();
@@ -47,11 +55,15 @@ export default async function DashboardPage() {
   const todayStart = bogotaStartOfDay(now);
   const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
   const monthStart = bogotaStartOfMonth(now);
+  const prevMonthAnchor = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const prevMonthStart = bogotaStartOfMonth(prevMonthAnchor);
 
   const [
     { count: todayCount },
+    { data: todayAppointments },
     { data: nextAppointment },
     { data: monthPayments },
+    { data: prevMonthPayments },
     { count: pendingPaymentsCount },
     { count: newPatientsCount },
     { count: cancelledCount },
@@ -70,6 +82,16 @@ export default async function DashboardPage() {
       .not("status", "in", "(cancelled,expired)"),
     supabase
       .from("appointments")
+      .select("id, starts_at, service_id")
+      .eq("clinic_id", clinicId)
+      .is("deleted_at", null)
+      .gte("starts_at", todayStart.toISOString())
+      .lt("starts_at", todayEnd.toISOString())
+      .not("status", "in", "(cancelled,expired)")
+      .order("starts_at")
+      .limit(3),
+    supabase
+      .from("appointments")
       .select("*")
       .eq("clinic_id", clinicId)
       .is("deleted_at", null)
@@ -84,6 +106,13 @@ export default async function DashboardPage() {
       .eq("clinic_id", clinicId)
       .eq("status", "approved")
       .gte("paid_at", monthStart.toISOString()),
+    supabase
+      .from("payments")
+      .select("amount")
+      .eq("clinic_id", clinicId)
+      .eq("status", "approved")
+      .gte("paid_at", prevMonthStart.toISOString())
+      .lt("paid_at", monthStart.toISOString()),
     supabase
       .from("payment_intents")
       .select("id", { count: "exact", head: true })
@@ -126,83 +155,66 @@ export default async function DashboardPage() {
       .eq("status", "waiting"),
   ]);
 
+  const todayServiceIds = Array.from(new Set((todayAppointments ?? []).map((a) => a.service_id)));
+  const { data: todayServices } =
+    todayServiceIds.length > 0
+      ? await supabase.from("services").select("id, name").in("id", todayServiceIds)
+      : { data: [] as { id: string; name: string }[] };
+  const serviceNameById = new Map((todayServices ?? []).map((s) => [s.id, s.name]));
+
   const activationState = await activation;
   const monthRevenue = (monthPayments ?? []).reduce((sum, p) => sum + Number(p.amount), 0);
+  const prevMonthRevenue = (prevMonthPayments ?? []).reduce((sum, p) => sum + Number(p.amount), 0);
+  const revenueChangePct = prevMonthRevenue > 0 ? Math.round(((monthRevenue - prevMonthRevenue) / prevMonthRevenue) * 100) : null;
 
-  const cards = [
+  const todayLabel = now.toLocaleDateString("es-CO", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: "America/Bogota",
+  });
+
+  const compactStats = [
     {
-      icon: CalendarDays,
-      title: `Hoy tienes ${todayCount ?? 0} citas`,
-      description: nextAppointment
-        ? `Tu próxima cita es a las ${new Date(nextAppointment.starts_at).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}.`
-        : "No tienes más citas programadas por ahora.",
-      href: "/dashboard/agenda",
-    },
-    {
-      icon: Wallet,
-      title: `$${monthRevenue.toLocaleString("es-CO")} en pagos confirmados este mes`,
-      description:
-        pendingPaymentsCount && pendingPaymentsCount > 0
-          ? `${pendingPaymentsCount} pagos están pendientes por confirmar.`
-          : "No tienes pagos pendientes por confirmar.",
-      href: "/dashboard/pagos/conciliacion",
-    },
-    {
-      icon: UserPlus,
-      title: `${newPatientsCount ?? 0} pacientes nuevos este mes`,
-      description: "Se registraron automáticamente al reservar o los agregaste manualmente.",
-      href: "/dashboard/pacientes",
-    },
-    {
-      icon: CalendarX,
-      title: `${cancelledCount ?? 0} citas canceladas este mes`,
-      description: "Activa la lista de espera para recuperar espacios cancelados.",
+      icon: ListChecks,
+      value: waitlistCount ?? 0,
+      label: "en lista de espera",
       href: "/dashboard/lista-espera",
     },
     {
-      icon: ListChecks,
-      title: `${waitlistCount ?? 0} pacientes en lista de espera`,
-      description:
-        waitlistCount && waitlistCount > 0
-          ? "Podrían tomar el espacio de una cita cancelada o reprogramada."
-          : "Cuando un paciente no encuentre horario, agrégalo aquí.",
+      icon: CalendarX,
+      value: cancelledCount ?? 0,
+      label: "citas canceladas este mes",
       href: "/dashboard/lista-espera",
     },
     {
       icon: UserX,
-      title: `${noShowCount ?? 0} inasistencias este mes`,
-      description: "Considera pedir anticipos para servicios con más inasistencias.",
+      value: noShowCount ?? 0,
+      label: "inasistencias este mes",
       href: "/dashboard/servicios",
     },
     {
       icon: LifeBuoy,
-      title: `${openTicketsCount ?? 0} tickets de soporte abiertos`,
-      description: "Primera respuesta desde 1 hora en tickets críticos, según la prioridad que asignes.",
-      href: "/dashboard/soporte",
-    },
-    {
-      icon: ShieldCheck,
-      title: lastBackup ? "Tu último backup fue realizado correctamente" : "Aún no hay backups registrados",
-      description: lastBackup
-        ? `${new Date(lastBackup.created_at).toLocaleDateString("es-CO")} · ${lastBackup.backup_type}`
-        : "Tus datos se respaldan automáticamente una vez esté activa tu licencia.",
+      value: openTicketsCount ?? 0,
+      label: "tickets de soporte abiertos",
       href: "/dashboard/soporte",
     },
   ];
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-5">
         <div>
-          <h1 className="text-2xl font-semibold">Hola, {firstName}</h1>
-          <p className="mt-1 text-muted-foreground">Este es el estado de tu consultorio hoy.</p>
+          <p className="text-[12.5px] font-semibold text-muted-foreground capitalize">{todayLabel}</p>
+          <h1 className="mt-1.5 text-[28px] font-extrabold tracking-tight text-foreground">Hola, {firstName}</h1>
+          <p className="mt-1.5 text-[14.5px] text-muted-foreground">Este es el estado de tu consultorio hoy.</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" render={<Link href="/dashboard/oportunidades" />}>
+        <div className="flex gap-2.5">
+          <Button variant="outline" className="rounded-[10px]" render={<Link href="/dashboard/oportunidades" />}>
             <Lightbulb className="size-4" />
             Oportunidades
           </Button>
-          <Button variant="outline" render={<Link href="/dashboard/reportes" />}>
+          <Button variant="outline" className="rounded-[10px]" render={<Link href="/dashboard/reportes" />}>
             <BarChart3 className="size-4" />
             Reportes
           </Button>
@@ -211,18 +223,144 @@ export default async function DashboardPage() {
 
       {activationState && <ActivationChecklist completion={activationState.completion} percent={activationState.percent} />}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map((card) => (
-          <Link key={card.title} href={card.href}>
-            <Card className="h-full transition-colors hover:border-primary">
-              <CardHeader>
-                <card.icon className="size-5 text-primary" />
-                <CardTitle className="mt-2 text-base">{card.title}</CardTitle>
-                <CardDescription>{card.description}</CardDescription>
-              </CardHeader>
+      {/* Bento fila 1: agenda / ingresos / pacientes nuevos */}
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-12">
+        <Card className="rounded-[20px] border-black/[0.06] p-6 shadow-[0_1px_2px_rgba(20,40,60,0.04),0_10px_28px_-16px_rgba(20,40,60,0.16)] md:col-span-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex size-[38px] shrink-0 items-center justify-center rounded-[11px] bg-secondary">
+                <CalendarDays className="size-[19px] text-primary" strokeWidth={1.7} />
+              </div>
+              <p className="text-sm font-semibold text-foreground/90">Agenda de hoy</p>
+            </div>
+            <Link href="/dashboard/agenda" className="text-[12.5px] font-semibold text-primary hover:underline">
+              Ver agenda →
+            </Link>
+          </div>
+
+          <div className="mt-4.5">
+            <p className="text-[38px] leading-none font-extrabold text-foreground">
+              {todayCount ?? 0} <span className="text-base font-semibold text-muted-foreground">citas hoy</span>
+            </p>
+            <p className="mt-2 text-[13.5px] text-muted-foreground">
+              {nextAppointment ? (
+                <>
+                  Tu próxima cita es a las{" "}
+                  <strong className="font-semibold text-foreground/90">
+                    {new Date(nextAppointment.starts_at).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}
+                  </strong>
+                  .
+                </>
+              ) : (
+                "No tienes más citas programadas por ahora."
+              )}
+            </p>
+          </div>
+
+          {todayAppointments && todayAppointments.length > 0 && (
+            <div className="mt-1 flex flex-col gap-2.5 border-t border-black/[0.06] pt-3">
+              {todayAppointments.map((a, i) => (
+                <div key={a.id} className="flex items-center gap-3">
+                  <span className={cn("size-1.5 shrink-0 rounded-full", AGENDA_DOT_COLORS[i % AGENDA_DOT_COLORS.length])} />
+                  <span className="w-14 text-[13px] font-semibold text-foreground/90">
+                    {new Date(a.starts_at).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                  <span className="truncate text-[13px] text-muted-foreground">{serviceNameById.get(a.service_id) ?? "Servicio"}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <Card className="rounded-[20px] border-black/[0.06] p-6 shadow-[0_1px_2px_rgba(20,40,60,0.04),0_10px_28px_-16px_rgba(20,40,60,0.16)] md:col-span-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex size-[38px] shrink-0 items-center justify-center rounded-[11px] bg-secondary">
+                <Wallet className="size-[19px] text-primary" strokeWidth={1.7} />
+              </div>
+              <p className="text-sm font-semibold text-foreground/90">Ingresos del mes</p>
+            </div>
+            {revenueChangePct !== null && (
+              <Badge
+                variant="secondary"
+                className="rounded-full border-transparent bg-accent/[0.28] px-2.5 py-0.5 text-[11.5px] font-bold text-accent-foreground"
+              >
+                {revenueChangePct >= 0 ? "+" : ""}
+                {revenueChangePct}%
+              </Badge>
+            )}
+          </div>
+
+          <p className="mt-4 text-[30px] font-extrabold tracking-tight text-foreground">
+            ${monthRevenue.toLocaleString("es-CO")}
+          </p>
+
+          <div className="mt-4 flex h-14 items-end gap-2">
+            {REVENUE_SPARKLINE_HEIGHTS.map((h, i) => (
+              <div
+                key={i}
+                className={cn("flex-1 rounded-t-[5px]", i === REVENUE_SPARKLINE_HEIGHTS.length - 1 ? "bg-primary" : "bg-chart-4")}
+                style={{ height: `${h}%` }}
+              />
+            ))}
+          </div>
+
+          <p className="mt-4 text-[12.5px] text-muted-foreground">
+            {pendingPaymentsCount && pendingPaymentsCount > 0 ? (
+              <>
+                <Link href="/dashboard/pagos/conciliacion" className="font-semibold text-primary hover:underline">
+                  {pendingPaymentsCount} pagos
+                </Link>{" "}
+                pendientes por confirmar
+              </>
+            ) : (
+              "No tienes pagos pendientes por confirmar."
+            )}
+          </p>
+        </Card>
+
+        <Link href="/dashboard/pacientes" className="md:col-span-3">
+          <Card className="h-full justify-between rounded-[20px] border-black/[0.06] p-[22px] shadow-[0_1px_2px_rgba(20,40,60,0.04),0_10px_28px_-16px_rgba(20,40,60,0.16)] transition-shadow hover:shadow-[0_1px_2px_rgba(20,40,60,0.06),0_14px_32px_-16px_rgba(20,40,60,0.22)]">
+            <div className="flex size-[38px] items-center justify-center rounded-[11px] bg-accent/[0.22]">
+              <UserPlus className="size-[19px] text-accent-foreground" strokeWidth={1.7} />
+            </div>
+            <div className="mt-3.5">
+              <p className="text-[30px] font-extrabold text-foreground">{newPatientsCount ?? 0}</p>
+              <p className="mt-1 text-[13px] text-muted-foreground">pacientes nuevos este mes</p>
+            </div>
+          </Card>
+        </Link>
+      </div>
+
+      {/* Bento fila 2: franja compacta */}
+      <div className="flex flex-wrap gap-4">
+        {compactStats.map((stat) => (
+          <Link key={stat.label} href={stat.href} className="min-w-[190px] flex-1">
+            <Card className="h-full gap-2.5 rounded-[16px] border-black/[0.06] p-[18px] shadow-none transition-colors hover:border-primary/30">
+              <stat.icon className="size-[18px] text-primary" strokeWidth={1.6} />
+              <p className="text-[22px] font-extrabold text-foreground">{stat.value}</p>
+              <p className="text-[12.5px] text-muted-foreground">{stat.label}</p>
             </Card>
           </Link>
         ))}
+
+        <Link href="/dashboard/soporte" className="min-w-[230px] flex-[1.4]">
+          <Card className="h-full flex-row items-center gap-3.5 rounded-[16px] border-black/[0.06] p-[18px] shadow-none transition-colors hover:border-primary/30">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-accent/[0.22]">
+              <ShieldCheck className="size-[18px] text-accent-foreground" strokeWidth={1.6} />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-[13.5px] font-semibold text-foreground/90">
+                {lastBackup ? "Último respaldo correcto" : "Aún no hay backups registrados"}
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {lastBackup
+                  ? `${new Date(lastBackup.created_at).toLocaleDateString("es-CO")} · ${lastBackup.backup_type}`
+                  : "Se respaldan automáticamente una vez esté activa tu licencia."}
+              </p>
+            </div>
+          </Card>
+        </Link>
       </div>
     </div>
   );
