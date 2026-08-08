@@ -54,10 +54,41 @@ export async function addBlockedTime(
 ): Promise<ScheduleActionState> {
   const { clinicId, supabase } = await ownerOrProfessionalClinicId();
   const professionalId = (formData.get("professional_id") as string) || null;
+  const reason = (formData.get("reason") as string) || null;
+  const isRecurring = formData.get("is_recurring") === "on";
+
+  if (isRecurring) {
+    const dayOfWeek = Number(formData.get("day_of_week"));
+    const startTime = formData.get("recurring_start_time") as string;
+    const endTime = formData.get("recurring_end_time") as string;
+    const fromDate = (formData.get("recurrence_from") as string) || new Date().toISOString().slice(0, 10);
+    const untilDate = (formData.get("recurrence_until") as string) || null;
+
+    if (Number.isNaN(dayOfWeek) || !startTime || !endTime) {
+      return { error: "Selecciona un día de la semana y un rango de horas válido." };
+    }
+    if (endTime <= startTime) return { error: "La hora de fin debe ser mayor a la de inicio." };
+
+    const { error } = await supabase.from("blocked_times").insert({
+      clinic_id: clinicId,
+      professional_id: professionalId,
+      is_recurring: true,
+      day_of_week: dayOfWeek,
+      start_time: startTime,
+      end_time: endTime,
+      starts_at: new Date(`${fromDate}T00:00:00`).toISOString(),
+      recurrence_ends_at: untilDate,
+      reason,
+    });
+
+    if (error) return { error: "No pudimos guardar el bloqueo recurrente." };
+    revalidatePath("/dashboard/configuracion/horarios");
+    return { success: true };
+  }
+
   const date = formData.get("date") as string;
   const startTime = formData.get("start_time") as string;
   const endTime = formData.get("end_time") as string;
-  const reason = (formData.get("reason") as string) || null;
 
   if (!date || !startTime || !endTime) return { error: "Completa la fecha y el rango de horas." };
 
