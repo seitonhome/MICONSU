@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole, requireCurrentProfile } from "@/lib/auth/session";
 import { logAudit } from "@/lib/security/audit";
+import { forwardTicketStatusToSeitonPqr } from "@/lib/integrations/seiton-pqr";
 import type { Database } from "@/lib/supabase/types";
 
 export type AdminActionState = { error?: string; success?: boolean };
@@ -165,7 +166,17 @@ export async function updateTicketStatus(
   const patch: Database["public"]["Tables"]["support_tickets"]["Update"] = { status };
   if (status === "resolved" || status === "closed") patch.resolved_at = new Date().toISOString();
 
-  await supabase.from("support_tickets").update(patch).eq("id", ticketId);
+  const { data: ticket } = await supabase
+    .from("support_tickets")
+    .update(patch)
+    .eq("id", ticketId)
+    .select("seiton_ticket_id")
+    .single();
+
+  if (ticket?.seiton_ticket_id) {
+    await forwardTicketStatusToSeitonPqr(ticket.seiton_ticket_id, status);
+  }
+
   revalidatePath(`/admin/soporte/${ticketId}`);
   revalidatePath("/admin/soporte");
 }

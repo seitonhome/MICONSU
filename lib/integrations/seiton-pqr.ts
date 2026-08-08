@@ -27,6 +27,44 @@ const SEITON_STATUS_TO_LOCAL: Record<SeitonTicketStatus, string> = {
   CLOSED: "closed",
 };
 
+// Mapeo inverso al de SEITON_STATUS_TO_LOCAL: los estados locales más finos
+// (in_review, waiting_client) no existen en Seiton, así que ambos colapsan a
+// IN_PROGRESS allá — es una pérdida de granularidad aceptada, no un bug.
+const LOCAL_STATUS_TO_SEITON: Record<string, SeitonTicketStatus> = {
+  open: "OPEN",
+  in_review: "IN_PROGRESS",
+  waiting_client: "IN_PROGRESS",
+  in_progress: "IN_PROGRESS",
+  resolved: "RESOLVED",
+  closed: "CLOSED",
+};
+
+/**
+ * Empuja un cambio de estado hecho en el panel de superadmin de esta app
+ * (/admin/soporte) hacia el ticket correspondiente en Seiton PQR, para que
+ * ambos paneles queden consistentes sin importar desde cuál se gestionó el
+ * ticket. Best-effort: si Seiton no responde, el estado local ya quedó
+ * guardado y esto no debe bloquear ni revertir esa actualización.
+ */
+export async function forwardTicketStatusToSeitonPqr(
+  seitonTicketId: string,
+  localStatus: string,
+): Promise<void> {
+  const seitonStatus = LOCAL_STATUS_TO_SEITON[localStatus];
+  if (!seitonStatus) return;
+
+  try {
+    await fetch(SEITON_PQR_URL, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ticketId: seitonTicketId, status: seitonStatus }),
+      signal: AbortSignal.timeout(5000),
+    });
+  } catch (error) {
+    console.error("No se pudo empujar el estado del ticket hacia Seiton PQR:", error);
+  }
+}
+
 export async function forwardTicketToSeitonPqr(params: {
   customerName: string;
   customerEmail: string;
