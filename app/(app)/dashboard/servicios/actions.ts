@@ -42,17 +42,38 @@ function parseServiceForm(formData: FormData) {
   };
 }
 
+async function syncServiceProfessionals(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  clinicId: string,
+  serviceId: string,
+  professionalIds: string[],
+): Promise<void> {
+  await supabase.from("professional_services").delete().eq("service_id", serviceId);
+  if (professionalIds.length > 0) {
+    await supabase.from("professional_services").insert(
+      professionalIds.map((professionalId) => ({ clinic_id: clinicId, service_id: serviceId, professional_id: professionalId })),
+    );
+  }
+}
+
 export async function createService(
   _prev: ServiceActionState | undefined,
   formData: FormData,
 ): Promise<ServiceActionState> {
   const { clinicId, supabase } = await ownerClinicId();
   const fields = parseServiceForm(formData);
+  const professionalIds = formData.getAll("professional_ids").map(String);
 
   if (!fields.name) return { error: "El nombre del servicio es obligatorio." };
 
-  const { error } = await supabase.from("services").insert({ clinic_id: clinicId, ...fields });
-  if (error) return { error: "No pudimos crear el servicio." };
+  const { data: service, error } = await supabase
+    .from("services")
+    .insert({ clinic_id: clinicId, ...fields })
+    .select("id")
+    .single();
+  if (error || !service) return { error: "No pudimos crear el servicio." };
+
+  await syncServiceProfessionals(supabase, clinicId, service.id, professionalIds);
 
   revalidatePath("/dashboard/servicios");
   return { success: true };
@@ -63,13 +84,16 @@ export async function updateService(
   _prev: ServiceActionState | undefined,
   formData: FormData,
 ): Promise<ServiceActionState> {
-  const { supabase } = await ownerClinicId();
+  const { clinicId, supabase } = await ownerClinicId();
   const fields = parseServiceForm(formData);
+  const professionalIds = formData.getAll("professional_ids").map(String);
 
   if (!fields.name) return { error: "El nombre del servicio es obligatorio." };
 
   const { error } = await supabase.from("services").update(fields).eq("id", id);
   if (error) return { error: "No pudimos actualizar el servicio." };
+
+  await syncServiceProfessionals(supabase, clinicId, id, professionalIds);
 
   revalidatePath("/dashboard/servicios");
   return { success: true };

@@ -32,13 +32,18 @@ const PAYMENT_TYPE_LABELS: Record<string, string> = {
 
 type ServiceRow = Database["public"]["Tables"]["services"]["Row"];
 type CategoryRow = Database["public"]["Tables"]["service_categories"]["Row"];
+type ProfessionalOption = { id: string; full_name: string };
 
 export function ServiceDialog({
   service,
   categories,
+  professionals,
+  linkedProfessionalIds,
 }: {
   service?: ServiceRow;
   categories: CategoryRow[];
+  professionals: ProfessionalOption[];
+  linkedProfessionalIds?: string[];
 }) {
   const [open, setOpen] = useState(false);
   const action = service ? updateService.bind(null, service.id) : createService;
@@ -192,6 +197,23 @@ export function ServiceDialog({
               <Checkbox name="allows_package" defaultChecked={service?.allows_package ?? false} />
               Se puede vender como paquete de sesiones
             </label>
+
+            {professionals.length > 0 && (
+              <div className="space-y-2 sm:col-span-2">
+                <Label>¿Quién atiende este servicio?</Label>
+                <p className="text-xs text-muted-foreground">
+                  Deja todos sin marcar para que cualquier profesional activo aparezca disponible.
+                </p>
+                <div className="flex flex-wrap gap-x-4 gap-y-2">
+                  {professionals.map((p) => (
+                    <label key={p.id} className="flex items-center gap-2 text-sm">
+                      <Checkbox name="professional_ids" value={p.id} defaultChecked={linkedProfessionalIds?.includes(p.id) ?? false} />
+                      {p.full_name}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="pre_instructions">Instrucciones previas (opcional)</Label>

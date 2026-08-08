@@ -12,12 +12,13 @@ import type { Database } from "@/lib/supabase/types";
 
 type ServiceRow = Database["public"]["Tables"]["services"]["Row"];
 type CategoryRow = Database["public"]["Tables"]["service_categories"]["Row"];
+type ProfessionalOption = { id: string; full_name: string };
 
 export default async function ServiciosPage() {
   const profile = await requireRole(["clinic_owner"]);
   const supabase = await createClient();
 
-  const [{ data: categories }, { data: services }] = await Promise.all([
+  const [{ data: categories }, { data: services }, { data: professionals }, { data: links }] = await Promise.all([
     supabase
       .from("service_categories")
       .select("*")
@@ -30,11 +31,21 @@ export default async function ServiciosPage() {
       .eq("clinic_id", profile.clinicId!)
       .is("deleted_at", null)
       .order("created_at"),
+    supabase.from("professionals").select("id, full_name").eq("clinic_id", profile.clinicId!).is("deleted_at", null).eq("is_active", true),
+    supabase.from("professional_services").select("service_id, professional_id").eq("clinic_id", profile.clinicId!),
   ]);
 
   const cats = categories ?? [];
   const svcs = services ?? [];
+  const pros = professionals ?? [];
   const uncategorized = svcs.filter((s) => !s.category_id);
+
+  const linkedIdsByService = new Map<string, string[]>();
+  for (const link of links ?? []) {
+    const list = linkedIdsByService.get(link.service_id) ?? [];
+    list.push(link.professional_id);
+    linkedIdsByService.set(link.service_id, list);
+  }
 
   return (
     <div className="space-y-8">
@@ -45,7 +56,7 @@ export default async function ServiciosPage() {
             Define lo que ofreces, su duración, precio y reglas de pago. Esto es lo que tus pacientes verán al reservar.
           </p>
         </div>
-        <ServiceDialog categories={cats} />
+        <ServiceDialog categories={cats} professionals={pros} />
       </div>
 
       <div className="rounded-xl border p-4">
@@ -85,10 +96,25 @@ export default async function ServiciosPage() {
           {cats.map((cat) => {
             const items = svcs.filter((s) => s.category_id === cat.id);
             if (items.length === 0) return null;
-            return <ServiceGroup key={cat.id} title={cat.name} services={items} categories={cats} />;
+            return (
+              <ServiceGroup
+                key={cat.id}
+                title={cat.name}
+                services={items}
+                categories={cats}
+                professionals={pros}
+                linkedIdsByService={linkedIdsByService}
+              />
+            );
           })}
           {uncategorized.length > 0 && (
-            <ServiceGroup title="Sin categoría" services={uncategorized} categories={cats} />
+            <ServiceGroup
+              title="Sin categoría"
+              services={uncategorized}
+              categories={cats}
+              professionals={pros}
+              linkedIdsByService={linkedIdsByService}
+            />
           )}
         </div>
       )}
@@ -100,10 +126,14 @@ function ServiceGroup({
   title,
   services,
   categories,
+  professionals,
+  linkedIdsByService,
 }: {
   title: string;
   services: ServiceRow[];
   categories: CategoryRow[];
+  professionals: ProfessionalOption[];
+  linkedIdsByService: Map<string, string[]>;
 }) {
   return (
     <div>
@@ -124,7 +154,12 @@ function ServiceGroup({
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <ServiceActiveToggle id={s.id} isActive={s.is_active} />
-              <ServiceDialog service={s} categories={categories} />
+              <ServiceDialog
+                service={s}
+                categories={categories}
+                professionals={professionals}
+                linkedProfessionalIds={linkedIdsByService.get(s.id) ?? []}
+              />
               <form action={deleteService.bind(null, s.id)}>
                 <ConfirmSubmitButton
                   confirmMessage={`¿Eliminar el servicio "${s.name}"?`}
