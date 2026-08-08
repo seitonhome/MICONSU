@@ -66,6 +66,21 @@ export function ProfessionalDialog({
         <form action={formAction} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="photo">Foto (opcional)</Label>
+              <div className="flex items-center gap-3">
+                {professional?.photo_url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={professional.photo_url}
+                    alt=""
+                    className="size-12 shrink-0 rounded-full object-cover"
+                  />
+                )}
+                <Input id="photo" name="photo" type="file" accept="image/*" className="flex-1" />
+              </div>
+              <p className="text-xs text-muted-foreground">Aparece en tu página pública y el flujo de reserva. Máx. 5 MB.</p>
+            </div>
+            <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="full_name">Nombre completo</Label>
               <Input
                 id="full_name"
