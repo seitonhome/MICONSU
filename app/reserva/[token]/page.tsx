@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { APPOINTMENT_STATUS_LABELS } from "@/lib/domain/labels";
 import { CancelBookingForm } from "./cancel-booking-form";
+import { RescheduleBookingForm } from "./reschedule-booking-form";
 
 export default async function ManageBookingPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -74,10 +75,8 @@ export default async function ManageBookingPage({ params }: { params: Promise<{ 
 
         {canCancel ? (
           <div className="space-y-3">
+            <RescheduleBookingForm token={token} />
             <CancelBookingForm token={token} />
-            <p className="text-center text-xs text-muted-foreground">
-              ¿Necesitas otro horario? Escríbenos y con gusto te ayudamos a reprogramar.
-            </p>
           </div>
         ) : (
           <p className="text-center text-sm text-muted-foreground">Esta cita ya no admite cambios desde aquí.</p>

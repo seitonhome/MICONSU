@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { updateAppointmentStatus, cancelAppointment } from "./actions";
+import { RescheduleDialog } from "./reschedule-dialog";
 import type { Database } from "@/lib/supabase/types";
 
 type Status = Database["public"]["Enums"]["appointment_status"];
@@ -28,37 +29,45 @@ const NEXT_ACTIONS: Partial<Record<Status, { label: string; next: Status }[]>> =
 
 export function AppointmentActions({ id, status }: { id: string; status: Status }) {
   const [isPending, startTransition] = useTransition();
+  const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const actions = NEXT_ACTIONS[status] ?? [];
   const canCancel = !["completed", "cancelled", "no_show", "expired"].includes(status);
+  const canReschedule = !["completed", "cancelled", "no_show", "expired"].includes(status);
 
-  if (actions.length === 0 && !canCancel) return null;
+  if (actions.length === 0 && !canCancel && !canReschedule) return null;
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" disabled={isPending} />}>
-        <MoreVertical className="size-4" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        {actions.map((action) => (
-          <DropdownMenuItem
-            key={action.next}
-            onClick={() => startTransition(() => updateAppointmentStatus(id, action.next))}
-          >
-            {action.label}
-          </DropdownMenuItem>
-        ))}
-        {canCancel && (
-          <DropdownMenuItem
-            variant="destructive"
-            onClick={() => {
-              const reason = window.prompt("Motivo de la cancelación (opcional):") ?? "";
-              startTransition(() => cancelAppointment(id, reason));
-            }}
-          >
-            Cancelar cita
-          </DropdownMenuItem>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" disabled={isPending} />}>
+          <MoreVertical className="size-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          {actions.map((action) => (
+            <DropdownMenuItem
+              key={action.next}
+              onClick={() => startTransition(() => updateAppointmentStatus(id, action.next))}
+            >
+              {action.label}
+            </DropdownMenuItem>
+          ))}
+          {canReschedule && (
+            <DropdownMenuItem onClick={() => setRescheduleOpen(true)}>Reprogramar</DropdownMenuItem>
+          )}
+          {canCancel && (
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => {
+                const reason = window.prompt("Motivo de la cancelación (opcional):") ?? "";
+                startTransition(() => cancelAppointment(id, reason));
+              }}
+            >
+              Cancelar cita
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <RescheduleDialog id={id} open={rescheduleOpen} onOpenChange={setRescheduleOpen} />
+    </>
   );
 }

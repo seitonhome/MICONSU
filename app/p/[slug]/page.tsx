@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { ThemeProvider, type VisualTheme } from "@/components/themes/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ReviewList, type PublicReview } from "@/components/patterns/review-list";
 import { PRACTITIONER_TYPE_LABELS } from "@/lib/auth/roles";
 import { MODALITY_LABELS } from "@/lib/domain/labels";
 
@@ -31,7 +32,7 @@ export default async function ProfessionalPublicPage({ params }: { params: Promi
 
   if (!clinic) notFound();
 
-  const [{ data: branding }, { data: links }, { data: credentials }] = await Promise.all([
+  const [{ data: branding }, { data: links }, { data: credentials }, { data: reviewRows }] = await Promise.all([
     supabase.from("clinic_branding").select("*").eq("clinic_id", clinic.id).maybeSingle(),
     supabase.from("professional_services").select("service_id").eq("professional_id", professional.id),
     supabase
@@ -40,7 +41,33 @@ export default async function ProfessionalPublicPage({ params }: { params: Promi
       .eq("professional_id", professional.id)
       .eq("is_public", true)
       .eq("is_verified", true),
+    supabase
+      .from("reviews")
+      .select("id, rating, comment, status, patient_id")
+      .eq("professional_id", professional.id)
+      .in("status", ["approved", "featured"])
+      .order("created_at", { ascending: false })
+      .limit(8),
   ]);
+
+  const sortedReviews = [...(reviewRows ?? [])].sort((a, b) => (a.status === b.status ? 0 : a.status === "featured" ? -1 : 1));
+  const reviewPatientIds = Array.from(new Set(sortedReviews.map((r) => r.patient_id).filter((id): id is string => Boolean(id))));
+
+  const admin = createAdminClient();
+  const { data: reviewPatients } =
+    reviewPatientIds.length > 0
+      ? await admin.from("patients").select("id, full_name").in("id", reviewPatientIds)
+      : { data: [] as { id: string; full_name: string }[] };
+  const reviewPatientNameById = new Map((reviewPatients ?? []).map((p) => [p.id, p.full_name.split(" ")[0]]));
+
+  const reviews: PublicReview[] = sortedReviews.map((r) => ({
+    id: r.id,
+    rating: r.rating,
+    comment: r.comment,
+    status: r.status as "approved" | "featured",
+    patientFirstName: r.patient_id ? (reviewPatientNameById.get(r.patient_id) ?? null) : null,
+    professionalName: null,
+  }));
 
   let servicesQuery = supabase
     .from("services")
@@ -118,6 +145,8 @@ export default async function ProfessionalPublicPage({ params }: { params: Promi
             </ul>
           )}
         </section>
+
+        <ReviewList reviews={reviews} />
       </main>
     </ThemeProvider>
   );

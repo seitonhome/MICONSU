@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MapPin, Phone, MessageCircle, Globe } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { ThemeProvider, type VisualTheme } from "@/components/themes/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ReviewList, type PublicReview } from "@/components/patterns/review-list";
 import { PRACTITIONER_TYPE_LABELS } from "@/lib/auth/roles";
 import { MODALITY_LABELS } from "@/lib/domain/labels";
 
@@ -22,7 +23,7 @@ export default async function ClinicPublicPage({ params }: { params: Promise<{ s
 
   if (!clinic) notFound();
 
-  const [{ data: branding }, { data: professionals }, { data: locations }, { data: categories }, { data: services }] =
+  const [{ data: branding }, { data: professionals }, { data: locations }, { data: categories }, { data: services }, { data: reviewRows }] =
     await Promise.all([
       supabase.from("clinic_branding").select("*").eq("clinic_id", clinic.id).maybeSingle(),
       supabase
@@ -44,11 +45,45 @@ export default async function ClinicPublicPage({ params }: { params: Promise<{ s
         .eq("clinic_id", clinic.id)
         .eq("is_active", true)
         .is("deleted_at", null),
+      supabase
+        .from("reviews")
+        .select("id, rating, comment, status, patient_id, professional_id")
+        .eq("clinic_id", clinic.id)
+        .in("status", ["approved", "featured"])
+        .order("created_at", { ascending: false })
+        .limit(8),
     ]);
 
   const svcs = services ?? [];
   const cats = categories ?? [];
   const uncategorized = svcs.filter((s) => !s.category_id);
+
+  const sortedReviews = [...(reviewRows ?? [])].sort((a, b) => (a.status === b.status ? 0 : a.status === "featured" ? -1 : 1));
+  const reviewPatientIds = Array.from(new Set(sortedReviews.map((r) => r.patient_id).filter((id): id is string => Boolean(id))));
+  const reviewProfessionalIds = Array.from(new Set(sortedReviews.map((r) => r.professional_id).filter((id): id is string => Boolean(id))));
+
+  // Reseñas son públicas, pero patients no lo es — se resuelve solo el
+  // primer nombre con el cliente admin, sin exponer el resto de la ficha.
+  const admin = createAdminClient();
+  const [{ data: reviewPatients }, { data: reviewProfessionals }] = await Promise.all([
+    reviewPatientIds.length > 0
+      ? admin.from("patients").select("id, full_name").in("id", reviewPatientIds)
+      : Promise.resolve({ data: [] as { id: string; full_name: string }[] }),
+    reviewProfessionalIds.length > 0
+      ? supabase.from("professionals").select("id, full_name").in("id", reviewProfessionalIds)
+      : Promise.resolve({ data: [] as { id: string; full_name: string }[] }),
+  ]);
+  const reviewPatientNameById = new Map((reviewPatients ?? []).map((p) => [p.id, p.full_name.split(" ")[0]]));
+  const reviewProfessionalNameById = new Map((reviewProfessionals ?? []).map((p) => [p.id, p.full_name]));
+
+  const reviews: PublicReview[] = sortedReviews.map((r) => ({
+    id: r.id,
+    rating: r.rating,
+    comment: r.comment,
+    status: r.status as "approved" | "featured",
+    patientFirstName: r.patient_id ? (reviewPatientNameById.get(r.patient_id) ?? null) : null,
+    professionalName: r.professional_id ? (reviewProfessionalNameById.get(r.professional_id) ?? null) : null,
+  }));
 
   return (
     <ThemeProvider
@@ -164,6 +199,8 @@ export default async function ClinicPublicPage({ params }: { params: Promise<{ s
             </ul>
           </section>
         )}
+
+        <ReviewList reviews={reviews} />
 
         <section className="text-center">
           <Link href={`/c/${slug}/resena`} className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground">

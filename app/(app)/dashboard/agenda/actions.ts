@@ -130,6 +130,57 @@ export async function updateAppointmentStatus(
   revalidatePath("/dashboard/agenda");
 }
 
+export type RescheduleState = { error?: string };
+
+export async function rescheduleAppointment(id: string, date: string, time: string): Promise<RescheduleState> {
+  const { supabase } = await staffClinicId();
+
+  const { data: appt } = await supabase
+    .from("appointments")
+    .select("professional_id, clinic_id, service_id, status")
+    .eq("id", id)
+    .single();
+  if (!appt) return { error: "No encontramos esta cita." };
+  if (["cancelled", "completed", "no_show", "expired"].includes(appt.status)) {
+    return { error: "Esta cita ya no se puede reprogramar." };
+  }
+
+  const { data: service } = await supabase.from("services").select("duration_minutes").eq("id", appt.service_id).single();
+  if (!service) return { error: "No encontramos el servicio de esta cita." };
+
+  const startsAt = new Date(`${date}T${time}:00`);
+  const endsAt = new Date(startsAt.getTime() + service.duration_minutes * 60000);
+
+  const { data: hasConflict } = await supabase.rpc("has_conflicting_appointment", {
+    p_professional_id: appt.professional_id,
+    p_starts_at: startsAt.toISOString(),
+    p_ends_at: endsAt.toISOString(),
+    p_exclude_appointment_id: id,
+  });
+  if (hasConflict) return { error: "Ese profesional ya tiene una cita en ese horario." };
+
+  const { data: isBlocked } = await supabase.rpc("is_range_blocked", {
+    p_professional_id: appt.professional_id,
+    p_clinic_id: appt.clinic_id,
+    p_starts_at: startsAt.toISOString(),
+    p_ends_at: endsAt.toISOString(),
+  });
+  if (isBlocked) return { error: "Ese horario está bloqueado para el profesional." };
+
+  // Se actualiza en el mismo registro (no se crea uno nuevo) para conservar
+  // el booking_token — así el link de gestión que ya recibió el paciente
+  // sigue funcionando después de reprogramar.
+  const { error } = await supabase
+    .from("appointments")
+    .update({ starts_at: startsAt.toISOString(), ends_at: endsAt.toISOString(), status: "confirmed" })
+    .eq("id", id);
+  if (error) return { error: "No pudimos reprogramar la cita." };
+
+  await notifyAppointment(createAdminClient(), id, "appointment_rescheduled");
+  revalidatePath("/dashboard/agenda");
+  return {};
+}
+
 export async function cancelAppointment(id: string, reason: string): Promise<void> {
   const { profileId, supabase } = await staffClinicId();
   await supabase
