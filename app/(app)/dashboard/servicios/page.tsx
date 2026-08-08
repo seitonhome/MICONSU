@@ -8,6 +8,8 @@ import { ServiceActiveToggle } from "./service-active-toggle";
 import { CategoryForm } from "./category-form";
 import { deleteService, deleteCategory } from "./actions";
 import { SERVICE_CLASSIFICATION_LABELS, MODALITY_LABELS } from "@/lib/domain/labels";
+import { BADGE_PRIMARY } from "@/lib/utils/badge-styles";
+import { cn } from "@/lib/utils";
 import type { Database } from "@/lib/supabase/types";
 
 type ServiceRow = Database["public"]["Tables"]["services"]["Row"];
@@ -51,7 +53,7 @@ export default async function ServiciosPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Servicios</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Servicios</h1>
           <p className="mt-1 text-muted-foreground">
             Define lo que ofreces, su duración, precio y reglas de pago. Esto es lo que tus pacientes verán al reservar.
           </p>
@@ -59,14 +61,14 @@ export default async function ServiciosPage() {
         <ServiceDialog categories={cats} professionals={pros} />
       </div>
 
-      <div className="rounded-xl border p-4">
+      <div className="rounded-[16px] border border-black/[0.07] bg-card p-4">
         <CategoryForm />
         {cats.length > 0 && (
           <ul className="mt-4 flex flex-wrap gap-2">
             {cats.map((c) => (
               <li key={c.id}>
                 <form action={deleteCategory.bind(null, c.id)} className="inline-flex">
-                  <Badge variant="outline" className="gap-1.5 pr-1">
+                  <Badge variant="outline" className="gap-1.5 border-black/[0.14] pr-1 text-muted-foreground">
                     {c.name}
                     <ConfirmSubmitButton
                       confirmMessage={`¿Eliminar la categoría "${c.name}"? Los servicios no se eliminan, solo quedan sin categoría.`}
@@ -137,18 +139,18 @@ function ServiceGroup({
 }) {
   return (
     <div>
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
-      <ul className="divide-y rounded-xl border">
+      <h2 className="mb-3 text-[11px] font-bold tracking-wider text-muted-foreground/80 uppercase">{title}</h2>
+      <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
         {services.map((s) => (
-          <li key={s.id} className="flex items-center justify-between gap-4 px-4 py-3">
+          <li key={s.id} className="flex items-center justify-between gap-4 px-5 py-4">
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium">{s.name}</p>
+              <p className="truncate text-[13.5px] font-semibold text-foreground/90">{s.name}</p>
               <p className="text-xs text-muted-foreground">
                 {s.duration_minutes} min ·{" "}
                 {s.price > 0 ? `$${Number(s.price).toLocaleString("es-CO")}` : "Sin costo"} ·{" "}
                 {MODALITY_LABELS[s.modality]}
               </p>
-              <Badge variant="secondary" className="mt-1">
+              <Badge variant="outline" className={cn("mt-1.5", BADGE_PRIMARY)}>
                 {SERVICE_CLASSIFICATION_LABELS[s.classification]}
               </Badge>
             </div>

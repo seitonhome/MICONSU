@@ -9,23 +9,24 @@ import { AppointmentActions } from "./appointment-actions";
 import { AgendaFilters } from "./agenda-filters";
 import { APPOINTMENT_STATUS_LABELS } from "@/lib/domain/labels";
 import { bogotaDateInputValue, bogotaMidnightFromDateString } from "@/lib/utils/timezone";
+import { BADGE_PRIMARY, BADGE_ACCENT, BADGE_OUTLINE, BADGE_DESTRUCTIVE } from "@/lib/utils/badge-styles";
 import type { Database } from "@/lib/supabase/types";
 
 type Status = Database["public"]["Enums"]["appointment_status"];
 
-const STATUS_BADGE_VARIANT: Partial<Record<Status, "default" | "secondary" | "destructive" | "outline">> = {
-  requested: "outline",
-  pending_payment: "outline",
-  pending_manual_confirmation: "outline",
-  confirmed: "secondary",
-  paid: "secondary",
-  checked_in: "default",
-  in_progress: "default",
-  completed: "secondary",
-  cancelled: "destructive",
-  no_show: "destructive",
-  rescheduled: "outline",
-  expired: "destructive",
+const STATUS_BADGE_CLASS: Partial<Record<Status, string>> = {
+  requested: BADGE_OUTLINE,
+  pending_payment: BADGE_OUTLINE,
+  pending_manual_confirmation: BADGE_OUTLINE,
+  confirmed: BADGE_PRIMARY,
+  paid: BADGE_PRIMARY,
+  checked_in: BADGE_PRIMARY,
+  in_progress: BADGE_PRIMARY,
+  completed: BADGE_ACCENT,
+  cancelled: BADGE_DESTRUCTIVE,
+  no_show: BADGE_DESTRUCTIVE,
+  rescheduled: BADGE_OUTLINE,
+  expired: BADGE_DESTRUCTIVE,
 };
 
 export default async function AgendaPage({
@@ -104,7 +105,7 @@ export default async function AgendaPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Agenda</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Agenda</h1>
           <p className="mt-1 text-muted-foreground">
             {filteringByPatient
               ? `${appointments?.length ?? 0} citas de ${patientById.get(patientFilter)?.full_name ?? "este paciente"}.`
@@ -167,7 +168,7 @@ export default async function AgendaPage({
           </p>
         </div>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {appointments.map((appt) => {
             const professional = professionalById.get(appt.professional_id);
             const service = serviceById.get(appt.service_id);
@@ -185,16 +186,16 @@ export default async function AgendaPage({
                 });
 
             return (
-              <li key={appt.id} className="flex items-center justify-between gap-4 px-4 py-3">
+              <li key={appt.id} className="flex items-center justify-between gap-4 px-5 py-4">
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium tabular-nums">{time}</span>
-                    <p className="truncate text-sm font-medium">{patient?.full_name ?? "Paciente"}</p>
-                    <Badge variant={STATUS_BADGE_VARIANT[appt.status] ?? "outline"}>
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-16 shrink-0 text-[13.5px] font-bold tabular-nums text-foreground/90">{time}</span>
+                    <p className="truncate text-[13.5px] font-semibold text-foreground/90">{patient?.full_name ?? "Paciente"}</p>
+                    <Badge variant="outline" className={STATUS_BADGE_CLASS[appt.status] ?? BADGE_OUTLINE}>
                       {APPOINTMENT_STATUS_LABELS[appt.status]}
                     </Badge>
                   </div>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
+                  <p className="mt-1 ml-[74px] text-[12.5px] text-muted-foreground">
                     {service?.name ?? "Servicio"} · {professional?.full_name ?? "Profesional"} ·{" "}
                     {appt.modality === "virtual" ? "Virtual" : "Presencial"}
                   </p>

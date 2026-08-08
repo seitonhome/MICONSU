@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DOCUMENT_TYPE_LABELS } from "@/lib/domain/labels";
+import { BADGE_ACCENT, BADGE_OUTLINE } from "@/lib/utils/badge-styles";
+import { cn } from "@/lib/utils";
 import { PatientDialog } from "./patient-dialog";
 
 function initials(fullName: string): string {
@@ -41,7 +43,7 @@ export default async function PacientesPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Pacientes</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Pacientes</h1>
           <p className="mt-1 text-muted-foreground">
             {patients && patients.length > 0
               ? `${patients.length} paciente${patients.length === 1 ? "" : "s"} registrado${patients.length === 1 ? "" : "s"}.`
@@ -69,18 +71,20 @@ export default async function PacientesPage({
           </p>
         </div>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {patients.map((p) => (
             <li key={p.id}>
               <Link
                 href={`/dashboard/pacientes/${p.id}`}
-                className="flex items-center gap-4 px-4 py-3 hover:bg-muted/50"
+                className="flex items-center gap-4 px-5 py-4 hover:bg-muted/40"
               >
                 <Avatar>
-                  <AvatarFallback>{initials(p.full_name) || "?"}</AvatarFallback>
+                  <AvatarFallback className="bg-accent/[0.22] font-semibold text-accent-foreground">
+                    {initials(p.full_name) || "?"}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{p.full_name}</p>
+                  <p className="truncate text-[13.5px] font-semibold text-foreground/90">{p.full_name}</p>
                   <p className="truncate text-xs text-muted-foreground">
                     {p.document_number
                       ? `${DOCUMENT_TYPE_LABELS[p.document_type ?? ""] ?? p.document_type ?? "Doc."} ${p.document_number}`
@@ -93,7 +97,7 @@ export default async function PacientesPage({
                   </p>
                   {p.city && <p className="truncate text-xs text-muted-foreground">{p.city}</p>}
                 </div>
-                <Badge variant={p.status === "active" ? "secondary" : "outline"} className="shrink-0">
+                <Badge variant="outline" className={cn("shrink-0", p.status === "active" ? BADGE_ACCENT : BADGE_OUTLINE)}>
                   {p.status === "active" ? "Activo" : "Inactivo"}
                 </Badge>
               </Link>
