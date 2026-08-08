@@ -165,7 +165,7 @@ export default async function DashboardPage() {
     {
       icon: LifeBuoy,
       title: `${openTicketsCount ?? 0} tickets de soporte abiertos`,
-      description: "Tu Plan Continuidad Clínica incluye soporte prioritario según tu plan.",
+      description: "Primera respuesta desde 1 hora en tickets críticos, según la prioridad que asignes.",
       href: "/dashboard/soporte",
     },
     {

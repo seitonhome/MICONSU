@@ -36,7 +36,7 @@ export function TicketDialog() {
       <DialogContent className="max-h-[85vh] max-w-lg overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Nuevo ticket de soporte</DialogTitle>
-          <DialogDescription>Cuéntanos qué necesitas y te responderemos según el SLA de tu plan.</DialogDescription>
+          <DialogDescription>Cuéntanos qué necesitas. El tiempo de primera respuesta depende de la prioridad que le asignes.</DialogDescription>
         </DialogHeader>
 
         <form action={formAction} className="space-y-4">

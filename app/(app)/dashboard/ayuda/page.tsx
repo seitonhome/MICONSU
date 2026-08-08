@@ -47,7 +47,7 @@ export default function AyudaPage() {
             <MessageCircle className="size-5 shrink-0 text-muted-foreground" />
             <div className="min-w-0 flex-1 text-sm">
               <p className="font-medium">¿No encontraste lo que buscabas?</p>
-              <p className="text-muted-foreground">Escríbenos desde Soporte y te respondemos según el SLA de tu plan.</p>
+              <p className="text-muted-foreground">Escríbenos desde Soporte — el tiempo de primera respuesta depende de la prioridad del ticket.</p>
             </div>
             <Button size="sm" variant="outline" render={<Link href="/dashboard/soporte" />}>
               Ir a Soporte
