@@ -159,7 +159,9 @@
 
 [data-theme="bienestar_premium"] {
   --background: oklch(0.98 0.008 85);
-  --card: oklch(0.98 0.008 85);
+  /* Rediseño visual: mismo criterio que clinico_moderno — tarjetas en
+     blanco puro para contraste sutil contra el fondo. */
+  --card: oklch(1 0 0);
   --primary: oklch(0.62 0.07 135);
   --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.92 0.03 85);
@@ -176,7 +178,7 @@
 
 [data-theme="integrativo"] {
   --background: oklch(0.98 0.006 90);
-  --card: oklch(0.98 0.006 90);
+  --card: oklch(1 0 0);
   --primary: oklch(0.55 0.11 162);
   --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.93 0.02 80);
@@ -193,7 +195,7 @@
 
 [data-theme="terapeutico_emocional"] {
   --background: oklch(0.98 0.006 300);
-  --card: oklch(0.98 0.006 300);
+  --card: oklch(1 0 0);
   --primary: oklch(0.48 0.13 275);
   --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.93 0.02 85);
@@ -210,7 +212,7 @@
 
 [data-theme="odontologico_premium"] {
   --background: oklch(0.995 0.001 220);
-  --card: oklch(0.995 0.001 220);
+  --card: oklch(1 0 0);
   --primary: oklch(0.62 0.09 225);
   --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.95 0 0);
