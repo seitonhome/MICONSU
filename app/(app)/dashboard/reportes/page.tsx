@@ -91,12 +91,12 @@ export default async function ReportesPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold">Reportes</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Reportes</h1>
         <p className="mt-1 text-muted-foreground">Últimos {MONTHS_BACK} meses de actividad de tu consultorio.</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
+        <Card className="rounded-[16px] border-black/[0.07]">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -119,7 +119,7 @@ export default async function ReportesPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-[16px] border-black/[0.07]">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -141,7 +141,7 @@ export default async function ReportesPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-[16px] border-black/[0.07]">
           <CardHeader>
             <CardTitle>Pacientes nuevos por mes</CardTitle>
             <CardDescription>Registrados automáticamente al reservar o manualmente.</CardDescription>
@@ -154,7 +154,7 @@ export default async function ReportesPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-[16px] border-black/[0.07]">
           <CardHeader>
             <CardTitle>Servicios más reservados</CardTitle>
             <CardDescription>Últimos {MONTHS_BACK} meses.</CardDescription>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireRole } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
+import { BADGE_PRIMARY } from "@/lib/utils/badge-styles";
 
 function startOfWeek(d: Date) {
   const day = d.getDay();
@@ -125,7 +126,7 @@ export default async function OportunidadesPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold">Panel de oportunidad comercial</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Panel de oportunidad comercial</h1>
         <p className="mt-1 text-muted-foreground">
           Ideas concretas para llenar tu agenda y recuperar ingresos que podrías estar dejando pasar.
         </p>
@@ -167,7 +168,7 @@ export default async function OportunidadesPage() {
         <OpportunityCard title="Servicios con mayor demanda" description="Últimos 90 días.">
           {topServices.map((s) => (
             <li key={s.name} className="flex items-center justify-between">
-              {s.name} <Badge variant="outline">{s.count}</Badge>
+              {s.name} <Badge variant="outline" className={BADGE_PRIMARY}>{s.count}</Badge>
             </li>
           ))}
         </OpportunityCard>
@@ -178,7 +179,7 @@ export default async function OportunidadesPage() {
         >
           {frequentPatients.map(([id, count]) => (
             <li key={id} className="flex items-center justify-between">
-              {patientNameById.get(id) ?? "Paciente"} <Badge variant="outline">{count} sesiones</Badge>
+              {patientNameById.get(id) ?? "Paciente"} <Badge variant="outline" className={BADGE_PRIMARY}>{count} sesiones</Badge>
             </li>
           ))}
         </OpportunityCard>
@@ -208,10 +209,10 @@ function OpportunityCard({
   children?: React.ReactNode;
 }) {
   const content = (
-    <div className="h-full rounded-xl border p-4 transition-colors hover:border-primary">
-      <p className="font-medium">{title}</p>
-      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-      {children && <ul className="mt-3 space-y-1 text-sm text-muted-foreground">{children}</ul>}
+    <div className="h-full rounded-[16px] border border-black/[0.07] bg-card p-5 transition-colors hover:border-primary/30">
+      <p className="text-[14.5px] font-bold text-foreground/90">{title}</p>
+      <p className="mt-1 text-[12.5px] text-muted-foreground">{description}</p>
+      {children && <ul className="mt-2.5 space-y-1 text-[12.5px] text-muted-foreground">{children}</ul>}
     </div>
   );
   return href ? <Link href={href}>{content}</Link> : content;

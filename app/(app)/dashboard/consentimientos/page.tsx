@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ConsentDialog } from "./consent-dialog";
 import { ConsentActiveToggle } from "./consent-active-toggle";
 import { CONSENT_TEMPLATES } from "@/lib/templates/consent-templates";
+import { BADGE_PRIMARY } from "@/lib/utils/badge-styles";
 
 export default async function ConsentimientosPage() {
   const profile = await requireRole(["clinic_owner"]);
@@ -19,7 +20,7 @@ export default async function ConsentimientosPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Consentimientos y legal</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Consentimientos y legal</h1>
           <p className="mt-1 text-muted-foreground">
             Documentos que tus pacientes deben aceptar antes de reservar. Cada edición crea una nueva versión.
           </p>
@@ -36,13 +37,13 @@ export default async function ConsentimientosPage() {
           </p>
         </div>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {documents.map((doc) => (
-            <li key={doc.id} className="flex items-center justify-between gap-4 px-4 py-3">
+            <li key={doc.id} className="flex items-center justify-between gap-4 px-5 py-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="truncate text-sm font-medium">{doc.title}</p>
-                  <Badge variant="outline">v{doc.version}</Badge>
+                  <p className="truncate text-[13.5px] font-semibold text-foreground/90">{doc.title}</p>
+                  <Badge variant="outline" className={BADGE_PRIMARY}>v{doc.version}</Badge>
                 </div>
                 <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
                   {CONSENT_TEMPLATES[doc.document_type]?.title ?? doc.document_type}
