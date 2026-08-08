@@ -37,6 +37,7 @@ function parsePatientForm(formData: FormData) {
     city: (formData.get("city") as string) || null,
     emergency_contact_name: (formData.get("emergency_contact_name") as string) || null,
     emergency_contact_phone: (formData.get("emergency_contact_phone") as string) || null,
+    insurance_provider: (formData.get("insurance_provider") as string) || null,
   };
 }
 

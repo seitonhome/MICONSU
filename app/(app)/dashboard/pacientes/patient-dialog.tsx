@@ -97,6 +97,10 @@ export function PatientDialog({ patient }: { patient?: PatientRow }) {
               <Input id="city" name="city" defaultValue={patient?.city ?? ""} />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="insurance_provider">EPS o aseguradora</Label>
+              <Input id="insurance_provider" name="insurance_provider" defaultValue={patient?.insurance_provider ?? ""} />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="emergency_contact_name">Contacto de emergencia</Label>
               <Input id="emergency_contact_name" name="emergency_contact_name" defaultValue={patient?.emergency_contact_name ?? ""} />
             </div>

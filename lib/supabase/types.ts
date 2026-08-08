@@ -352,6 +352,7 @@ export type Database = {
           emergency_contact_name: string | null;
           emergency_contact_phone: string | null;
           administrative_notes: string | null;
+          insurance_provider: string | null;
           status: string;
           user_id: string | null;
           created_at: string;
@@ -371,6 +372,7 @@ export type Database = {
           emergency_contact_name?: string | null;
           emergency_contact_phone?: string | null;
           administrative_notes?: string | null;
+          insurance_provider?: string | null;
           status?: string;
           user_id?: string | null;
           created_at?: string;
@@ -390,6 +392,7 @@ export type Database = {
           emergency_contact_name?: string | null;
           emergency_contact_phone?: string | null;
           administrative_notes?: string | null;
+          insurance_provider?: string | null;
           status?: string;
           user_id?: string | null;
           created_at?: string;

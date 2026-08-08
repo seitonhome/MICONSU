@@ -83,7 +83,9 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
         <div>
           <h1 className="text-2xl font-semibold">{patient.full_name}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {[patient.phone, patient.email, patient.city].filter(Boolean).join(" · ") || "Sin datos de contacto"}
+            {[patient.phone, patient.email, patient.city, patient.insurance_provider ? `EPS: ${patient.insurance_provider}` : null]
+              .filter(Boolean)
+              .join(" · ") || "Sin datos de contacto"}
           </p>
         </div>
         <div className="flex items-center gap-2">
