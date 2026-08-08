@@ -1,14 +1,23 @@
 import Link from "next/link";
 import { requireRole } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardAction, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { BADGE_ACCENT, BADGE_PRIMARY, BADGE_OUTLINE } from "@/lib/utils/badge-styles";
+import { cn } from "@/lib/utils";
 import { ManualTransferForm } from "./manual-transfer-form";
 import { WompiForm } from "./wompi-form";
 import { InPersonToggle } from "./in-person-toggle";
 import { MercadoPagoForm } from "./mercado-pago-form";
 import { EpaycoForm } from "./epayco-form";
 import { ExternalLinkForm } from "./external-link-form";
+
+function ProviderStatusBadge({ isActive, isConfigured }: { isActive: boolean; isConfigured: boolean }) {
+  if (isActive) return <Badge variant="outline" className={BADGE_ACCENT}>Activo</Badge>;
+  if (isConfigured) return <Badge variant="outline" className={BADGE_PRIMARY}>Configurado</Badge>;
+  return <Badge variant="outline" className={BADGE_OUTLINE}>Sin configurar</Badge>;
+}
 
 export default async function PagosPage() {
   const profile = await requireRole(["clinic_owner", "finance_user"]);
@@ -40,7 +49,7 @@ export default async function PagosPage() {
     <div className="max-w-3xl space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Centro de pagos</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Centro de pagos</h1>
           <p className="mt-1 text-muted-foreground">
             Configura cómo tus pacientes pagan sus servicios. No guardamos datos de tarjetas ni exponemos tus llaves privadas.
           </p>
@@ -50,30 +59,39 @@ export default async function PagosPage() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="rounded-[16px] border-black/[0.07]">
         <CardHeader>
           <CardTitle>Transferencia bancaria</CardTitle>
           <CardDescription>El paciente transfiere y tu equipo confirma el pago manualmente.</CardDescription>
+          <CardAction>
+            <ProviderStatusBadge isActive={manual?.is_active ?? false} isConfigured={Boolean(manualInstructions)} />
+          </CardAction>
         </CardHeader>
         <CardContent>
           <ManualTransferForm currentInstructions={manualInstructions} />
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="rounded-[16px] border-black/[0.07]">
         <CardHeader>
           <CardTitle>Pago presencial</CardTitle>
           <CardDescription>El paciente paga al llegar a su cita.</CardDescription>
+          <CardAction>
+            <ProviderStatusBadge isActive={inPerson?.is_active ?? false} isConfigured={Boolean(inPerson)} />
+          </CardAction>
         </CardHeader>
         <CardContent>
           <InPersonToggle isActive={inPerson?.is_active ?? false} />
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="rounded-[16px] border-black/[0.07]">
         <CardHeader>
           <CardTitle>Wompi</CardTitle>
           <CardDescription>Pagos automáticos con tarjeta, PSE y más.</CardDescription>
+          <CardAction>
+            <ProviderStatusBadge isActive={wompi?.is_active ?? false} isConfigured={Boolean(wompi?.encrypted_credentials)} />
+          </CardAction>
         </CardHeader>
         <CardContent>
           <WompiForm
@@ -84,10 +102,13 @@ export default async function PagosPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="rounded-[16px] border-black/[0.07]">
         <CardHeader>
           <CardTitle>Mercado Pago</CardTitle>
           <CardDescription>Pagos automáticos con tarjeta y otros medios locales.</CardDescription>
+          <CardAction>
+            <ProviderStatusBadge isActive={mercadoPago?.is_active ?? false} isConfigured={Boolean(mercadoPago?.encrypted_credentials)} />
+          </CardAction>
         </CardHeader>
         <CardContent>
           <MercadoPagoForm
@@ -98,10 +119,13 @@ export default async function PagosPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="rounded-[16px] border-black/[0.07]">
         <CardHeader>
           <CardTitle>ePayco</CardTitle>
           <CardDescription>Pagos automáticos con tarjeta, PSE y efectivo.</CardDescription>
+          <CardAction>
+            <ProviderStatusBadge isActive={epayco?.is_active ?? false} isConfigured={Boolean(epayco?.encrypted_credentials)} />
+          </CardAction>
         </CardHeader>
         <CardContent>
           <EpaycoForm
@@ -112,10 +136,13 @@ export default async function PagosPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="rounded-[16px] border-black/[0.07]">
         <CardHeader>
           <CardTitle>Link externo de pago</CardTitle>
           <CardDescription>¿Ya tienes un link de cobro en otra plataforma? Pégalo aquí.</CardDescription>
+          <CardAction>
+            <ProviderStatusBadge isActive={externalLink?.is_active ?? false} isConfigured={Boolean(externalLink?.encrypted_credentials)} />
+          </CardAction>
         </CardHeader>
         <CardContent>
           <ExternalLinkForm
@@ -125,10 +152,13 @@ export default async function PagosPage() {
         </CardContent>
       </Card>
 
-      <Card className="opacity-60">
+      <Card className={cn("rounded-[16px] border-black/[0.07]", "opacity-60")}>
         <CardHeader>
           <CardTitle>PayU, Bold, PlaceToPay</CardTitle>
           <CardDescription>Arquitectura preparada — disponibles próximamente.</CardDescription>
+          <CardAction>
+            <Badge variant="outline" className={BADGE_OUTLINE}>Próximamente</Badge>
+          </CardAction>
         </CardHeader>
         <CardContent />
       </Card>

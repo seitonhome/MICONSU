@@ -7,6 +7,7 @@ import { getClinicEntitlements, planAtLeast, hasModule } from "@/lib/modules";
 import { ModuleLocked } from "@/components/patterns/module-locked";
 import { PackageDialog } from "./package-dialog";
 import { PackageRowActions } from "./package-row-actions";
+import { BADGE_PRIMARY, BADGE_ACCENT, BADGE_OUTLINE, BADGE_DESTRUCTIVE } from "@/lib/utils/badge-styles";
 
 const STATUS_LABELS = {
   active: "Activo",
@@ -15,6 +16,14 @@ const STATUS_LABELS = {
   expired: "Vencido",
   cancelled: "Cancelado",
 } as const;
+
+const STATUS_BADGE_CLASS: Record<keyof typeof STATUS_LABELS, string> = {
+  active: BADGE_PRIMARY,
+  completed: BADGE_ACCENT,
+  paused: BADGE_OUTLINE,
+  expired: BADGE_DESTRUCTIVE,
+  cancelled: BADGE_DESTRUCTIVE,
+};
 
 export default async function PaquetesPage() {
   const profile = await requireRole(["clinic_owner", "assistant", "receptionist", "professional"]);
@@ -49,7 +58,7 @@ export default async function PaquetesPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Paquetes de sesiones</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Paquetes de sesiones</h1>
           <p className="mt-1 text-muted-foreground">
             Vende procesos completos, no solo citas sueltas, y controla cuántas sesiones le quedan a cada paciente.
           </p>
@@ -66,16 +75,16 @@ export default async function PaquetesPage() {
           </p>
         </div>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {packages.map((pkg) => {
             const progressPct = Math.min(100, Math.round((pkg.sessions_used / pkg.total_sessions) * 100));
             const isComplete = pkg.sessions_used >= pkg.total_sessions;
             return (
-              <li key={pkg.id} className="flex items-center justify-between gap-4 px-4 py-3">
+              <li key={pkg.id} className="flex items-center justify-between gap-4 px-5 py-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="truncate text-sm font-medium">{pkg.name}</p>
-                    <Badge variant={pkg.status === "active" ? "default" : "outline"}>{STATUS_LABELS[pkg.status]}</Badge>
+                    <p className="truncate text-[13.5px] font-semibold text-foreground/90">{pkg.name}</p>
+                    <Badge variant="outline" className={STATUS_BADGE_CLASS[pkg.status]}>{STATUS_LABELS[pkg.status]}</Badge>
                   </div>
                   <p className="mt-0.5 text-xs text-muted-foreground">
                     {patientById.get(pkg.patient_id)?.full_name ?? "Paciente"} ·{" "}

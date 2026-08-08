@@ -2,6 +2,7 @@ import { Users, CalendarX2 } from "lucide-react";
 import { requireRole } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
+import { BADGE_PRIMARY, BADGE_OUTLINE } from "@/lib/utils/badge-styles";
 import { getClinicEntitlements, planAtLeast } from "@/lib/modules";
 import { ModuleLocked } from "@/components/patterns/module-locked";
 import { WaitlistDialog } from "./waitlist-dialog";
@@ -68,7 +69,7 @@ export default async function ListaEsperaPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Lista de espera</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Lista de espera</h1>
           <p className="mt-1 text-muted-foreground">
             Cuando se cancele una cita, revisa aquí quién puede tomar ese espacio libre.
           </p>
@@ -77,9 +78,9 @@ export default async function ListaEsperaPage() {
       </div>
 
       {cancellationsWithMatches.length > 0 && (
-        <div className="rounded-xl border border-dashed p-4">
-          <div className="mb-2 flex items-center gap-2 text-sm font-medium">
-            <CalendarX2 className="size-4 text-muted-foreground" />
+        <div className="rounded-[16px] border border-dashed border-black/[0.12] p-4">
+          <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground/90">
+            <CalendarX2 className="size-4 text-primary" />
             Cupos recién liberados
           </div>
           <ul className="space-y-1.5 text-sm text-muted-foreground">
@@ -90,7 +91,9 @@ export default async function ListaEsperaPage() {
                   {serviceById.get(c.service_id)?.name ?? "Servicio"} · {professionalById.get(c.professional_id)?.full_name ?? "Profesional"}
                 </span>
                 {c.matchCount > 0 && (
-                  <Badge variant="outline">{c.matchCount} en lista de espera podría{c.matchCount === 1 ? "" : "n"} tomarlo</Badge>
+                  <Badge variant="outline" className={BADGE_PRIMARY}>
+                    {c.matchCount} en lista de espera podría{c.matchCount === 1 ? "" : "n"} tomarlo
+                  </Badge>
                 )}
               </li>
             ))}
@@ -107,15 +110,15 @@ export default async function ListaEsperaPage() {
           </p>
         </div>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {entries.map((entry) => (
-            <li key={entry.id} className="flex items-center justify-between gap-4 px-4 py-3">
+            <li key={entry.id} className="flex items-center justify-between gap-4 px-5 py-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="truncate text-sm font-medium">
+                  <p className="truncate text-[13.5px] font-semibold text-foreground/90">
                     {patientById.get(entry.patient_id)?.full_name ?? "Paciente"}
                   </p>
-                  <Badge variant={entry.status === "notified" ? "default" : "outline"}>
+                  <Badge variant="outline" className={entry.status === "notified" ? BADGE_PRIMARY : BADGE_OUTLINE}>
                     {STATUS_LABELS[entry.status]}
                   </Badge>
                 </div>
