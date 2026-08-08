@@ -15,6 +15,8 @@ import { requireCurrentProfile } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ActivationChecklist } from "@/components/patterns/activation-checklist";
+import { getOnboardingContext, computeStepCompletion, progressPercent } from "@/app/onboarding/_lib/context";
 import { bogotaStartOfDay, bogotaStartOfMonth } from "@/lib/utils/timezone";
 
 export default async function DashboardPage() {
@@ -31,6 +33,15 @@ export default async function DashboardPage() {
 
   const supabase = await createClient();
   const clinicId = profile.clinicId;
+
+  const activation =
+    profile.role === "clinic_owner"
+      ? (async () => {
+          const ctx = await getOnboardingContext();
+          const completion = computeStepCompletion(ctx);
+          return { completion, percent: progressPercent(completion) };
+        })()
+      : Promise.resolve(null);
 
   const now = new Date();
   const todayStart = bogotaStartOfDay(now);
@@ -115,6 +126,7 @@ export default async function DashboardPage() {
       .eq("status", "waiting"),
   ]);
 
+  const activationState = await activation;
   const monthRevenue = (monthPayments ?? []).reduce((sum, p) => sum + Number(p.amount), 0);
 
   const cards = [
@@ -196,6 +208,8 @@ export default async function DashboardPage() {
           </Button>
         </div>
       </div>
+
+      {activationState && <ActivationChecklist completion={activationState.completion} percent={activationState.percent} />}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
