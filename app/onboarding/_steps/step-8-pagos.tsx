@@ -6,6 +6,7 @@ import { configureManualTransfer, configureWompi, type OnboardingActionState } f
 import { StepShell } from "../_components/step-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -81,15 +82,15 @@ export function Step8Pagos({
               </div>
               <div className="space-y-2">
                 <Label htmlFor="private_key">Llave privada</Label>
-                <Input id="private_key" name="private_key" type="password" placeholder="prv_test_..." />
+                <PasswordInput id="private_key" name="private_key" placeholder="prv_test_..." />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="events_secret">Secreto de eventos (opcional)</Label>
-                <Input id="events_secret" name="events_secret" type="password" />
+                <PasswordInput id="events_secret" name="events_secret" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="integrity_secret">Secreto de integridad (opcional)</Label>
-                <Input id="integrity_secret" name="integrity_secret" type="password" />
+                <PasswordInput id="integrity_secret" name="integrity_secret" />
               </div>
             </div>
             <label className="flex items-center gap-2 text-sm">

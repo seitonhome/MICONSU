@@ -4,6 +4,7 @@ import { useActionState, useTransition } from "react";
 import { configureEpayco, toggleEpaycoActive, type PaymentsActionState } from "./actions";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
@@ -42,7 +43,7 @@ export function EpaycoForm({
         </div>
         <div className="space-y-2">
           <Label htmlFor="private_key">Llave privada (p_key)</Label>
-          <Input id="private_key" name="private_key" type="password" required />
+          <PasswordInput id="private_key" name="private_key" required />
         </div>
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="customer_id">ID de cliente ePayco</Label>

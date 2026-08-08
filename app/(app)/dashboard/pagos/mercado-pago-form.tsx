@@ -3,7 +3,7 @@
 import { useActionState, useTransition } from "react";
 import { configureMercadoPago, toggleMercadoPagoActive, type PaymentsActionState } from "./actions";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
@@ -38,11 +38,11 @@ export function MercadoPagoForm({
       <form action={formAction} className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="access_token">Access token</Label>
-          <Input id="access_token" name="access_token" type="password" placeholder="APP_USR-..." required />
+          <PasswordInput id="access_token" name="access_token" placeholder="APP_USR-..." required />
         </div>
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="webhook_secret">Secreto del webhook</Label>
-          <Input id="webhook_secret" name="webhook_secret" type="password" />
+          <PasswordInput id="webhook_secret" name="webhook_secret" />
         </div>
         <label className="flex items-center gap-2 text-sm sm:col-span-2">
           <Checkbox name="is_sandbox" defaultChecked={isSandbox} />
