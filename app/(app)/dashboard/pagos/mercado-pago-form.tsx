@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState, useTransition } from "react";
-import { configureMercadoPago, toggleMercadoPagoActive, type PaymentsActionState } from "./actions";
+import { useActionState, useState, useTransition } from "react";
+import { configureMercadoPago, testMercadoPagoConnection, toggleMercadoPagoActive, type PaymentsActionState } from "./actions";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,8 @@ export function MercadoPagoForm({
   isSandbox: boolean;
 }) {
   const [state, formAction, isPending] = useActionState(configureMercadoPago, initialState);
+  const [testResult, setTestResult] = useState<PaymentsActionState | null>(null);
+  const [isTesting, startTest] = useTransition();
   const [isToggling, startToggle] = useTransition();
 
   return (
@@ -27,13 +29,26 @@ export function MercadoPagoForm({
       {isConfigured && (
         <div className="flex items-center justify-between rounded-lg bg-muted/30 p-3 text-sm">
           <span>Mercado Pago está configurado ({isSandbox ? "modo pruebas" : "producción"}).</span>
-          <Switch
-            checked={isActive}
-            disabled={isToggling}
-            onCheckedChange={(checked) => startToggle(() => toggleMercadoPagoActive(checked))}
-          />
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={isActive}
+              disabled={isToggling}
+              onCheckedChange={(checked) => startToggle(() => toggleMercadoPagoActive(checked))}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={isTesting}
+              onClick={() => startTest(async () => setTestResult(await testMercadoPagoConnection()))}
+            >
+              {isTesting ? "Probando..." : "Probar conexión"}
+            </Button>
+          </div>
         </div>
       )}
+      {testResult?.error && <p className="text-sm text-destructive">{testResult.error}</p>}
+      {testResult?.success && <p className="text-sm text-primary">{testResult.message}</p>}
 
       <form action={formAction} className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-2 sm:col-span-2">

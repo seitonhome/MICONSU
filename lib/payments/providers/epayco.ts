@@ -31,6 +31,25 @@ export class EpaycoProvider implements PaymentProvider {
     private readonly isSandbox: boolean,
   ) {}
 
+  /**
+   * Verifica las llaves contra el endpoint de autenticación de ePayco
+   * (Basic auth con publicKey:privateKey, devuelve un JWT si son válidas).
+   */
+  async testConnection(): Promise<{ ok: boolean; message: string }> {
+    try {
+      const basicAuth = Buffer.from(`${this.credentials.publicKey}:${this.credentials.privateKey}`).toString("base64");
+      const response = await fetch("https://apify.epayco.co/login", {
+        method: "POST",
+        headers: { Authorization: `Basic ${basicAuth}`, "Content-Type": "application/json" },
+      });
+      if (!response.ok) return { ok: false, message: "Las llaves de ePayco no fueron aceptadas. Verifícalas." };
+      const body = (await response.json()) as { token?: string };
+      return body.token ? { ok: true, message: "Conexión exitosa." } : { ok: false, message: "ePayco no devolvió un token válido." };
+    } catch {
+      return { ok: false, message: "No pudimos conectar con ePayco." };
+    }
+  }
+
   async createCheckoutSession(input: CreateCheckoutInput): Promise<CheckoutSession> {
     const amount = input.amount.toFixed(2);
     const signature = crypto

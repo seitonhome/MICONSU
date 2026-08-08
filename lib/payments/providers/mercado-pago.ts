@@ -29,6 +29,21 @@ export class MercadoPagoProvider implements PaymentProvider {
     private readonly isSandbox: boolean,
   ) {}
 
+  /** Verifica el access token contra /users/me, el endpoint estándar de MP para validar credenciales. */
+  async testConnection(): Promise<{ ok: boolean; message: string }> {
+    try {
+      const response = await fetch("https://api.mercadopago.com/users/me", {
+        headers: { Authorization: `Bearer ${this.credentials.accessToken}` },
+      });
+      if (!response.ok) return { ok: false, message: "El access token de Mercado Pago no fue aceptado. Verifícalo." };
+      const body = (await response.json()) as { nickname?: string; email?: string };
+      const who = body.nickname ?? body.email;
+      return { ok: true, message: who ? `Conectado como "${who}".` : "Conexión exitosa." };
+    } catch {
+      return { ok: false, message: "No pudimos conectar con Mercado Pago." };
+    }
+  }
+
   async createCheckoutSession(input: CreateCheckoutInput): Promise<CheckoutSession> {
     const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
       method: "POST",

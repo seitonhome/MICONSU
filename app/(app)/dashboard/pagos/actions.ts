@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth/session";
 import { encryptCredentials, decryptCredentials } from "@/lib/payments/crypto";
 import { WompiProvider } from "@/lib/payments/providers/wompi";
+import { EpaycoProvider } from "@/lib/payments/providers/epayco";
+import { MercadoPagoProvider } from "@/lib/payments/providers/mercado-pago";
 import { logAudit } from "@/lib/security/audit";
 
 export type PaymentsActionState = { error?: string; success?: boolean; message?: string };
@@ -304,6 +306,48 @@ export async function testWompiConnection(): Promise<PaymentsActionState> {
   const creds = decryptCredentials(providerRow.encrypted_credentials);
   const provider = new WompiProvider(
     { publicKey: creds.publicKey, privateKey: creds.privateKey, eventsSecret: creds.eventsSecret, integritySecret: creds.integritySecret },
+    providerRow.is_sandbox,
+  );
+
+  const result = await provider.testConnection();
+  return result.ok ? { success: true, message: result.message } : { error: result.message };
+}
+
+export async function testEpaycoConnection(): Promise<PaymentsActionState> {
+  const { clinicId, supabase } = await ownerClinicId();
+  const { data: providerRow } = await supabase
+    .from("payment_providers")
+    .select("*")
+    .eq("clinic_id", clinicId)
+    .eq("provider_key", "epayco")
+    .maybeSingle();
+
+  if (!providerRow?.encrypted_credentials) return { error: "Configura ePayco primero." };
+
+  const creds = decryptCredentials(providerRow.encrypted_credentials);
+  const provider = new EpaycoProvider(
+    { publicKey: creds.publicKey, privateKey: creds.privateKey, customerId: creds.customerId },
+    providerRow.is_sandbox,
+  );
+
+  const result = await provider.testConnection();
+  return result.ok ? { success: true, message: result.message } : { error: result.message };
+}
+
+export async function testMercadoPagoConnection(): Promise<PaymentsActionState> {
+  const { clinicId, supabase } = await ownerClinicId();
+  const { data: providerRow } = await supabase
+    .from("payment_providers")
+    .select("*")
+    .eq("clinic_id", clinicId)
+    .eq("provider_key", "mercado_pago")
+    .maybeSingle();
+
+  if (!providerRow?.encrypted_credentials) return { error: "Configura Mercado Pago primero." };
+
+  const creds = decryptCredentials(providerRow.encrypted_credentials);
+  const provider = new MercadoPagoProvider(
+    { accessToken: creds.accessToken, webhookSecret: creds.webhookSecret ?? "" },
     providerRow.is_sandbox,
   );
 
