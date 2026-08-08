@@ -24,7 +24,7 @@ export function LoginForm() {
         <PasswordInput id="password" name="password" required autoComplete="current-password" />
       </div>
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
-      <Button type="submit" className="w-full" disabled={isPending}>
+      <Button type="submit" className="mt-1 h-10 w-full font-bold" disabled={isPending}>
         {isPending ? "Ingresando..." : "Ingresar"}
       </Button>
       <p className="text-center text-xs text-muted-foreground">

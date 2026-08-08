@@ -1,9 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 
 export type PortalActionState = { error?: string };
+
+export async function signOutPortal() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/portal/login");
+}
 
 /**
  * El paciente solo puede retirar su consentimiento, nunca modificar la

@@ -7,8 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { APPOINTMENT_STATUS_LABELS, PAYMENT_STATUS_LABELS } from "@/lib/domain/labels";
+import { BADGE_PRIMARY, BADGE_ACCENT, BADGE_OUTLINE, BADGE_DESTRUCTIVE } from "@/lib/utils/badge-styles";
 import type { Database } from "@/lib/supabase/types";
 import { RevokeConsentButton } from "./revoke-consent-button";
+import { signOutPortal } from "./actions";
 
 const PACKAGE_STATUS_LABELS: Record<string, string> = {
   active: "Activo",
@@ -138,40 +140,64 @@ export default async function PortalPatientPage({ params }: { params: Promise<{ 
       secondaryColor={branding?.secondary_color}
       className="min-h-screen bg-muted/30"
     >
+      <header className="flex items-center justify-between border-b border-black/[0.07] bg-card px-6 py-4 sm:px-14">
+        <div className="flex items-center gap-2.5">
+          {/* eslint-disable-next-line @next/next/no-img-element -- logo_url puede ser un dominio externo (Supabase Storage) no configurado en next.config */}
+          <img
+            src={branding?.logo_url || "/logo.png"}
+            alt={clinic?.commercial_name ?? "Logo"}
+            className="size-8 shrink-0 rounded-[9px] object-cover"
+          />
+          <p className="text-[14.5px] font-bold text-foreground/90">{clinic?.commercial_name}</p>
+        </div>
+        <form action={signOutPortal}>
+          <Button type="submit" variant="outline" size="sm" className="rounded-[9px]">
+            Salir
+          </Button>
+        </form>
+      </header>
+
       <div className="mx-auto max-w-2xl space-y-6 px-4 py-10">
         <div>
-          <p className="text-sm text-muted-foreground">{clinic?.commercial_name}</p>
-          <h1 className="text-2xl font-semibold">Hola, {patient.full_name.split(" ")[0]}</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Hola, {patient.full_name.split(" ")[0]}</h1>
+          <p className="mt-1.5 text-[14px] text-muted-foreground">Este es el resumen de tu historial con nosotros.</p>
         </div>
 
-        <section className="rounded-xl border bg-background p-4">
-          <div className="mb-3 flex items-center gap-2 font-medium">
-            <CalendarCheck className="size-4" /> Próxima cita
+        <section className="rounded-[20px] bg-primary p-6 text-primary-foreground sm:p-7">
+          <div className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-wider text-primary-foreground/80 uppercase">
+            <CalendarCheck className="size-3.5" /> Tu próxima cita
           </div>
           {nextAppointment ? (
-            <div className="space-y-1 text-sm">
-              <div className="flex items-center justify-between">
-                <p className="font-medium">{serviceById.get(nextAppointment.service_id) ?? "Servicio"}</p>
-                <Badge>{APPOINTMENT_STATUS_LABELS[nextAppointment.status]}</Badge>
-              </div>
-              <p className="text-muted-foreground">
+            <div className="space-y-1">
+              <p className="text-lg font-bold sm:text-xl">
+                {serviceById.get(nextAppointment.service_id) ?? "Servicio"} ·{" "}
                 {new Date(nextAppointment.starts_at).toLocaleDateString("es-CO", {
                   weekday: "long",
                   day: "numeric",
                   month: "long",
-                })}{" "}
-                ·{" "}
-                {new Date(nextAppointment.starts_at).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}
+                })}
+                , {new Date(nextAppointment.starts_at).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}
               </p>
-              <p className="text-muted-foreground">Con {professionalById.get(nextAppointment.professional_id) ?? "tu profesional"}</p>
-              <Button variant="link" className="h-auto px-0" render={<Link href={`/reserva/${nextAppointment.booking_token}`} />}>
-                Reprogramar o cancelar
-              </Button>
+              <p className="text-[13px] text-primary-foreground/85">
+                Con {professionalById.get(nextAppointment.professional_id) ?? "tu profesional"}
+              </p>
+              <div className="flex items-center gap-3 pt-2">
+                <Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground">
+                  {APPOINTMENT_STATUS_LABELS[nextAppointment.status]}
+                </Badge>
+                <Button
+                  variant="link"
+                  className="h-auto px-0 text-primary-foreground"
+                  render={<Link href={`/reserva/${nextAppointment.booking_token}`} />}
+                >
+                  Reprogramar o cancelar
+                </Button>
+              </div>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-primary-foreground/90">
               No tienes una próxima cita.{" "}
-              <Link href={`/c/${clinic?.slug}`} className="font-medium underline underline-offset-4">
+              <Link href={`/c/${clinic?.slug}`} className="font-semibold underline underline-offset-4">
                 Reserva tu próxima sesión
               </Link>
               .
@@ -180,14 +206,16 @@ export default async function PortalPatientPage({ params }: { params: Promise<{ 
         </section>
 
         {activePackage && (
-          <section className="rounded-xl border bg-background p-4">
-            <div className="mb-3 flex items-center gap-2 font-medium">
-              <Package className="size-4" /> Tu paquete activo
+          <section className="rounded-[16px] border border-black/[0.07] bg-card p-5">
+            <div className="mb-3 flex items-center gap-2 font-semibold text-foreground/90">
+              <Package className="size-4 text-primary" /> Tu paquete activo
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between">
                 <p className="font-medium">{activePackage.name}</p>
-                <Badge variant="secondary">{PACKAGE_STATUS_LABELS[activePackage.status]}</Badge>
+                <Badge variant="outline" className={activePackage.status === "active" ? BADGE_PRIMARY : BADGE_OUTLINE}>
+                  {PACKAGE_STATUS_LABELS[activePackage.status]}
+                </Badge>
               </div>
               <Progress value={(activePackage.sessions_used / activePackage.total_sessions) * 100} />
               <p className="text-muted-foreground">
@@ -199,9 +227,9 @@ export default async function PortalPatientPage({ params }: { params: Promise<{ 
         )}
 
         {resources.length > 0 && (
-          <section className="rounded-xl border bg-background p-4">
-            <div className="mb-3 flex items-center gap-2 font-medium">
-              <FileText className="size-4" /> Recursos enviados
+          <section className="rounded-[16px] border border-black/[0.07] bg-card p-5">
+            <div className="mb-3 flex items-center gap-2 font-semibold text-foreground/90">
+              <FileText className="size-4 text-primary" /> Recursos enviados
             </div>
             <ul className="space-y-2 text-sm">
               {resources.map((r) => (
@@ -224,9 +252,9 @@ export default async function PortalPatientPage({ params }: { params: Promise<{ 
         )}
 
         {documentsWithUrls.length > 0 && (
-          <section className="rounded-xl border bg-background p-4">
-            <div className="mb-3 flex items-center gap-2 font-medium">
-              <FileText className="size-4" /> Tus documentos
+          <section className="rounded-[16px] border border-black/[0.07] bg-card p-5">
+            <div className="mb-3 flex items-center gap-2 font-semibold text-foreground/90">
+              <FileText className="size-4 text-primary" /> Tus documentos
             </div>
             <ul className="space-y-2 text-sm">
               {documentsWithUrls.map((d) => (
@@ -248,9 +276,9 @@ export default async function PortalPatientPage({ params }: { params: Promise<{ 
           </section>
         )}
 
-        <section className="rounded-xl border bg-background p-4">
-          <div className="mb-3 flex items-center gap-2 font-medium">
-            <Receipt className="size-4" /> Pagos
+        <section className="rounded-[16px] border border-black/[0.07] bg-card p-5">
+          <div className="mb-3 flex items-center gap-2 font-semibold text-foreground/90">
+            <Receipt className="size-4 text-primary" /> Pagos
           </div>
           {(payments ?? []).length === 0 ? (
             <p className="text-sm text-muted-foreground">Aún no tienes pagos registrados.</p>
@@ -261,16 +289,18 @@ export default async function PortalPatientPage({ params }: { params: Promise<{ 
                   <span>
                     ${p.amount.toLocaleString("es-CO")} {p.currency}
                   </span>
-                  <Badge variant="outline">{PAYMENT_STATUS_LABELS[p.status]}</Badge>
+                  <Badge variant="outline" className={p.status === "approved" ? BADGE_ACCENT : BADGE_OUTLINE}>
+                    {PAYMENT_STATUS_LABELS[p.status]}
+                  </Badge>
                 </li>
               ))}
             </ul>
           )}
         </section>
 
-        <section className="rounded-xl border bg-background p-4">
-          <div className="mb-3 flex items-center gap-2 font-medium">
-            <ShieldCheck className="size-4" /> Consentimientos aceptados
+        <section className="rounded-[16px] border border-black/[0.07] bg-card p-5">
+          <div className="mb-3 flex items-center gap-2 font-semibold text-foreground/90">
+            <ShieldCheck className="size-4 text-primary" /> Consentimientos aceptados
           </div>
           {(consentRecords ?? []).length === 0 ? (
             <p className="text-sm text-muted-foreground">No tienes consentimientos registrados.</p>
@@ -294,8 +324,8 @@ export default async function PortalPatientPage({ params }: { params: Promise<{ 
         </section>
 
         {history.length > 0 && (
-          <section className="rounded-xl border bg-background p-4">
-            <div className="mb-3 font-medium">Historial de citas</div>
+          <section className="rounded-[16px] border border-black/[0.07] bg-card p-5">
+            <div className="mb-3 font-semibold text-foreground/90">Historial de citas</div>
             <ul className="space-y-2 text-sm">
               {history.map((a) => (
                 <li key={a.id} className="flex items-center justify-between">
@@ -305,7 +335,18 @@ export default async function PortalPatientPage({ params }: { params: Promise<{ 
                       {new Date(a.starts_at).toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" })}
                     </p>
                   </div>
-                  <Badge variant="outline">{APPOINTMENT_STATUS_LABELS[a.status]}</Badge>
+                  <Badge
+                    variant="outline"
+                    className={
+                      a.status === "completed"
+                        ? BADGE_ACCENT
+                        : a.status === "cancelled" || a.status === "no_show"
+                          ? BADGE_DESTRUCTIVE
+                          : BADGE_OUTLINE
+                    }
+                  >
+                    {APPOINTMENT_STATUS_LABELS[a.status]}
+                  </Badge>
                 </li>
               ))}
             </ul>
