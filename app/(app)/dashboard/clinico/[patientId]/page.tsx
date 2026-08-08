@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, FileText, ShieldAlert } from "lucide-react";
 import { requireRole } from "@/lib/auth/session";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,6 +11,7 @@ import { ModuleLocked } from "@/components/patterns/module-locked";
 import { NoteDialog } from "./note-dialog";
 import { TreatmentPlanDialog } from "./treatment-plan-dialog";
 import { PlanRowActions } from "./plan-row-actions";
+import { AccessLogList } from "./access-log-list";
 
 export default async function ClinicalRecordPage({ params }: { params: Promise<{ patientId: string }> }) {
   const { patientId } = await params;
@@ -51,19 +52,53 @@ export default async function ClinicalRecordPage({ params }: { params: Promise<{
   const professionalById = new Map((professionals ?? []).map((p) => [p.id, p]));
 
   // Auditoría de acceso: registra que este usuario vio estas notas clínicas.
-  // Best-effort — no debe bloquear el render si falla.
+  // No hay política de insert para "authenticated" en clinical_notes_access_logs
+  // (por diseño, ver migración 20260714100000) — hay que usar el cliente admin.
+  // Best-effort — no debe bloquear el render si falla. Se deduplica contra los
+  // últimos 30 minutos para no generar una fila por cada render/revalidación.
+  const admin = createAdminClient();
   if (notes && notes.length > 0) {
-    await supabase.from("clinical_notes_access_logs").insert(
-      notes.map((n) => ({
-        clinic_id: profile.clinicId!,
-        clinical_note_id: n.id,
-        accessed_by: profile.id,
-        action: "view" as const,
-      })),
-    );
+    const noteIds = notes.map((n) => n.id);
+    const since = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    const { data: recentLogs } = await admin
+      .from("clinical_notes_access_logs")
+      .select("clinical_note_id")
+      .eq("accessed_by", profile.id)
+      .in("clinical_note_id", noteIds)
+      .gte("created_at", since);
+    const alreadyLogged = new Set((recentLogs ?? []).map((l) => l.clinical_note_id));
+    const toLog = noteIds.filter((id) => !alreadyLogged.has(id));
+    if (toLog.length > 0) {
+      await admin.from("clinical_notes_access_logs").insert(
+        toLog.map((noteId) => ({
+          clinic_id: profile.clinicId!,
+          clinical_note_id: noteId,
+          accessed_by: profile.id,
+          action: "view" as const,
+        })),
+      );
+    }
   }
 
   const showProfessionalSelect = profile.role === "clinic_owner";
+  const isOwner = profile.role === "clinic_owner";
+
+  let accessLogs: { id: string; clinical_note_id: string; accessed_by: string | null; action: "view" | "edit"; created_at: string }[] = [];
+  let viewerNameById = new Map<string, string>();
+  if (isOwner && notes && notes.length > 0) {
+    const noteIds = notes.map((n) => n.id);
+    const [{ data: logs }, { data: allProfiles }] = await Promise.all([
+      admin
+        .from("clinical_notes_access_logs")
+        .select("id, clinical_note_id, accessed_by, action, created_at")
+        .in("clinical_note_id", noteIds)
+        .order("created_at", { ascending: false })
+        .limit(100),
+      admin.from("profiles").select("id, full_name").eq("clinic_id", profile.clinicId!),
+    ]);
+    accessLogs = logs ?? [];
+    viewerNameById = new Map((allProfiles ?? []).map((p) => [p.id, p.full_name ?? "Usuario"]));
+  }
 
   return (
     <div className="space-y-6">
@@ -85,6 +120,7 @@ export default async function ClinicalRecordPage({ params }: { params: Promise<{
         <TabsList>
           <TabsTrigger value="notas">Notas clínicas</TabsTrigger>
           <TabsTrigger value="planes">Plan de tratamiento</TabsTrigger>
+          {isOwner && <TabsTrigger value="auditoria">Auditoría de acceso</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="notas" className="mt-4 space-y-4">
@@ -176,6 +212,20 @@ export default async function ClinicalRecordPage({ params }: { params: Promise<{
             </ul>
           )}
         </TabsContent>
+
+        {isOwner && (
+          <TabsContent value="auditoria" className="mt-4">
+            <AccessLogList
+              logs={accessLogs.map((l) => ({
+                id: l.id,
+                createdAt: l.created_at,
+                action: l.action,
+                viewerName: l.accessed_by ? (viewerNameById.get(l.accessed_by) ?? "Usuario eliminado") : "Usuario eliminado",
+                noteDate: notes?.find((n) => n.id === l.clinical_note_id)?.created_at ?? null,
+              }))}
+            />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
