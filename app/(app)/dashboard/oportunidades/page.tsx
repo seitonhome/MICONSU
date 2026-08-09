@@ -37,13 +37,16 @@ export default async function OportunidadesPage() {
       .eq("clinic_id", clinicId)
       .gte("starts_at", now.toISOString())
       .not("status", "in", "(cancelled,expired,no_show)"),
+    // "Recuperable" significa que ese horario todavía no pasó — una
+    // cancelación de hace 3 semanas cuyo horario ya ocurrió no es un cupo
+    // que se pueda ofrecer a nadie, aunque haya sido cancelada "recientemente".
     supabase
       .from("appointments")
       .select("id, patient_id, starts_at, service_id")
       .eq("clinic_id", clinicId)
       .eq("status", "cancelled")
-      .gte("starts_at", thirtyDaysAgo.toISOString())
-      .order("starts_at", { ascending: false }),
+      .gte("starts_at", now.toISOString())
+      .order("starts_at", { ascending: true }),
     supabase
       .from("appointments")
       .select("patient_id, service_id, status, starts_at, ends_at, professional_id")
@@ -61,6 +64,7 @@ export default async function OportunidadesPage() {
       .select("starts_at, ends_at, professional_id")
       .eq("clinic_id", clinicId)
       .gte("starts_at", startOfWeek(now).toISOString())
+      .lt("starts_at", new Date(startOfWeek(now).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString())
       .not("status", "in", "(cancelled,expired,no_show)"),
   ]);
 

@@ -31,9 +31,9 @@ export default async function HorariosPage() {
   return (
     <div className="max-w-3xl space-y-10">
       <div>
-        <h1 className="text-2xl font-semibold">Horarios</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Horarios</h1>
         <p className="mt-1 text-muted-foreground">
-          Define cuándo está disponible cada profesional para recibir reservas, y bloquea fechas puntuales cuando lo necesites.
+          Define cuándo está disponible cada profesional para recibir reservas, y bloquea horarios puntuales o recurrentes cuando lo necesites.
         </p>
       </div>
 

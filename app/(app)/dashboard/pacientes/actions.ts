@@ -63,11 +63,12 @@ export async function updatePatient(
 ): Promise<PatientActionState> {
   const { clinicId, profileId, supabase } = await staffClinicId();
   const fields = parsePatientForm(formData);
+  const status = formData.get("status") === "on" ? "active" : "inactive";
   if (!fields.full_name) return { error: "El nombre completo es obligatorio." };
 
   const { data: before } = await supabase.from("patients").select("*").eq("id", id).maybeSingle();
 
-  const { error } = await supabase.from("patients").update(fields).eq("id", id);
+  const { error } = await supabase.from("patients").update({ ...fields, status }).eq("id", id);
   if (error) return { error: "No pudimos actualizar el paciente." };
 
   await logAudit({

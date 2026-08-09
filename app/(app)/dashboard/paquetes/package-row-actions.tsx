@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { toast } from "sonner";
 import { CheckCheck, Pause, Play, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { registerPackageSession, updatePackageStatus } from "./actions";
@@ -23,7 +24,12 @@ export function PackageRowActions({
           size="sm"
           variant="outline"
           disabled={isPending}
-          onClick={() => startTransition(() => registerPackageSession(id))}
+          onClick={() =>
+            startTransition(async () => {
+              const result = await registerPackageSession(id);
+              if (result.error) toast.error(result.error);
+            })
+          }
         >
           Registrar sesión
         </Button>

@@ -12,6 +12,7 @@ import {
   SUPPORT_TICKET_PRIORITY_LABELS,
   SUPPORT_TICKET_CATEGORY_LABELS,
 } from "@/lib/domain/labels";
+import { TICKET_STATUS_BADGE_CLASS, BADGE_OUTLINE } from "@/lib/utils/badge-styles";
 
 export default async function TicketDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -52,7 +53,7 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
       <div>
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-semibold">{ticket.subject}</h1>
-          <Badge variant="outline">
+          <Badge variant="outline" className={TICKET_STATUS_BADGE_CLASS[currentStatus] ?? BADGE_OUTLINE}>
             {SUPPORT_TICKET_STATUS_LABELS[currentStatus as keyof typeof SUPPORT_TICKET_STATUS_LABELS] ?? currentStatus}
           </Badge>
         </div>

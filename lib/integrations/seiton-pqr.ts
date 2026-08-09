@@ -28,13 +28,16 @@ const SEITON_STATUS_TO_LOCAL: Record<SeitonTicketStatus, string> = {
 };
 
 // Mapeo inverso al de SEITON_STATUS_TO_LOCAL: los estados locales más finos
-// (in_review, waiting_client) no existen en Seiton, así que ambos colapsan a
-// IN_PROGRESS allá — es una pérdida de granularidad aceptada, no un bug.
+// (in_review, waiting_client, escalated) no existen en Seiton, así que todos
+// colapsan a IN_PROGRESS allá — es una pérdida de granularidad aceptada, no
+// un bug. "escalated" es justo el que más importa que sí llegue (es el más
+// urgente), así que debe estar en este mapa igual que los demás activos.
 const LOCAL_STATUS_TO_SEITON: Record<string, SeitonTicketStatus> = {
   open: "OPEN",
   in_review: "IN_PROGRESS",
   waiting_client: "IN_PROGRESS",
   in_progress: "IN_PROGRESS",
+  escalated: "IN_PROGRESS",
   resolved: "RESOLVED",
   closed: "CLOSED",
 };

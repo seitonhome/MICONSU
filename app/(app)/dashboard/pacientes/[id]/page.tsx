@@ -10,6 +10,7 @@ import { PatientDialog } from "../patient-dialog";
 import { NotesForm } from "./notes-form";
 import { DocumentUploadForm } from "./document-upload-form";
 import { APPOINTMENT_STATUS_LABELS, PAYMENT_STATUS_LABELS } from "@/lib/domain/labels";
+import { APPOINTMENT_STATUS_BADGE_CLASS, PAYMENT_STATUS_BADGE_CLASS, BADGE_OUTLINE, BADGE_DESTRUCTIVE } from "@/lib/utils/badge-styles";
 
 export default async function PatientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -81,7 +82,7 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">{patient.full_name}</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">{patient.full_name}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {[patient.phone, patient.email, patient.city, patient.insurance_provider ? `EPS: ${patient.insurance_provider}` : null]
               .filter(Boolean)
@@ -112,16 +113,18 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
           {!appointments || appointments.length === 0 ? (
             <p className="text-sm text-muted-foreground">Sin citas todavía.</p>
           ) : (
-            <ul className="divide-y rounded-xl border">
+            <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
               {appointments.map((a) => (
-                <li key={a.id} className="flex items-center justify-between gap-4 px-4 py-3">
+                <li key={a.id} className="flex items-center justify-between gap-4 px-5 py-4">
                   <div>
-                    <p className="text-sm font-medium">{serviceById.get(a.service_id) ?? "Servicio"}</p>
+                    <p className="text-[13.5px] font-semibold text-foreground/90">{serviceById.get(a.service_id) ?? "Servicio"}</p>
                     <p className="text-xs text-muted-foreground">
                       {new Date(a.starts_at).toLocaleString("es-CO")} · {professionalById.get(a.professional_id) ?? "Profesional"}
                     </p>
                   </div>
-                  <Badge variant="outline">{APPOINTMENT_STATUS_LABELS[a.status]}</Badge>
+                  <Badge variant="outline" className={APPOINTMENT_STATUS_BADGE_CLASS[a.status] ?? BADGE_OUTLINE}>
+                    {APPOINTMENT_STATUS_LABELS[a.status]}
+                  </Badge>
                 </li>
               ))}
             </ul>
@@ -132,16 +135,18 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
           {!paymentIntents || paymentIntents.length === 0 ? (
             <p className="text-sm text-muted-foreground">Sin pagos registrados.</p>
           ) : (
-            <ul className="divide-y rounded-xl border">
+            <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
               {paymentIntents.map((pi) => (
-                <li key={pi.id} className="flex items-center justify-between gap-4 px-4 py-3">
+                <li key={pi.id} className="flex items-center justify-between gap-4 px-5 py-4">
                   <div>
-                    <p className="text-sm font-medium">${Number(pi.amount).toLocaleString("es-CO")}</p>
+                    <p className="text-[13.5px] font-semibold text-foreground/90">${Number(pi.amount).toLocaleString("es-CO")}</p>
                     <p className="text-xs text-muted-foreground">
                       {pi.kind === "deposit" ? "Anticipo" : "Pago completo"} · {new Date(pi.created_at).toLocaleDateString("es-CO")}
                     </p>
                   </div>
-                  <Badge variant="outline">{PAYMENT_STATUS_LABELS[pi.status]}</Badge>
+                  <Badge variant="outline" className={PAYMENT_STATUS_BADGE_CLASS[pi.status] ?? BADGE_OUTLINE}>
+                    {PAYMENT_STATUS_LABELS[pi.status]}
+                  </Badge>
                 </li>
               ))}
             </ul>
@@ -152,17 +157,19 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
           {!consentRecords || consentRecords.length === 0 ? (
             <p className="text-sm text-muted-foreground">Sin consentimientos registrados.</p>
           ) : (
-            <ul className="divide-y rounded-xl border">
+            <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
               {consentRecords.map((c) => (
-                <li key={c.id} className="flex items-center justify-between gap-2 px-4 py-3">
+                <li key={c.id} className="flex items-center justify-between gap-2 px-5 py-4">
                   <div>
-                    <p className="text-sm font-medium">{consentDocById.get(c.document_id) ?? "Documento"}</p>
+                    <p className="text-[13.5px] font-semibold text-foreground/90">{consentDocById.get(c.document_id) ?? "Documento"}</p>
                     <p className="text-xs text-muted-foreground">
                       Aceptado el {new Date(c.accepted_at).toLocaleString("es-CO")} (v{c.document_version})
                     </p>
                   </div>
                   {c.revoked_at && (
-                    <Badge variant="destructive">Retirado el {new Date(c.revoked_at).toLocaleDateString("es-CO")}</Badge>
+                    <Badge variant="outline" className={BADGE_DESTRUCTIVE}>
+                      Retirado el {new Date(c.revoked_at).toLocaleDateString("es-CO")}
+                    </Badge>
                   )}
                 </li>
               ))}

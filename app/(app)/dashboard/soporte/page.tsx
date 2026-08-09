@@ -12,17 +12,7 @@ import {
   LICENSE_STATUS_LABELS,
   SUPPORT_SUBSCRIPTION_STATUS_LABELS,
 } from "@/lib/domain/labels";
-import { BADGE_PRIMARY, BADGE_ACCENT, BADGE_OUTLINE, BADGE_DESTRUCTIVE } from "@/lib/utils/badge-styles";
-
-const TICKET_STATUS_BADGE_CLASS: Record<string, string> = {
-  open: BADGE_OUTLINE,
-  in_review: BADGE_PRIMARY,
-  waiting_client: BADGE_PRIMARY,
-  in_progress: BADGE_PRIMARY,
-  resolved: BADGE_ACCENT,
-  closed: BADGE_OUTLINE,
-  escalated: BADGE_DESTRUCTIVE,
-};
+import { BADGE_ACCENT, BADGE_OUTLINE, TICKET_STATUS_BADGE_CLASS } from "@/lib/utils/badge-styles";
 
 export default async function SoportePage() {
   const profile = await requireCurrentProfile();

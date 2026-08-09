@@ -14,6 +14,7 @@ export type OnboardingContext = {
   availabilityRules: Database["public"]["Tables"]["availability_rules"]["Row"][];
   paymentProviders: Database["public"]["Tables"]["payment_providers"]["Row"][];
   consentDocuments: Database["public"]["Tables"]["consent_documents"]["Row"][];
+  hasAppointments: boolean;
 };
 
 export const getOnboardingContext = cache(async (): Promise<OnboardingContext> => {
@@ -30,6 +31,7 @@ export const getOnboardingContext = cache(async (): Promise<OnboardingContext> =
     { data: availabilityRules },
     { data: paymentProviders },
     { data: consentDocuments },
+    { count: appointmentCount },
   ] = await Promise.all([
     supabase.from("clinics").select("*").eq("id", clinicId).single(),
     supabase.from("clinic_branding").select("*").eq("clinic_id", clinicId).maybeSingle(),
@@ -39,6 +41,9 @@ export const getOnboardingContext = cache(async (): Promise<OnboardingContext> =
     supabase.from("availability_rules").select("*").eq("clinic_id", clinicId).is("deleted_at", null),
     supabase.from("payment_providers").select("*").eq("clinic_id", clinicId),
     supabase.from("consent_documents").select("*").eq("clinic_id", clinicId),
+    // Señal real de que el flujo de reserva ya se probó al menos una vez
+    // (paso 11), en vez de un checkbox manual que nadie marca.
+    supabase.from("appointments").select("id", { count: "exact", head: true }).eq("clinic_id", clinicId).is("deleted_at", null),
   ]);
 
   if (!clinic) {
@@ -55,6 +60,7 @@ export const getOnboardingContext = cache(async (): Promise<OnboardingContext> =
     availabilityRules: availabilityRules ?? [],
     paymentProviders: paymentProviders ?? [],
     consentDocuments: consentDocuments ?? [],
+    hasAppointments: (appointmentCount ?? 0) > 0,
   };
 });
 
@@ -72,7 +78,7 @@ export function computeStepCompletion(ctx: OnboardingContext): StepCompletion {
     8: ctx.paymentProviders.some((p) => p.is_active),
     9: ctx.consentDocuments.length > 0,
     10: ctx.services.length > 0 && (ctx.branding?.logo_url ? true : false),
-    11: false,
+    11: ctx.hasAppointments,
     12: ctx.clinic.is_published,
   };
 }

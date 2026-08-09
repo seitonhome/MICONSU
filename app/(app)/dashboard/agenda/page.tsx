@@ -9,25 +9,10 @@ import { AppointmentActions } from "./appointment-actions";
 import { AgendaFilters } from "./agenda-filters";
 import { APPOINTMENT_STATUS_LABELS } from "@/lib/domain/labels";
 import { bogotaDateInputValue, bogotaMidnightFromDateString } from "@/lib/utils/timezone";
-import { BADGE_PRIMARY, BADGE_ACCENT, BADGE_OUTLINE, BADGE_DESTRUCTIVE } from "@/lib/utils/badge-styles";
+import { APPOINTMENT_STATUS_BADGE_CLASS, BADGE_OUTLINE } from "@/lib/utils/badge-styles";
 import type { Database } from "@/lib/supabase/types";
 
 type Status = Database["public"]["Enums"]["appointment_status"];
-
-const STATUS_BADGE_CLASS: Partial<Record<Status, string>> = {
-  requested: BADGE_OUTLINE,
-  pending_payment: BADGE_OUTLINE,
-  pending_manual_confirmation: BADGE_OUTLINE,
-  confirmed: BADGE_PRIMARY,
-  paid: BADGE_PRIMARY,
-  checked_in: BADGE_PRIMARY,
-  in_progress: BADGE_PRIMARY,
-  completed: BADGE_ACCENT,
-  cancelled: BADGE_DESTRUCTIVE,
-  no_show: BADGE_DESTRUCTIVE,
-  rescheduled: BADGE_OUTLINE,
-  expired: BADGE_DESTRUCTIVE,
-};
 
 export default async function AgendaPage({
   searchParams,
@@ -100,6 +85,11 @@ export default async function AgendaPage({
   const patientById = new Map((patients ?? []).map((p) => [p.id, p]));
 
   const isToday = date === bogotaDateInputValue(new Date());
+  // La lista del día muestra todos los estados (incluida canceladas), pero el
+  // titular "Hoy tienes X citas" debe coincidir con el mismo criterio que
+  // usa Inicio (excluye canceladas/expiradas) para no mostrar dos números
+  // distintos del mismo día.
+  const activeAppointmentsCount = (appointments ?? []).filter((a) => !["cancelled", "expired"].includes(a.status)).length;
 
   return (
     <div className="space-y-6">
@@ -110,7 +100,7 @@ export default async function AgendaPage({
             {filteringByPatient
               ? `${appointments?.length ?? 0} citas de ${patientById.get(patientFilter)?.full_name ?? "este paciente"}.`
               : isToday
-                ? `Hoy tienes ${appointments?.length ?? 0} citas.`
+                ? `Hoy tienes ${activeAppointmentsCount} citas.`
                 : `Citas del ${date}.`}
           </p>
         </div>
@@ -191,7 +181,7 @@ export default async function AgendaPage({
                   <div className="flex items-center gap-2.5">
                     <span className="w-16 shrink-0 text-[13.5px] font-bold tabular-nums text-foreground/90">{time}</span>
                     <p className="truncate text-[13.5px] font-semibold text-foreground/90">{patient?.full_name ?? "Paciente"}</p>
-                    <Badge variant="outline" className={STATUS_BADGE_CLASS[appt.status] ?? BADGE_OUTLINE}>
+                    <Badge variant="outline" className={APPOINTMENT_STATUS_BADGE_CLASS[appt.status] ?? BADGE_OUTLINE}>
                       {APPOINTMENT_STATUS_LABELS[appt.status]}
                     </Badge>
                   </div>

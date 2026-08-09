@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { BADGE_ACCENT, BADGE_PRIMARY, BADGE_OUTLINE } from "@/lib/utils/badge-styles";
 import { cn } from "@/lib/utils";
 import { ManualTransferForm } from "./manual-transfer-form";
+import { ManualTransferToggle } from "./manual-transfer-toggle";
 import { WompiForm } from "./wompi-form";
 import { InPersonToggle } from "./in-person-toggle";
 import { MercadoPagoForm } from "./mercado-pago-form";
@@ -67,7 +68,13 @@ export default async function PagosPage() {
             <ProviderStatusBadge isActive={manual?.is_active ?? false} isConfigured={Boolean(manualInstructions)} />
           </CardAction>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {manual && (
+            <div className="flex items-center justify-between rounded-lg bg-muted/30 p-3 text-sm">
+              <span>Transferencia bancaria activa</span>
+              <ManualTransferToggle isActive={manual.is_active} />
+            </div>
+          )}
           <ManualTransferForm currentInstructions={manualInstructions} />
         </CardContent>
       </Card>

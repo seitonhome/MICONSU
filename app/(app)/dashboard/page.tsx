@@ -163,6 +163,10 @@ export default async function DashboardPage() {
   const serviceNameById = new Map((todayServices ?? []).map((s) => [s.id, s.name]));
 
   const activationState = await activation;
+  // Ingresos, variación mensual y pagos pendientes son datos financieros —
+  // mismo criterio de acceso que Pagos y Reportes, para no exponerlos a
+  // roles operativos (asistente, recepcionista, profesional).
+  const canSeeFinancials = profile.role === "clinic_owner" || profile.role === "finance_user";
   const monthRevenue = (monthPayments ?? []).reduce((sum, p) => sum + Number(p.amount), 0);
   const prevMonthRevenue = (prevMonthPayments ?? []).reduce((sum, p) => sum + Number(p.amount), 0);
   const revenueChangePct = prevMonthRevenue > 0 ? Math.round(((monthRevenue - prevMonthRevenue) / prevMonthRevenue) * 100) : null;
@@ -191,7 +195,7 @@ export default async function DashboardPage() {
       icon: UserX,
       value: noShowCount ?? 0,
       label: "inasistencias este mes",
-      href: "/dashboard/servicios",
+      href: "/dashboard/agenda?status=no_show",
     },
     {
       icon: LifeBuoy,
@@ -223,9 +227,14 @@ export default async function DashboardPage() {
 
       {activationState && <ActivationChecklist completion={activationState.completion} percent={activationState.percent} />}
 
-      {/* Bento fila 1: agenda / ingresos / pacientes nuevos */}
+      {/* Bento fila 1: agenda / ingresos (solo dueño y finanzas) / pacientes nuevos */}
       <div className="grid grid-cols-1 gap-5 md:grid-cols-12">
-        <Card className="rounded-[20px] border-black/[0.06] p-6 shadow-[0_1px_2px_rgba(20,40,60,0.04),0_10px_28px_-16px_rgba(20,40,60,0.16)] md:col-span-5">
+        <Card
+          className={cn(
+            "rounded-[20px] border-black/[0.06] p-6 shadow-[0_1px_2px_rgba(20,40,60,0.04),0_10px_28px_-16px_rgba(20,40,60,0.16)]",
+            canSeeFinancials ? "md:col-span-5" : "md:col-span-8",
+          )}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex size-[38px] shrink-0 items-center justify-center rounded-[11px] bg-secondary">
@@ -272,54 +281,56 @@ export default async function DashboardPage() {
           )}
         </Card>
 
-        <Card className="rounded-[20px] border-black/[0.06] p-6 shadow-[0_1px_2px_rgba(20,40,60,0.04),0_10px_28px_-16px_rgba(20,40,60,0.16)] md:col-span-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex size-[38px] shrink-0 items-center justify-center rounded-[11px] bg-secondary">
-                <Wallet className="size-[19px] text-primary" strokeWidth={1.7} />
+        {canSeeFinancials && (
+          <Card className="rounded-[20px] border-black/[0.06] p-6 shadow-[0_1px_2px_rgba(20,40,60,0.04),0_10px_28px_-16px_rgba(20,40,60,0.16)] md:col-span-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex size-[38px] shrink-0 items-center justify-center rounded-[11px] bg-secondary">
+                  <Wallet className="size-[19px] text-primary" strokeWidth={1.7} />
+                </div>
+                <p className="text-sm font-semibold text-foreground/90">Ingresos del mes</p>
               </div>
-              <p className="text-sm font-semibold text-foreground/90">Ingresos del mes</p>
+              {revenueChangePct !== null && (
+                <Badge
+                  variant="secondary"
+                  className="rounded-full border-transparent bg-accent/[0.28] px-2.5 py-0.5 text-[11.5px] font-bold text-accent-foreground"
+                >
+                  {revenueChangePct >= 0 ? "+" : ""}
+                  {revenueChangePct}%
+                </Badge>
+              )}
             </div>
-            {revenueChangePct !== null && (
-              <Badge
-                variant="secondary"
-                className="rounded-full border-transparent bg-accent/[0.28] px-2.5 py-0.5 text-[11.5px] font-bold text-accent-foreground"
-              >
-                {revenueChangePct >= 0 ? "+" : ""}
-                {revenueChangePct}%
-              </Badge>
-            )}
-          </div>
 
-          <p className="mt-4 text-[30px] font-extrabold tracking-tight text-foreground">
-            ${monthRevenue.toLocaleString("es-CO")}
-          </p>
+            <p className="mt-4 text-[30px] font-extrabold tracking-tight text-foreground">
+              ${monthRevenue.toLocaleString("es-CO")}
+            </p>
 
-          <div className="mt-4 flex h-14 items-end gap-2">
-            {REVENUE_SPARKLINE_HEIGHTS.map((h, i) => (
-              <div
-                key={i}
-                className={cn("flex-1 rounded-t-[5px]", i === REVENUE_SPARKLINE_HEIGHTS.length - 1 ? "bg-primary" : "bg-chart-4")}
-                style={{ height: `${h}%` }}
-              />
-            ))}
-          </div>
+            <div className="mt-4 flex h-14 items-end gap-2">
+              {REVENUE_SPARKLINE_HEIGHTS.map((h, i) => (
+                <div
+                  key={i}
+                  className={cn("flex-1 rounded-t-[5px]", i === REVENUE_SPARKLINE_HEIGHTS.length - 1 ? "bg-primary" : "bg-chart-4")}
+                  style={{ height: `${h}%` }}
+                />
+              ))}
+            </div>
 
-          <p className="mt-4 text-[12.5px] text-muted-foreground">
-            {pendingPaymentsCount && pendingPaymentsCount > 0 ? (
-              <>
-                <Link href="/dashboard/pagos/conciliacion" className="font-semibold text-primary hover:underline">
-                  {pendingPaymentsCount} pagos
-                </Link>{" "}
-                pendientes por confirmar
-              </>
-            ) : (
-              "No tienes pagos pendientes por confirmar."
-            )}
-          </p>
-        </Card>
+            <p className="mt-4 text-[12.5px] text-muted-foreground">
+              {pendingPaymentsCount && pendingPaymentsCount > 0 ? (
+                <>
+                  <Link href="/dashboard/pagos/conciliacion" className="font-semibold text-primary hover:underline">
+                    {pendingPaymentsCount} pagos
+                  </Link>{" "}
+                  pendientes por confirmar
+                </>
+              ) : (
+                "No tienes pagos pendientes por confirmar."
+              )}
+            </p>
+          </Card>
+        )}
 
-        <Link href="/dashboard/pacientes" className="md:col-span-3">
+        <Link href="/dashboard/pacientes" className={canSeeFinancials ? "md:col-span-3" : "md:col-span-4"}>
           <Card className="h-full justify-between rounded-[20px] border-black/[0.06] p-[22px] shadow-[0_1px_2px_rgba(20,40,60,0.04),0_10px_28px_-16px_rgba(20,40,60,0.16)] transition-shadow hover:shadow-[0_1px_2px_rgba(20,40,60,0.06),0_14px_32px_-16px_rgba(20,40,60,0.22)]">
             <div className="flex size-[38px] items-center justify-center rounded-[11px] bg-accent/[0.22]">
               <UserPlus className="size-[19px] text-accent-foreground" strokeWidth={1.7} />

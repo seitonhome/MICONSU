@@ -75,6 +75,13 @@ export async function assignResource(
   const patientId = formData.get("patient_id") as string;
   if (!patientId) return { error: "Selecciona un paciente." };
 
+  const { count: existingCount } = await supabase
+    .from("assigned_resources")
+    .select("id", { count: "exact", head: true })
+    .eq("resource_id", resourceId)
+    .eq("patient_id", patientId);
+  if ((existingCount ?? 0) > 0) return { error: "Ese recurso ya está asignado a este paciente." };
+
   const { error } = await supabase.from("assigned_resources").insert({
     clinic_id: profile.clinicId!,
     resource_id: resourceId,

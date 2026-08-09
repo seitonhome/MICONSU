@@ -34,7 +34,7 @@ export function BlockedTimeForm({
       </p>
 
       {blockedTimes.length > 0 && (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {blockedTimes.map((bt) => (
             <li key={bt.id} className="flex items-center justify-between px-4 py-3">
               <p className="text-sm">
@@ -89,7 +89,7 @@ export function BlockedTimeForm({
         </label>
 
         {isRecurring ? (
-          <div className="grid gap-4 sm:max-w-2xl sm:grid-cols-4">
+          <div className="grid gap-4 sm:max-w-3xl sm:grid-cols-5">
             <div className="space-y-2">
               <Label htmlFor="day_of_week">Día</Label>
               <Select name="day_of_week" defaultValue="3">
@@ -106,12 +106,16 @@ export function BlockedTimeForm({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="recurring_start_time">Desde</Label>
+              <Label htmlFor="recurring_start_time">Desde (hora)</Label>
               <Input id="recurring_start_time" name="recurring_start_time" type="time" defaultValue="00:00" required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="recurring_end_time">Hasta</Label>
+              <Label htmlFor="recurring_end_time">Hasta (hora)</Label>
               <Input id="recurring_end_time" name="recurring_end_time" type="time" defaultValue="23:59" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="recurrence_from">Vigente desde</Label>
+              <Input id="recurrence_from" name="recurrence_from" type="date" defaultValue={new Date().toISOString().slice(0, 10)} required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="recurrence_until">Vigente hasta (opcional)</Label>

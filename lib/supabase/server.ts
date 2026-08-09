@@ -19,8 +19,11 @@ export async function createClient() {
               cookieStore.set(name, value, options),
             );
           } catch {
-            // Se llama desde un Server Component sin permiso de escritura.
-            // El middleware ya refresca la sesión en cada request, así que es seguro ignorar.
+            // Se llama desde un Server Component sin permiso de escritura de
+            // cookies (no hay middleware en este proyecto — se eliminó por
+            // causar fallos de plataforma, ver df116cc). Es seguro ignorar
+            // aquí porque cualquier refresco real de sesión ocurre en un
+            // Server Action o Route Handler, que sí puede escribir cookies.
           }
         },
       },

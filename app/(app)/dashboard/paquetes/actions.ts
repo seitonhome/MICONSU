@@ -83,7 +83,7 @@ export async function updatePackage(
   return { success: true };
 }
 
-export async function registerPackageSession(packageId: string): Promise<void> {
+export async function registerPackageSession(packageId: string): Promise<{ error?: string }> {
   const { clinicId, supabase } = await staffClinicId();
 
   const { data: pkg } = await supabase
@@ -92,15 +92,18 @@ export async function registerPackageSession(packageId: string): Promise<void> {
     .eq("id", packageId)
     .single();
 
-  if (!pkg || pkg.sessions_used >= pkg.total_sessions) return;
+  if (!pkg) return { error: "No encontramos este paquete." };
+  if (pkg.sessions_used >= pkg.total_sessions) return { error: "Este paquete ya no tiene sesiones disponibles." };
 
-  await supabase.from("package_sessions").insert({
+  const { error } = await supabase.from("package_sessions").insert({
     clinic_id: clinicId,
     package_id: packageId,
     session_number: pkg.sessions_used + 1,
   });
+  if (error) return { error: "No pudimos registrar la sesión. Intenta de nuevo." };
 
   revalidatePath("/dashboard/paquetes");
+  return {};
 }
 
 export async function updatePackageStatus(

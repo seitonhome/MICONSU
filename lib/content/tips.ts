@@ -45,8 +45,8 @@ export const TIP_CATEGORIES: TipCategory[] = [
         body: "Cuando alguien cancela, en vez de perder el espacio puedes ofrecerlo directamente a quien esté en la lista de espera para ese servicio y esas fechas. Se gestiona desde Agenda → Lista de espera.",
       },
       {
-        title: "Bloquea franjas puntuales, no solo tu horario fijo",
-        body: "Vacaciones, una emergencia o un día ocupado no requieren cambiar tu horario general — puedes bloquear solo esa franja específica desde Configuración → Horarios → Bloqueos.",
+        title: "Bloquea franjas puntuales o recurrentes, no solo tu horario fijo",
+        body: "Vacaciones, una emergencia o un día ocupado no requieren cambiar tu horario general — puedes bloquear solo esa franja específica desde Configuración → Horarios → Bloqueos. Si es algo que se repite cada semana (ej. \"todos los miércoles no atiendo\"), activa \"Se repite cada semana\" en vez de crear el bloqueo una y otra vez.",
       },
       {
         title: "Filtra la agenda por paciente para ver su historial completo",

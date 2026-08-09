@@ -10,8 +10,14 @@ import { ModuleLocked } from "@/components/patterns/module-locked";
 import { AttendeeDialog } from "./attendee-dialog";
 import { AttendeeRow } from "./attendee-row";
 import { GroupSessionStatusActions } from "./status-actions";
+import { BADGE_PRIMARY, BADGE_ACCENT, BADGE_DESTRUCTIVE } from "@/lib/utils/badge-styles";
 
 const STATUS_LABELS = { scheduled: "Programado", completed: "Realizado", cancelled: "Cancelado" } as const;
+const STATUS_BADGE_CLASS: Record<keyof typeof STATUS_LABELS, string> = {
+  scheduled: BADGE_PRIMARY,
+  completed: BADGE_ACCENT,
+  cancelled: BADGE_DESTRUCTIVE,
+};
 
 export default async function GroupSessionDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -57,8 +63,8 @@ export default async function GroupSessionDetailPage({ params }: { params: Promi
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold">{session.name}</h1>
-            <Badge variant={session.status === "scheduled" ? "default" : "outline"}>{STATUS_LABELS[session.status]}</Badge>
+            <h1 className="text-2xl font-extrabold tracking-tight text-foreground">{session.name}</h1>
+            <Badge variant="outline" className={STATUS_BADGE_CLASS[session.status]}>{STATUS_LABELS[session.status]}</Badge>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
             {new Date(session.starts_at).toLocaleString("es-CO")} · {spotsLeft > 0 ? `${spotsLeft} cupos libres` : "Cupo lleno"}
@@ -82,7 +88,7 @@ export default async function GroupSessionDetailPage({ params }: { params: Promi
           <p className="mt-3 font-medium">Nadie se ha inscrito todavía.</p>
         </div>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {attendees.map((a) => (
             <AttendeeRow
               key={a.id}

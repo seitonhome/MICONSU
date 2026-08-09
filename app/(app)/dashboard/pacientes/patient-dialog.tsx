@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { createPatient, updatePatient, type PatientActionState } from "./actions";
 import { DOCUMENT_TYPE_LABELS } from "@/lib/domain/labels";
 import type { Database } from "@/lib/supabase/types";
@@ -109,6 +110,13 @@ export function PatientDialog({ patient }: { patient?: PatientRow }) {
               <Input id="emergency_contact_phone" name="emergency_contact_phone" defaultValue={patient?.emergency_contact_phone ?? ""} />
             </div>
           </div>
+
+          {patient && (
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox name="status" defaultChecked={patient.status === "active"} />
+              Paciente activo
+            </label>
+          )}
 
           {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
 

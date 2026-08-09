@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   CalendarDays,
+  Clock,
   Users,
   UserRound,
   Stethoscope,
@@ -69,6 +70,17 @@ const NAV_GROUPS: NavGroup[] = [
         label: "Lista de espera",
         icon: ListTree,
         show: (r, e) => STAFF_OPERATIVE_ROLES.includes(r) && e.profesionalPlan,
+      },
+      {
+        // El backend ya permite a un profesional gestionar su propio horario
+        // (ver requireRole en configuracion/horarios/actions.ts) pero antes
+        // solo se llegaba ahí desde "Configuración", visible únicamente al
+        // dueño — un profesional no tenía forma de llegar sin escribir la
+        // URL a mano.
+        href: "/dashboard/configuracion/horarios",
+        label: "Horarios",
+        icon: Clock,
+        show: (r) => r === "clinic_owner" || r === "professional",
       },
     ],
   },

@@ -28,7 +28,7 @@ export function AvailabilityForm({
       <h2 className="text-lg font-semibold">Horarios de atención</h2>
 
       {availabilityRules.length > 0 && (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {availabilityRules.map((rule) => (
             <li key={rule.id} className="flex items-center justify-between px-4 py-3">
               <p className="text-sm">

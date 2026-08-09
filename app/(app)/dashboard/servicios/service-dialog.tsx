@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Plus, Pencil } from "lucide-react";
 import {
   Dialog,
@@ -50,7 +51,10 @@ export function ServiceDialog({
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   useEffect(() => {
-    if (state?.success) setOpen(false);
+    if (state?.success) {
+      setOpen(false);
+      if (state.warning) toast.warning(state.warning);
+    }
   }, [state]);
 
   return (
@@ -208,6 +212,7 @@ export function ServiceDialog({
                   {professionals.map((p) => (
                     <label key={p.id} className="flex items-center gap-2 text-sm">
                       <Checkbox name="professional_ids" value={p.id} defaultChecked={linkedProfessionalIds?.includes(p.id) ?? false} />
+                      <input type="hidden" name="professional_candidate_ids" value={p.id} />
                       {p.full_name}
                     </label>
                   ))}

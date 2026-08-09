@@ -8,13 +8,36 @@ import { WompiProvider } from "@/lib/payments/providers/wompi";
 import { EpaycoProvider } from "@/lib/payments/providers/epayco";
 import { MercadoPagoProvider } from "@/lib/payments/providers/mercado-pago";
 import { logAudit } from "@/lib/security/audit";
+import type { Database } from "@/lib/supabase/types";
 
 export type PaymentsActionState = { error?: string; success?: boolean; message?: string };
+
+type ProviderKey = Database["public"]["Tables"]["payment_providers"]["Row"]["provider_key"];
 
 async function ownerClinicId() {
   const profile = await requireRole(["clinic_owner", "finance_user"]);
   const supabase = await createClient();
   return { clinicId: profile.clinicId!, profileId: profile.id, supabase };
+}
+
+/**
+ * Al editar credenciales (ej. rotar una llave) el upsert no debe reactivar
+ * una pasarela que el dueño apagó a propósito con el switch — solo activa
+ * por defecto (true) la primera vez que se configura, cuando todavía no
+ * existe la fila.
+ */
+async function preserveActiveOnUpdate(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  clinicId: string,
+  providerKey: ProviderKey,
+): Promise<boolean> {
+  const { data: existing } = await supabase
+    .from("payment_providers")
+    .select("is_active")
+    .eq("clinic_id", clinicId)
+    .eq("provider_key", providerKey)
+    .maybeSingle();
+  return existing ? existing.is_active : true;
 }
 
 export async function configureManualTransfer(
@@ -25,10 +48,11 @@ export async function configureManualTransfer(
   const instructions = (formData.get("instructions") as string)?.trim();
   if (!instructions) return { error: "Escribe las instrucciones para transferencia." };
 
+  const isActive = await preserveActiveOnUpdate(supabase, clinicId, "manual_transfer");
   const { data: provider, error } = await supabase
     .from("payment_providers")
     .upsert(
-      { clinic_id: clinicId, provider_key: "manual_transfer", display_name: "Transferencia bancaria", is_active: true, is_sandbox: false },
+      { clinic_id: clinicId, provider_key: "manual_transfer", display_name: "Transferencia bancaria", is_active: isActive, is_sandbox: false },
       { onConflict: "clinic_id,provider_key" },
     )
     .select()
@@ -58,6 +82,12 @@ export async function configureManualTransfer(
   return { success: true };
 }
 
+export async function toggleManualTransferActive(isActive: boolean): Promise<void> {
+  const { clinicId, supabase } = await ownerClinicId();
+  await supabase.from("payment_providers").update({ is_active: isActive }).eq("clinic_id", clinicId).eq("provider_key", "manual_transfer");
+  revalidatePath("/dashboard/pagos");
+}
+
 export async function toggleInPerson(isActive: boolean): Promise<void> {
   const { clinicId, supabase } = await ownerClinicId();
   await supabase
@@ -85,13 +115,14 @@ export async function configureWompi(
   }
 
   const encrypted = encryptCredentials({ publicKey, privateKey, eventsSecret: eventsSecret ?? "", integritySecret });
+  const isActive = await preserveActiveOnUpdate(supabase, clinicId, "wompi");
 
   const { error } = await supabase.from("payment_providers").upsert(
     {
       clinic_id: clinicId,
       provider_key: "wompi",
       display_name: "Wompi",
-      is_active: true,
+      is_active: isActive,
       is_sandbox: isSandbox,
       encrypted_credentials: encrypted,
     },
@@ -139,13 +170,14 @@ export async function configureMercadoPago(
   if (!accessToken) return { error: "El access token es obligatorio." };
 
   const encrypted = encryptCredentials({ accessToken, webhookSecret: webhookSecret ?? "" });
+  const isActive = await preserveActiveOnUpdate(supabase, clinicId, "mercado_pago");
 
   const { error } = await supabase.from("payment_providers").upsert(
     {
       clinic_id: clinicId,
       provider_key: "mercado_pago",
       display_name: "Mercado Pago",
-      is_active: true,
+      is_active: isActive,
       is_sandbox: isSandbox,
       encrypted_credentials: encrypted,
     },
@@ -196,13 +228,14 @@ export async function configureEpayco(
   }
 
   const encrypted = encryptCredentials({ publicKey, privateKey, customerId });
+  const isActive = await preserveActiveOnUpdate(supabase, clinicId, "epayco");
 
   const { error } = await supabase.from("payment_providers").upsert(
     {
       clinic_id: clinicId,
       provider_key: "epayco",
       display_name: "ePayco",
-      is_active: true,
+      is_active: isActive,
       is_sandbox: isSandbox,
       encrypted_credentials: encrypted,
     },
@@ -250,13 +283,14 @@ export async function configureExternalLink(
   }
 
   const encrypted = encryptCredentials({ linkUrl });
+  const isActive = await preserveActiveOnUpdate(supabase, clinicId, "external_link");
 
   const { error } = await supabase.from("payment_providers").upsert(
     {
       clinic_id: clinicId,
       provider_key: "external_link",
       display_name: "Link externo de pago",
-      is_active: true,
+      is_active: isActive,
       is_sandbox: false,
       encrypted_credentials: encrypted,
     },

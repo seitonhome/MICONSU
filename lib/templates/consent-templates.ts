@@ -80,6 +80,18 @@ const CLASSIFICATION_TO_DISCLAIMER: Partial<
   servicio_salud_habilitado: "sensitive_data_authorization",
 };
 
+/**
+ * Tipo de disclaimer sugerido para UNA clasificación puntual — usado al
+ * crear/editar un servicio individual desde el dashboard (a diferencia de
+ * suggestedConsentTypesForClassifications, pensada para el resumen de
+ * onboarding con todas las clasificaciones del consultorio a la vez).
+ */
+export function disclaimerTypeForClassification(
+  classification: Database["public"]["Enums"]["service_classification"],
+): ConsentDocumentType | undefined {
+  return CLASSIFICATION_TO_DISCLAIMER[classification];
+}
+
 export function suggestedConsentTypesForClassifications(
   classifications: Database["public"]["Enums"]["service_classification"][],
 ): ConsentDocumentType[] {

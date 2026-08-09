@@ -2,6 +2,7 @@ import { requireRole } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { PAYMENT_STATUS_LABELS } from "@/lib/domain/labels";
+import { PAYMENT_STATUS_BADGE_CLASS, BADGE_OUTLINE, BADGE_PRIMARY } from "@/lib/utils/badge-styles";
 import { ReconciliationRowActions } from "./reconciliation-row-actions";
 
 export default async function ConciliacionPage() {
@@ -63,7 +64,7 @@ export default async function ConciliacionPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Conciliación de pagos</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Conciliación de pagos</h1>
         <p className="mt-1 text-muted-foreground">Confirma o rechaza los pagos que necesitan revisión manual.</p>
       </div>
 
@@ -72,16 +73,22 @@ export default async function ConciliacionPage() {
           <p className="font-medium">No tienes pagos pendientes por confirmar.</p>
         </div>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-[16px] border border-black/[0.07] bg-card">
           {intentsWithProofUrls.map(({ intent, proofs: intentProofs }) => {
             const provider = intent.payment_provider_id ? providerById.get(intent.payment_provider_id) : null;
             return (
-              <li key={intent.id} className="flex items-center justify-between gap-4 px-4 py-3">
+              <li key={intent.id} className="flex items-center justify-between gap-4 px-5 py-4">
                 <div className="min-w-0 space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm font-medium">{patientById.get(intent.patient_id) ?? "Paciente"}</p>
-                    <Badge variant="outline">{PAYMENT_STATUS_LABELS[intent.status]}</Badge>
-                    {provider && <Badge variant="secondary">{provider.display_name}</Badge>}
+                    <p className="text-[13.5px] font-semibold text-foreground/90">{patientById.get(intent.patient_id) ?? "Paciente"}</p>
+                    <Badge variant="outline" className={PAYMENT_STATUS_BADGE_CLASS[intent.status] ?? BADGE_OUTLINE}>
+                      {PAYMENT_STATUS_LABELS[intent.status]}
+                    </Badge>
+                    {provider && (
+                      <Badge variant="outline" className={BADGE_PRIMARY}>
+                        {provider.display_name}
+                      </Badge>
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     {intent.service_id ? serviceById.get(intent.service_id) : "Servicio"} · Valor esperado: $
