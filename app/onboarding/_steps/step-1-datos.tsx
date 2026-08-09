@@ -43,7 +43,15 @@ export function Step1Datos({ clinic }: { clinic: Database["public"]["Tables"]["c
           </div>
           <div className="space-y-2">
             <Label htmlFor="whatsapp_number">WhatsApp (opcional)</Label>
-            <Input id="whatsapp_number" name="whatsapp_number" defaultValue={clinic.whatsapp_number ?? ""} />
+            <Input
+              id="whatsapp_number"
+              name="whatsapp_number"
+              placeholder="Ej. +57 300 123 4567"
+              defaultValue={clinic.whatsapp_number ?? ""}
+            />
+            <p className="text-xs text-muted-foreground">
+              Incluye el indicativo del país — activa el botón de WhatsApp en tu página pública.
+            </p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="contact_email">Correo de contacto (opcional)</Label>

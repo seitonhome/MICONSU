@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ShieldAlert } from "lucide-react";
+import { ArrowLeft, ShieldAlert, MessageCircle } from "lucide-react";
 import { requireRole } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { NotesForm } from "./notes-form";
 import { DocumentUploadForm } from "./document-upload-form";
 import { APPOINTMENT_STATUS_LABELS, PAYMENT_STATUS_LABELS } from "@/lib/domain/labels";
 import { APPOINTMENT_STATUS_BADGE_CLASS, PAYMENT_STATUS_BADGE_CLASS, BADGE_OUTLINE, BADGE_DESTRUCTIVE } from "@/lib/utils/badge-styles";
+import { buildWhatsAppLink } from "@/lib/utils/whatsapp";
 
 export default async function PatientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -26,6 +27,12 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
     .single();
 
   if (!patient) notFound();
+
+  const { data: clinic } = await supabase.from("clinics").select("commercial_name").eq("id", profile.clinicId!).maybeSingle();
+  const whatsappHref = buildWhatsAppLink(
+    patient.phone,
+    `Hola ${patient.full_name.split(" ")[0]}, te escribimos de ${clinic?.commercial_name ?? "tu consultorio"}.`,
+  );
 
   const [
     { data: appointments },
@@ -90,6 +97,12 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
           </p>
         </div>
         <div className="flex items-center gap-2">
+          {whatsappHref && (
+            <Button variant="outline" render={<a href={whatsappHref} target="_blank" rel="noreferrer" />}>
+              <MessageCircle className="size-4" />
+              Contactar por WhatsApp
+            </Button>
+          )}
           {(profile.role === "clinic_owner" || profile.role === "professional") && (
             <Button variant="outline" render={<Link href={`/dashboard/clinico/${id}`} />}>
               <ShieldAlert className="size-4" />

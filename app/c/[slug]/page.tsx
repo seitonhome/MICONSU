@@ -6,6 +6,7 @@ import { ThemeProvider, type VisualTheme } from "@/components/themes/theme-provi
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ReviewList, type PublicReview } from "@/components/patterns/review-list";
+import { WhatsAppFloatingButton } from "@/components/patterns/whatsapp-floating-button";
 import { PRACTITIONER_TYPE_LABELS } from "@/lib/auth/roles";
 import { MODALITY_LABELS } from "@/lib/domain/labels";
 
@@ -214,6 +215,11 @@ export default async function ClinicPublicPage({ params }: { params: Promise<{ s
           </section>
         )}
       </main>
+
+      <WhatsAppFloatingButton
+        phone={clinic.whatsapp_number}
+        message={`Hola, te escribo desde tu página de ${clinic.commercial_name}. Quiero hacerte una pregunta.`}
+      />
     </ThemeProvider>
   );
 }
