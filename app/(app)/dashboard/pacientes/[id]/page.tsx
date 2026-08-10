@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ShieldAlert, MessageCircle } from "lucide-react";
+import { ArrowLeft, ShieldAlert } from "lucide-react";
 import { requireRole } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { DocumentUploadForm } from "./document-upload-form";
 import { APPOINTMENT_STATUS_LABELS, PAYMENT_STATUS_LABELS } from "@/lib/domain/labels";
 import { APPOINTMENT_STATUS_BADGE_CLASS, PAYMENT_STATUS_BADGE_CLASS, BADGE_OUTLINE, BADGE_DESTRUCTIVE } from "@/lib/utils/badge-styles";
 import { buildWhatsAppLink } from "@/lib/utils/whatsapp";
+import { WhatsAppIcon } from "@/components/patterns/whatsapp-icon";
 
 export default async function PatientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -98,8 +99,11 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
         </div>
         <div className="flex items-center gap-2">
           {whatsappHref && (
-            <Button variant="outline" render={<a href={whatsappHref} target="_blank" rel="noreferrer" />}>
-              <MessageCircle className="size-4" />
+            <Button
+              className="border-transparent bg-[#25D366] text-white hover:bg-[#1ebe5b]"
+              render={<a href={whatsappHref} target="_blank" rel="noreferrer" />}
+            >
+              <WhatsAppIcon className="size-4" />
               Contactar por WhatsApp
             </Button>
           )}
